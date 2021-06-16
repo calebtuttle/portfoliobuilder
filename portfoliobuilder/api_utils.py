@@ -4,9 +4,6 @@ import time
 from portfoliobuilder import alpaca_endpoint, alpaca_headers, finnhub_endpoint, finnhub_key
 
 
-# TODO: Test all of these methods
-
-
 ################# Alpaca utility functions #################
 
 _last_alpaca_call = 0
@@ -28,7 +25,6 @@ def alpaca_call(func):
 
     return wrapper
 
-
 @alpaca_call
 def get_account():
     url = alpaca_endpoint + 'account'
@@ -44,8 +40,11 @@ def fractionable_tradable(symbol):
     url = alpaca_endpoint + f'assets/{symbol}'
     response = requests.get(url=url, headers=alpaca_headers)
     response = response.json()
-    if response['fractionable'] and response['tradable']:
-        return True
+    try:
+        if response['fractionable'] and response['tradable']:
+            return True
+    except KeyError:
+        pass
     return False
 
 @alpaca_call
@@ -94,22 +93,41 @@ def finnhub_call(func):
 
     return wrapper
 
-
 @finnhub_call
 def get_market_cap(symbol):
     url = finnhub_endpoint + 'stock/profile2'
     params = {'symbol': symbol, 'token': finnhub_key}
     response = requests.get(url=url, params=params)
-    market_cap = response.json()['marketCapitalization']
-    market_cap *= 1_000_000 # Finnhub reports a multiple of a million
-    return market_cap
+    try: 
+        market_cap = response.json()['marketCapitalization']
+        market_cap *= 1_000_000 # Finnhub reports a multiple of a million
+        return market_cap
+    except KeyError:
+        return None
 
 @finnhub_call
-def get_ebitda_ps(symbol):
-    ''' Get TTM EBITDA per share. '''
-    url = finnhub_endpoint + 'metric'
+def get_metrics(symbol):
+    ''' Return the JSON response from the stock/metrics Finnhub endpoint. '''
+    url = finnhub_endpoint + 'stock/metric'
     params = {'symbol': symbol, 'metric': 'all', 'token': finnhub_key}
-    response = requests.get(url=url, params=params)
-    response = response.json()
-    return response['metric']['ebitdPerShareTTM']
+    response = requests.get(url=url, params=params).json()
+    if not response['metric'] and not response['series']:
+        return None
+    return response
+
+@finnhub_call
+def get_ev_to_fcf(symbol):
+    ''' 
+    Get current Enterprise Value / TTM Free Cash Flow. 
     
+    Return EV/FCF if number is positive, None if negative.
+    '''
+    url = finnhub_endpoint + 'stock/metric'
+    params = {'symbol': symbol, 'metric': 'all', 'token': finnhub_key}
+    response = requests.get(url=url, params=params).json()
+    try:
+        ev_to_fcf = response['metric']['currentEv/freeCashFlowTTM']
+        return ev_to_fcf
+    except KeyError:
+        pass
+    return None
