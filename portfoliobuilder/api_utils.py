@@ -4,7 +4,10 @@ import time
 from portfoliobuilder import alpaca_endpoint, alpaca_headers, finnhub_endpoint, finnhub_key
 
 
-############### Alpaca utility functions ###############
+# TODO: Test all of these methods
+
+
+################# Alpaca utility functions #################
 
 _last_alpaca_call = 0
 # _alpaca_limit = 10/3 # number of calls per second
@@ -70,7 +73,7 @@ def place_order(symbol, notional, side):
     return response
 
 
-############### Finnhub utility functions ###############
+################# Finnhub utility functions #################
 
 _last_finnhub_call = 0
 # _finnhub_limit = 30 # number of calls per second
@@ -94,10 +97,19 @@ def finnhub_call(func):
 
 @finnhub_call
 def get_market_cap(symbol):
-    url = finnhub_endpoint + f'stock/profile2'
+    url = finnhub_endpoint + 'stock/profile2'
     params = {'symbol': symbol, 'token': finnhub_key}
     response = requests.get(url=url, params=params)
     market_cap = response.json()['marketCapitalization']
     market_cap *= 1_000_000 # Finnhub reports a multiple of a million
     return market_cap
 
+@finnhub_call
+def get_ebitda_ps(symbol):
+    ''' Get TTM EBITDA per share. '''
+    url = finnhub_endpoint + 'metric'
+    params = {'symbol': symbol, 'metric': 'all', 'token': finnhub_key}
+    response = requests.get(url=url, params=params)
+    response = response.json()
+    return response['metric']['ebitdPerShareTTM']
+    

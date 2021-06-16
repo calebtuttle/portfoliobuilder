@@ -39,20 +39,6 @@ class Portfolio():
         self.last_cash_update = time.time()
         return cash
 
-    def symbols_to_stocks(self, symbols):
-        '''
-        Generate a list of Stock objects from a list of ticker symbols.
-
-        Return a list of Stock objects.
-        '''
-        stocks = []
-        for symbol in symbols:
-            stock = Stock(symbol)
-            stock.update_market_cap()
-            stocks.append(stock)
-        return stocks
-            
-
     def build_portfolio(self):
         '''                     
         Purchase all stocks in each basket, weighting the stocks according
@@ -78,13 +64,30 @@ class Portfolio():
 
             # TODO: Turn this into a function
             if basket.weighting_method is 'market_cap':
-                stocks = self.symbols_to_stocks(basket.symbols)
-                basket_market_cap = sum([stock.market_cap for stock in stocks])
+                stocks = [Stock(symbol) for symbol in basket.symbols]
+                market_caps = [stock.update_market_cap() for stock in stocks]
+                basket_market_cap = sum(market_caps)
                 for i, symbol in enumerate(basket.symbols):
-                    stock_weight = stocks[i].market_cap / basket_market_cap
+                    stock_weight = market_caps[i] / basket_market_cap
                     notional = self.cash * basket.weight * stock_weight
+                    self.place_order(symbol, notional, 'buy')
 
             # TODO: Value weighting
+            if basket.weighting_method is 'value':
+                stocks = [Stock(symbol) for symbol in basket.symbols]
+                ebitdas = [stock.update_ebitda_ps for stock in stocks]
+
+                # We do this to prevent a single ebitda from having a weight greater than 100%, 
+                # something that would happen if enough negative ebitdas are present; and to 
+                # give less weight to stocks with negative ebitda.
+                largest_ebitda = max(ebitdas)
+                ebitdas = [largest_ebitda if e <= 0 else e for e in ebitdas]
+                
+                basket_ebitda = sum(ebitdas)
+                for i, symbol in enumerate(basket.symbols):
+                    stock_weight = 1 - (ebitdas[i] / basket_ebitda)
+                    notional = self.cash * basket.weight * stock_weight
+                    self.place_order(symbol, notional, 'buy')
 
     def rebalance(self):
         for basket in self.baskets:
@@ -141,8 +144,12 @@ class Basket():
 class Stock():
     def __init__(self, symbol):
         self.symbol = symbol
+
         self.market_cap = 0
         self.last_market_cap_update = 0
+
+        self.ebitda_ps = 0 # TTM EBITDA per share
+        self.last_ebitda_ps_update = 0
 
     def update_market_cap(self):
         '''
@@ -152,3 +159,10 @@ class Stock():
         self.last_market_cap_update = time.time()
         return self.market_cap
 
+    def update_ebitda_ps(self):
+        '''
+        Return new EBITDA per share if successful.
+        '''
+        self.ebitda_ps = api_utils.get_ebitda_ps(self.symbol)
+        self.last_ebitda_ps_update = time.time()
+        return self.ebitda_ps
