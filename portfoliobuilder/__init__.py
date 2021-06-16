@@ -13,4 +13,4 @@ alpaca_headers = {'APCA-API-KEY-ID': alpaca_paper_key, 'APCA-API-SECRET-KEY': al
 
 finnhub_endpoint = 'https://finnhub.io/api/v1/'
 
-finnhub_key = input('Enter Finnhub API key')
+finnhub_key = input('Enter Finnhub API key: ')

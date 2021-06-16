@@ -39,60 +39,92 @@ class Portfolio():
         self.last_cash_update = time.time()
         return cash
 
+    def buy_equal_basket(self, basket):
+        ''' Buy all stocks in basket, weighting them equally. '''
+        num_constituents = len(basket.symbols)
+        stock_weight = 1/num_constituents
+        for symbol in basket.symbols:
+            notional = self.cash * (basket.weight / 100) * stock_weight
+            self.place_order(symbol, notional, 'buy')
+
+    def buy_market_cap_basket(self, basket):
+        ''' 
+        Buy all stocks in basket, weighting them by market cap. 
+        The greater the market cap, the greater the weight.
+        '''
+        stocks = [Stock(symbol) for symbol in basket.symbols]
+        market_caps = [stock.update_market_cap() for stock in stocks]
+        basket_market_cap = sum(market_caps)
+        for i, symbol in enumerate(basket.symbols):
+            stock_weight = market_caps[i] / basket_market_cap
+            notional = self.cash * (basket.weight / 100) * stock_weight
+            self.place_order(symbol, notional, 'buy')
+
+    def buy_value_basket(self, basket):
+        ''' 
+        Buy all stocks in basket, weighting them by value.
+        Value is determined by current Enterprise Value to
+        Trailing Twelve Months Free Cash Flow. The smaller
+        the EV/FCF, the greater the weight.
+        '''
+        stocks = [Stock(symbol) for symbol in basket.symbols]
+        ev_to_fcfs = [stock.update_ev_to_fcf() for stock in stocks]
+        
+        # If a stock's EV/FCF is negative, give it as much
+        # weight as the most expensive (highest EV/FCF) stock.
+        max_ev_to_fcf = max(ev_to_fcfs)
+        ev_to_fcfs = [max_ev_to_fcf if e2f is None else e2f for e2f in ev_to_fcfs]
+
+        basket_ev_to_fcf = sum(ev_to_fcfs)
+        for i, symbol in enumerate(basket.symbols):
+            stock_weight = 1 - (ev_to_fcfs[i] / basket_ev_to_fcf)
+            notional = self.cash * (basket.weight / 100) * stock_weight
+            self.place_order(symbol, notional, 'buy')
+
+    def buy_basket(self, basket):
+        if basket.weighting_method is 'equal':
+            self.buy_equal_basket(basket)
+        elif basket.weighting_method is 'market_cap':
+            self.buy_market_cap_basket(basket)
+        elif basket.weighting_method is 'value':
+            self.buy_value_basket(basket)
+        else:
+            raise Exception('\n\tInvalid weighting method')
+
     def build_portfolio(self):
-        '''                     
+        '''
         Purchase all stocks in each basket, weighting the stocks according
         to the weighting method indicated by each basket.
         '''
+        # TODO: Check whether the account already has a portfolio (i.e.,
+        # whether the account is holding anything other than cash).
+
         if not self.weights_are_valid():
             raise InvalidTotalWeightException()
-        
         if not self.update_cash():
             print('Could not update cash. Try again or see Portfolio.update_cash()')
             raise BadAPICallException()
 
-        # TODO: Finish the below for loop, and split it into multiple funcitons
         for basket in self.baskets:
-            num_constituents = len(basket.symbols)
-
-            # TODO: Turn this into a function
-            if basket.weighting_method is 'equal':
-                stock_weight = 1/num_constituents
-                for symbol in basket.symbols:
-                    notional = self.cash * basket.weight * stock_weight
-                    self.place_order(symbol, notional, 'buy')
-
-            # TODO: Turn this into a function
-            if basket.weighting_method is 'market_cap':
-                stocks = [Stock(symbol) for symbol in basket.symbols]
-                market_caps = [stock.update_market_cap() for stock in stocks]
-                basket_market_cap = sum(market_caps)
-                for i, symbol in enumerate(basket.symbols):
-                    stock_weight = market_caps[i] / basket_market_cap
-                    notional = self.cash * basket.weight * stock_weight
-                    self.place_order(symbol, notional, 'buy')
-
-            # TODO: Value weighting
-            if basket.weighting_method is 'value':
-                stocks = [Stock(symbol) for symbol in basket.symbols]
-                ebitdas = [stock.update_ebitda_ps for stock in stocks]
-
-                # We do this to prevent a single ebitda from having a weight greater than 100%, 
-                # something that would happen if enough negative ebitdas are present; and to 
-                # give less weight to stocks with negative ebitda.
-                largest_ebitda = max(ebitdas)
-                ebitdas = [largest_ebitda if e <= 0 else e for e in ebitdas]
-                
-                basket_ebitda = sum(ebitdas)
-                for i, symbol in enumerate(basket.symbols):
-                    stock_weight = 1 - (ebitdas[i] / basket_ebitda)
-                    notional = self.cash * basket.weight * stock_weight
-                    self.place_order(symbol, notional, 'buy')
+            self.buy_basket(basket)
 
     def rebalance(self):
         for basket in self.baskets:
             # rebalance basket
             pass
+
+    def new_portfolio(self, baskets):
+        ''' 
+        Create a new portfolio. Create a list of baskets, and
+        for each basket, choose a weight, weighting method, and
+        list of stocks. 
+        '''
+        # TODO: Add appropriate checks.
+
+        # TODO: Add user options.
+
+        self.baskets = baskets
+        self.build_portfolio()
 
     def execute(self):
         '''
@@ -148,8 +180,8 @@ class Stock():
         self.market_cap = 0
         self.last_market_cap_update = 0
 
-        self.ebitda_ps = 0 # TTM EBITDA per share
-        self.last_ebitda_ps_update = 0
+        self.ev_to_fcf = 0 # current Enterprise Value / TTM Free Cash Flow
+        self.last_ev_to_fcf_update = 0
 
     def update_market_cap(self):
         '''
@@ -159,10 +191,12 @@ class Stock():
         self.last_market_cap_update = time.time()
         return self.market_cap
 
-    def update_ebitda_ps(self):
+    def update_ev_to_fcf(self):
         '''
         Return new EBITDA per share if successful.
         '''
-        self.ebitda_ps = api_utils.get_ebitda_ps(self.symbol)
-        self.last_ebitda_ps_update = time.time()
-        return self.ebitda_ps
+        self.ev_to_fcf = api_utils.get_ev_to_fcf(self.symbol)
+        self.last_ev_to_fcf_update = time.time()
+        return self.ev_to_fcf
+
+        
