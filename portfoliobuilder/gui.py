@@ -226,8 +226,18 @@ def new_basket_frame():
     weight.setMinimum(1)
     weight.setMaximum(100)
 
+    # Confirm button
+    create_basket_btn = QPushButton('Create Basket')
+    create_basket_btn.setStyleSheet(
+        """
+        margin: 10px;
+        height: 35px;
+        width: 50px;
+        """
+    )
+
     # Add widgets to grid
-    grid.addWidget(new_basket_label, 0, 0, 1, 3) # widget, row, col, occupy_num_rows, occupy_num_cols
+    grid.addWidget(new_basket_label, 0, 0, 1, 4) # widget, row, col, occupy_num_rows, occupy_num_cols
     grid.addWidget(stock_label, 1, 0)
     grid.addWidget(symbol_input, 1, 1)
     grid.addWidget(new_stocks_label, 1, 2)
@@ -237,6 +247,7 @@ def new_basket_frame():
     grid.addWidget(value_wm_btn, 2, 3)
     grid.addWidget(weight_label, 3, 0)
     grid.addWidget(weight, 3, 1)
+    grid.addWidget(create_basket_btn, 4, 0, 1, 4)
 
 
 
