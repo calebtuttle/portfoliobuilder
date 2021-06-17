@@ -5,7 +5,8 @@ from portfoliobuilder.exceptions import InvalidTotalWeightException, BadAPICallE
 
 
 class Portfolio():
-    def __init__(self):
+    def __init__(self, name='Portfolio'):
+        self.name = name
         self.portfolio_value = 0
         self.cash = 0
         self.last_cash_update = 0
@@ -45,7 +46,7 @@ class Portfolio():
         stock_weight = 1/num_constituents
         for symbol in basket.symbols:
             notional = self.cash * (basket.weight / 100) * stock_weight
-            self.place_order(symbol, notional, 'buy')
+            api_utils.place_order(symbol, notional, 'buy')
 
     def buy_market_cap_basket(self, basket):
         ''' 
@@ -58,7 +59,7 @@ class Portfolio():
         for i, symbol in enumerate(basket.symbols):
             stock_weight = market_caps[i] / basket_market_cap
             notional = self.cash * (basket.weight / 100) * stock_weight
-            self.place_order(symbol, notional, 'buy')
+            api_utils.place_order(symbol, notional, 'buy')
 
     def buy_value_basket(self, basket):
         ''' 
@@ -79,7 +80,7 @@ class Portfolio():
         for i, symbol in enumerate(basket.symbols):
             stock_weight = 1 - (ev_to_fcfs[i] / basket_ev_to_fcf)
             notional = self.cash * (basket.weight / 100) * stock_weight
-            self.place_order(symbol, notional, 'buy')
+            api_utils.place_order(symbol, notional, 'buy')
 
     def buy_basket(self, basket):
         if basket.weighting_method is 'equal':

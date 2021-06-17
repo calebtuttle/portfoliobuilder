@@ -38,5 +38,3 @@ def test_api_utils_get_ev_to_fcf():
     assert isinstance(ev_to_fcf_aapl, float)
     assert ev_to_fcf_fake_stock is None
 
-
-test_api_utils_get_ev_to_fcf()

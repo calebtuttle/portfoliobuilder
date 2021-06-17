@@ -3,8 +3,8 @@
 
 alpaca_endpoint = 'https://paper-api.alpaca.markets/v2/'
 
-alpaca_paper_key = 'PK1WEJMYZYRT8K4QMJ58'
-alpaca_paper_secret = '75ZqYASD2sK0gPuf69tXwGOIwlp6eiWprBtEjfQj'
+alpaca_paper_key = input('Enter Alpaca paper API key: ')
+alpaca_paper_secret = input('Enter Alpaca paper secret: ')
 
 alpaca_headers = {'APCA-API-KEY-ID': alpaca_paper_key, 'APCA-API-SECRET-KEY': alpaca_paper_secret}
 
