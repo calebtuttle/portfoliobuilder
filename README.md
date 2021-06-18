@@ -9,4 +9,4 @@ As of November 2020, the exchange traded fund (ETF) market is about $5 trillion,
 
 With the ability to automate trades and purchase fractional shares, an investor can copy these ETFs without paying the fees. Let's get rid of unnecessary fees.
 
-Additionally, the size of the companies that manage these funds is concerning I encourage anyone intrigued to see this article by Annie Lowrey: https://www.theatlantic.com/ideas/archive/2021/04/the-autopilot-economy/618497/. 
+Additionally, the size of the companies that manage these funds is concerning. I encourage anyone intrigued to see this article by Annie Lowrey: https://www.theatlantic.com/ideas/archive/2021/04/the-autopilot-economy/618497/. 
