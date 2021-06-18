@@ -3,7 +3,8 @@ import sys
 # from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QPushButton, 
                             QVBoxLayout, QWidget, QFileDialog, QGridLayout,
-                            QRadioButton, QButtonGroup, QSpinBox, QLineEdit)
+                            QRadioButton, QButtonGroup, QSpinBox, QLineEdit,
+                            QDialogButtonBox)
 from PyQt5.QtGui import QPixmap, QCursor
 from PyQt5 import QtGui, QtCore
 
@@ -227,6 +228,8 @@ def new_basket_frame():
     weight.setMaximum(100)
 
     # Confirm button
+    def display_confirm_dialog():
+        confirm_new_basket_dlg.exec()
     create_basket_btn = QPushButton('Create Basket')
     create_basket_btn.setStyleSheet(
         """
@@ -235,6 +238,17 @@ def new_basket_frame():
         width: 50px;
         """
     )
+    create_basket_btn.clicked.connect(display_confirm_dialog)
+
+    # Confirm pop-up
+    def print_yes_message():
+        print('Yes')
+    def print_no_message():
+        print('No')
+    QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+    confirm_new_basket_dlg = QDialogButtonBox(QBtn)
+    confirm_new_basket_dlg.accepted.connect(print_yes_message)
+    confirm_new_basket_dlg.rejected.connect(print_no_message)
 
     # Add widgets to grid
     grid.addWidget(new_basket_label, 0, 0, 1, 4) # widget, row, col, occupy_num_rows, occupy_num_cols
@@ -248,6 +262,7 @@ def new_basket_frame():
     grid.addWidget(weight_label, 3, 0)
     grid.addWidget(weight, 3, 1)
     grid.addWidget(create_basket_btn, 4, 0, 1, 4)
+    grid.addWidget(confirm_new_basket_dlg)
 
 
 
