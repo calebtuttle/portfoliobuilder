@@ -4,11 +4,17 @@ import sys
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QPushButton, 
                             QVBoxLayout, QWidget, QFileDialog, QGridLayout,
                             QRadioButton, QButtonGroup, QSpinBox, QLineEdit,
-                            QDialogButtonBox)
+                            QMessageBox)
 from PyQt5.QtGui import QPixmap, QCursor
 from PyQt5 import QtGui, QtCore
 
 from portfoliobuilder.builder import Portfolio, Basket
+
+
+# TODO: Clean up code. Organize into classes and functions.
+# TODO: Implement navigation between frames.
+# TODO: Bring portfoliobuilder.builder functionality into the GUI.
+
 
 
 
@@ -46,6 +52,12 @@ def window_func():
     sys.exit(app.exec_())
 
 # window_func()
+
+
+
+
+
+
 
 
 def create_portfolio():
@@ -229,7 +241,9 @@ def new_basket_frame():
 
     # Confirm button
     def display_confirm_dialog():
-        confirm_new_basket_dlg.exec()
+        yes_or_no = baskets_message_box.exec()
+        if yes_or_no == QMessageBox.Yes:
+            print('OK clicked')
     create_basket_btn = QPushButton('Create Basket')
     create_basket_btn.setStyleSheet(
         """
@@ -241,14 +255,11 @@ def new_basket_frame():
     create_basket_btn.clicked.connect(display_confirm_dialog)
 
     # Confirm pop-up
-    def print_yes_message():
-        print('Yes')
-    def print_no_message():
-        print('No')
-    QBtn = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-    confirm_new_basket_dlg = QDialogButtonBox(QBtn)
-    confirm_new_basket_dlg.accepted.connect(print_yes_message)
-    confirm_new_basket_dlg.rejected.connect(print_no_message)
+    baskets_message_box = QMessageBox()
+    baskets_message_box.setText('Are you finished creating this basket?')
+    baskets_message_box.setWindowTitle('Create Basket')
+    baskets_message_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+    # baskets_message_box.buttonClicked.connect(some_function)
 
     # Add widgets to grid
     grid.addWidget(new_basket_label, 0, 0, 1, 4) # widget, row, col, occupy_num_rows, occupy_num_cols
@@ -262,13 +273,12 @@ def new_basket_frame():
     grid.addWidget(weight_label, 3, 0)
     grid.addWidget(weight, 3, 1)
     grid.addWidget(create_basket_btn, 4, 0, 1, 4)
-    grid.addWidget(confirm_new_basket_dlg)
 
 
 
-# home_frame()
+home_frame()
 # new_portfolio_frame()
-new_basket_frame()
+# new_basket_frame()
 
 window.setLayout(grid)
 
