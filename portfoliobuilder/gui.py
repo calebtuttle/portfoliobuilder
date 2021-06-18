@@ -4,7 +4,7 @@ import sys
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QPushButton, 
                             QWidget, QFileDialog, QGridLayout, QStackedLayout,
                             QRadioButton, QButtonGroup, QSpinBox, QLineEdit,
-                            QMessageBox)
+                            QMessageBox, QVBoxLayout)
 from PyQt5.QtGui import QPixmap, QCursor
 from PyQt5 import QtGui, QtCore
 
@@ -78,17 +78,34 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Portfolio Builder")
+        self.setFixedWidth(1000)
+
+        self.box_layout = QVBoxLayout()
+        self.setLayout(self.box_layout)
 
         self.stacked_layout = QStackedLayout()
-        self.setLayout(self.stacked_layout)
+        # self.setLayout(self.stacked_layout)
 
         self.home_frame = HomeFrame()
-
         self.stacked_layout.addWidget(self.home_frame)
 
         # TODO: Put the below line in a method and change setCurrentIndex
         # to a variable 
         self.stacked_layout.setCurrentIndex(0)
+
+        self.box_layout.addWidget(self.portfolio_builder_header())
+        self.box_layout.addLayout(self.stacked_layout)
+
+    def portfolio_builder_header(self):
+        header = QLabel('Portfolio Builder')
+        header.setStyleSheet(
+            """
+            font-family: Arial;
+            font-size: 40px;
+            color: '#001040';
+            """
+        )
+        return header
 
 
 class HomeFrame(QWidget):
@@ -103,24 +120,24 @@ class HomeFrame(QWidget):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        portfolio_builder_header = QLabel('Portfolio Builder')
         portfolio_list_header = self.portfolio_list_header()
         portfolio_labels = self.portfolio_labels()
         new_portfolio_button = self.new_portfolio_button()
 
         # Add widgets to grid
-        self.grid.addWidget(portfolio_builder_header, 0, 0)
-        self.grid.addWidget(portfolio_list_header, 1, 0)
+        self.grid.addWidget(portfolio_list_header, 0, 0)
         for i, p in enumerate(portfolio_labels):
-            self.grid.addWidget(p, i+2, 0)
-        self.grid.addWidget(new_portfolio_button, 0, 1, 1, 2)
+            self.grid.addWidget(p, i+1, 0)
+        self.grid.addWidget(new_portfolio_button, 0, 1)
 
     def portfolio_list_header(self):
         ''' Return a QLabel '''
         portfolio_list_label = QLabel('Portfolios')
         portfolio_list_label.setStyleSheet("""
                 text-decoration: underline;
-                font-family: Andale Mono;
+                font-size: 25px;
+                font-family: Arial;
+                color: '#001040';
                 """)
         return portfolio_list_label
 
@@ -129,6 +146,10 @@ class HomeFrame(QWidget):
         portfolio_labels = []
         for p in self.portfolios:
             p_label = QLabel()
+            p_label.setStyleSheet("""
+                font-size: 15px;
+                font-family: Arial;
+                """)
             p_label.setText(p.name)
             portfolio_labels.append(p_label)
         return portfolio_labels
@@ -141,10 +162,11 @@ class HomeFrame(QWidget):
         new_portfolio_btn.setStyleSheet(
             """
             *{
-                border: 4px solid '#00107f';
+                border: 4px solid '#001040';
                 border-radius: 15px; 
                 font-size: 25px;
-                color: '#0010ff;
+                font-family: Arial;
+                color: '#001040';
                 padding: 15px 0px;
             }
             *:hover{
