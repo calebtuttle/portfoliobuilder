@@ -80,20 +80,34 @@ class MainWindow(QWidget):
         self.setWindowTitle("Portfolio Builder")
         self.setFixedWidth(1000)
 
+        self.initUI()
+        
+    def initUI(self):
         self.box_layout = QVBoxLayout()
         self.setLayout(self.box_layout)
+
+        # Header layout
+        self.header_layout = QVBoxLayout()
+        portfolio_builder_header = self.portfolio_builder_header() # TODO: Turn portfolio_builder_header into a property
+        self.header_layout.addWidget(portfolio_builder_header)
+        self.frame_header = self.frame_header_func()
+        self.header_layout.addWidget(self.frame_header)
 
         self.stacked_layout = QStackedLayout()
         # self.setLayout(self.stacked_layout)
 
         self.home_frame = HomeFrame()
+        self.home_frame.new_portfolio_button.clicked.connect(self.switch_to_new_portfolio_frame)
         self.stacked_layout.addWidget(self.home_frame)
+
+        self.new_portfolio_frame = NewPortfolioFrame()
+        self.stacked_layout.addWidget(self.new_portfolio_frame)
 
         # TODO: Put the below line in a method and change setCurrentIndex
         # to a variable 
         self.stacked_layout.setCurrentIndex(0)
 
-        self.box_layout.addWidget(self.portfolio_builder_header())
+        self.box_layout.addLayout(self.header_layout)
         self.box_layout.addLayout(self.stacked_layout)
 
     def portfolio_builder_header(self):
@@ -106,6 +120,21 @@ class MainWindow(QWidget):
             """
         )
         return header
+
+    def frame_header_func(self):
+        header = QLabel('Home')
+        header.setStyleSheet(
+            """
+            font-family: Arial;
+            font-size: 30px;
+            color: '#001040';
+            """
+        )
+        return header
+
+    def switch_to_new_portfolio_frame(self):
+        self.frame_header.setText('Create New Portfolio')
+        self.stacked_layout.setCurrentIndex(1)
 
 
 class HomeFrame(QWidget):
@@ -120,17 +149,17 @@ class HomeFrame(QWidget):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        portfolio_list_header = self.portfolio_list_header()
-        portfolio_labels = self.portfolio_labels()
-        new_portfolio_button = self.new_portfolio_button()
+        self.portfolio_list_header = self.portfolio_list_header_func()
+        self.portfolio_labels = self.portfolio_labels_func()
+        self.new_portfolio_button = self.new_portfolio_button_func()
 
         # Add widgets to grid
-        self.grid.addWidget(portfolio_list_header, 0, 0)
-        for i, p in enumerate(portfolio_labels):
+        self.grid.addWidget(self.portfolio_list_header, 0, 0)
+        for i, p in enumerate(self.portfolio_labels):
             self.grid.addWidget(p, i+1, 0)
-        self.grid.addWidget(new_portfolio_button, 0, 1)
+        self.grid.addWidget(self.new_portfolio_button, 0, 1)
 
-    def portfolio_list_header(self):
+    def portfolio_list_header_func(self):
         ''' Return a QLabel '''
         portfolio_list_label = QLabel('Portfolios')
         portfolio_list_label.setStyleSheet("""
@@ -141,7 +170,7 @@ class HomeFrame(QWidget):
                 """)
         return portfolio_list_label
 
-    def portfolio_labels(self):
+    def portfolio_labels_func(self):
         ''' Return a list of QLabels '''
         portfolio_labels = []
         for p in self.portfolios:
@@ -154,7 +183,7 @@ class HomeFrame(QWidget):
             portfolio_labels.append(p_label)
         return portfolio_labels
 
-    def new_portfolio_button(self):
+    def new_portfolio_button_func(self):
         ''' Return a QPushButton '''
         new_portfolio_btn = QPushButton()
         new_portfolio_btn.setText('New Portfolio')
@@ -175,10 +204,68 @@ class HomeFrame(QWidget):
             }
             """
         )
-        new_portfolio_btn.clicked.connect(create_portfolio)
         return new_portfolio_btn
 
 
+class NewPortfolioFrame(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.baskets = []
+
+        self.initUI()
+
+    def initUI(self):
+        self.grid = QGridLayout()
+        self.setLayout(self.grid)
+
+        basket_list_header = self.baskets_list_header()
+        basket_labels = self.basket_labels()
+        new_basket_button = self.new_basket_button()
+
+        # Add widgets to grid
+        self.grid.addWidget(basket_list_header, 0, 0)
+        for i, p in enumerate(basket_labels):
+            self.grid.addWidget(p, i+1, 0)
+        self.grid.addWidget(new_basket_button, 0, 1)
+
+    def baskets_list_header(self):
+        basket_list_label = QLabel('Baskets')
+        basket_list_label.setStyleSheet("""
+            text-decoration: underline;
+            font-family: Arial;
+            """)
+        return basket_list_label
+
+    def basket_labels(self):
+        basket_labels = []
+        for b in self.baskets:
+            b_label = QLabel()
+            b_label.setText(b.name)
+            basket_labels.append(b_label)
+        return basket_labels
+
+    def new_basket_button(self):
+        new_basket_button = QPushButton('New Basket')
+        new_basket_button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        new_basket_button.setStyleSheet(
+            """
+            *{
+                border: 4px solid '#00107f';
+                border-radius: 15px; 
+                font-size: 25px;
+                color: '#0010ff;
+                padding: 15px 0px;
+            }
+            *:hover{
+                background: '#00107f';
+                color: '#ffffff';
+            }
+
+            """
+        )
+        new_basket_button.clicked.connect(create_basket)
+        return new_basket_button
 
 
 def run():

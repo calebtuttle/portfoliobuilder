@@ -141,7 +141,7 @@ class Basket():
     A basket is a collection of stocks. It is basically a sub-portfolio.
     It provides the user with greater granularity with respect to weighting.
     '''
-    def __init__(self, symbols, weighting_method='equal', weight=100):
+    def __init__(self, symbols, weighting_method='equal', weight=100, name='Basket'):
         '''
         symbols : list
             List of stocks' ticker symbols. 
@@ -153,6 +153,8 @@ class Basket():
         self.symbols = symbols
         self.weighting_method = weighting_method
         self.weight = weight
+        
+        self.name = name
 
         assert weight > 0 and weight <= 100
         assert weighting_method in ['equal', 'market_cap', 'value']
