@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QPushButton,
                             QRadioButton, QButtonGroup, QSpinBox, QLineEdit,
                             QMessageBox, QVBoxLayout)
 from PyQt5.QtGui import QPixmap, QCursor
+from PyQt5.QtCore import Qt
 from PyQt5 import QtGui, QtCore
 
 from portfoliobuilder.builder import Portfolio, Basket
@@ -101,7 +102,11 @@ class MainWindow(QWidget):
         self.stacked_layout.addWidget(self.home_frame)
 
         self.new_portfolio_frame = NewPortfolioFrame()
+        self.new_portfolio_frame.new_basket_button.clicked.connect(self.switch_to_new_basket_frame)
         self.stacked_layout.addWidget(self.new_portfolio_frame)
+
+        self.new_basket_frame = NewBasketFrame()
+        self.stacked_layout.addWidget(self.new_basket_frame)
 
         # TODO: Put the below line in a method and change setCurrentIndex
         # to a variable 
@@ -136,6 +141,11 @@ class MainWindow(QWidget):
         self.frame_header.setText('Create New Portfolio')
         self.stacked_layout.setCurrentIndex(1)
 
+    def switch_to_new_basket_frame(self):
+        self.frame_header.setText('Create New Basket')
+        self.stacked_layout.setCurrentIndex(2)
+
+
 
 class HomeFrame(QWidget):
     def __init__(self):
@@ -162,6 +172,7 @@ class HomeFrame(QWidget):
     def portfolio_list_header_func(self):
         ''' Return a QLabel '''
         portfolio_list_label = QLabel('Portfolios')
+        portfolio_list_label.setAlignment(Qt.AlignLeft)
         portfolio_list_label.setStyleSheet("""
                 text-decoration: underline;
                 font-size: 25px;
@@ -192,11 +203,11 @@ class HomeFrame(QWidget):
             """
             *{
                 border: 4px solid '#001040';
-                border-radius: 15px; 
+                border-radius: 15px;
+                font-family: Arial;
                 font-size: 25px;
                 font-family: Arial;
                 color: '#001040';
-                padding: 15px 0px;
             }
             *:hover{
                 background: '#00107f';
@@ -219,25 +230,27 @@ class NewPortfolioFrame(QWidget):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        basket_list_header = self.baskets_list_header()
-        basket_labels = self.basket_labels()
-        new_basket_button = self.new_basket_button()
+        self.basket_list_header = self.baskets_list_header_func()
+        self.basket_labels = self.basket_labels_func()
+        self.new_basket_button = self.new_basket_button_func()
 
         # Add widgets to grid
-        self.grid.addWidget(basket_list_header, 0, 0)
-        for i, p in enumerate(basket_labels):
+        self.grid.addWidget(self.basket_list_header, 0, 0)
+        for i, p in enumerate(self.basket_labels):
             self.grid.addWidget(p, i+1, 0)
-        self.grid.addWidget(new_basket_button, 0, 1)
+        self.grid.addWidget(self.new_basket_button, 0, 1)
 
-    def baskets_list_header(self):
+    def baskets_list_header_func(self):
         basket_list_label = QLabel('Baskets')
         basket_list_label.setStyleSheet("""
-            text-decoration: underline;
-            font-family: Arial;
-            """)
+                text-decoration: underline;
+                font-size: 25px;
+                font-family: Arial;
+                color: '#001040';
+                """)
         return basket_list_label
 
-    def basket_labels(self):
+    def basket_labels_func(self):
         basket_labels = []
         for b in self.baskets:
             b_label = QLabel()
@@ -245,27 +258,173 @@ class NewPortfolioFrame(QWidget):
             basket_labels.append(b_label)
         return basket_labels
 
-    def new_basket_button(self):
+    def new_basket_button_func(self):
         new_basket_button = QPushButton('New Basket')
         new_basket_button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
         new_basket_button.setStyleSheet(
             """
             *{
                 border: 4px solid '#00107f';
-                border-radius: 15px; 
+                border-radius: 15px;
+                font-family: Arial;
                 font-size: 25px;
-                color: '#0010ff;
+                color: '#001040';
                 padding: 15px 0px;
             }
             *:hover{
                 background: '#00107f';
                 color: '#ffffff';
             }
-
             """
         )
-        new_basket_button.clicked.connect(create_basket)
         return new_basket_button
+
+
+class NewBasketFrame(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.initUI()
+
+    def initUI(self):
+        self.grid = QGridLayout()
+        self.setLayout(self.grid)
+
+        self.new_basket_header = self.new_basket_header_func()
+
+        # Collect stock symbols from user
+        self.add_stock_label = self.add_stock_label_func()
+        self.new_stocks_label = self.new_stocks_label_func()
+        self.symbol_input = QLineEdit()
+        self.symbols = []
+        self.symbol_input.returnPressed.connect(self.add_symbol_to_new_stocks_label)
+        
+        weighting_method_label = QLabel('Weighting Method: ')
+        weighting_method_label.setStyleSheet("""
+            font-family: Arial;
+            color: '#001040';
+            """
+        )
+        weighting_method_btn_grp = QButtonGroup()
+        equal_wm_btn = QRadioButton('Equal')
+        equal_wm_btn.setStyleSheet("""
+            font-family: Arial;
+            color: '#001040';
+            """
+        )
+        market_cap_wm_btn = QRadioButton('Market Cap')
+        market_cap_wm_btn.setStyleSheet("""
+            font-family: Arial;
+            color: '#001040';
+            """
+        )
+        value_wm_btn = QRadioButton('Value')
+        value_wm_btn.setStyleSheet("""
+            font-family: Arial;
+            color: '#001040';
+            """
+        )
+        weighting_method_btn_grp.addButton(equal_wm_btn)
+        weighting_method_btn_grp.addButton(market_cap_wm_btn)
+        weighting_method_btn_grp.addButton(value_wm_btn)
+
+        weight_label = QLabel('Basket weight: ')
+        weight_label.setStyleSheet("""
+            font-family: Arial;
+            color: '#001040';
+            """
+        )
+        weight = QSpinBox()
+        weight.setMinimum(1)
+        weight.setMaximum(100)
+
+        self.confirm_basket_message_box = self.confirm_basket_message_box_func()
+        self.create_basket_button = self.create_basket_button()
+
+        self.grid.addWidget(self.new_basket_header, 0, 0, 1, 4)
+        self.grid.addWidget(self.add_stock_label, 1, 0)
+        self.grid.addWidget(self.symbol_input, 1, 1)
+        self.grid.addWidget(self.new_stocks_label, 1, 2)
+        self.grid.addWidget(weighting_method_label, 2, 0)
+        self.grid.addWidget(equal_wm_btn, 2, 1)
+        self.grid.addWidget(market_cap_wm_btn, 2, 2)
+        self.grid.addWidget(value_wm_btn, 2, 3)
+        self.grid.addWidget(weight_label, 3, 0)
+        self.grid.addWidget(weight, 3, 1)
+        self.grid.addWidget(self.create_basket_button, 4, 0, 1, 4)
+
+    def new_basket_header_func(self):
+        new_basket_label = QLabel('Create New Basket')
+        new_basket_label.setAlignment(QtCore.Qt.AlignCenter) 
+        new_basket_label.setStyleSheet(
+            """
+            text-decoration: underline;
+            font-size: 30px;
+            font-family: Arial;
+            color: '#001040';
+            """
+        )
+        return new_basket_label
+
+    def add_stock_label_func(self):
+        add_stock = QLabel('Add Stock: ')
+        add_stock.setStyleSheet("""
+            font-family: Arial;
+            color: '#001040';
+            """
+        )
+        return add_stock
+
+    def new_stocks_label_func(self):
+        new_stocks = QLabel('Stocks added:\n')
+        new_stocks.setStyleSheet("""
+            font-family: Arial;
+            color: '#001040';
+            """
+        )
+        return new_stocks
+
+    def add_symbol_to_new_stocks_label(self):
+        self.symbols.append(self.symbol_input.text())
+        new_stocks_str = self.new_stocks_label.text() + f'{self.symbols[-1]}\n'
+        self.new_stocks_label.setText(new_stocks_str)
+        self.symbol_input.setText('')
+
+    def confirm_basket_message_box_func(self):
+        baskets_message_box = QMessageBox()
+        baskets_message_box.setText('Are you finished creating this basket?')
+        baskets_message_box.setWindowTitle('Create Basket')
+        baskets_message_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        # baskets_message_box.buttonClicked.connect(some_function)
+        return baskets_message_box
+
+    def create_basket_button(self):
+        def display_confirm_dialog():
+            yes_or_no = self.confirm_basket_message_box.exec()
+            if yes_or_no == QMessageBox.Yes:
+                print('OK clicked')
+        create_basket_btn = QPushButton('Create Basket')
+        create_basket_btn.setStyleSheet(
+            """
+            *{
+                border: 4px solid '#00107f';
+                border-radius: 15px; 
+                font-family: Arial;
+                font-size: 25px;
+                color: '#001040';
+                padding: 15px 0px;
+            }
+            *:hover{
+                background: '#00107f';
+                color: '#ffffff';
+            }
+            """
+        )
+        create_basket_btn.clicked.connect(display_confirm_dialog)
+        return create_basket_btn
+
+    
+
 
 
 def run():
@@ -416,69 +575,69 @@ run()
 #     )
 
 #     # Take stocks input
-#     stock_label = QLabel()
-#     stock_label.setText('Add Stock: ')
-#     new_stocks_label = QLabel('Stocks added:\n')
-#     symbol_input = QLineEdit()
-#     symbols = []
-#     def add_symbol():
-#         symbols.append(symbol_input.text())
-#         print(f'symbols: {symbols}')
-#         new_stocks_str = new_stocks_label.text() + f'{symbols[-1]}\n'
-#         new_stocks_label.setText(new_stocks_str)
-#         symbol_input.setText('')
-#     symbol_input.returnPressed.connect(add_symbol)
+    # stock_label = QLabel()
+    # stock_label.setText('Add Stock: ')
+    # new_stocks_label = QLabel('Stocks added:\n')
+    # symbol_input = QLineEdit()
+    # symbols = []
+    # def add_symbol():
+    #     symbols.append(symbol_input.text())
+    #     print(f'symbols: {symbols}')
+    #     new_stocks_str = new_stocks_label.text() + f'{symbols[-1]}\n'
+    #     new_stocks_label.setText(new_stocks_str)
+    #     symbol_input.setText('')
+    # symbol_input.returnPressed.connect(add_symbol)
 
 #     # Weighting method
-#     weighting_method_label = QLabel('Weighting Method: ')
-#     weighting_method_btn_grp = QButtonGroup()
-#     equal_wm_btn = QRadioButton('Equal')
-#     weighting_method_btn_grp.addButton(equal_wm_btn)
-#     market_cap_wm_btn = QRadioButton('Market Cap')
-#     weighting_method_btn_grp.addButton(market_cap_wm_btn)
-#     value_wm_btn = QRadioButton('Value')
-#     weighting_method_btn_grp.addButton(value_wm_btn)
+    # weighting_method_label = QLabel('Weighting Method: ')
+    # weighting_method_btn_grp = QButtonGroup()
+    # equal_wm_btn = QRadioButton('Equal')
+    # weighting_method_btn_grp.addButton(equal_wm_btn)
+    # market_cap_wm_btn = QRadioButton('Market Cap')
+    # weighting_method_btn_grp.addButton(market_cap_wm_btn)
+    # value_wm_btn = QRadioButton('Value')
+    # weighting_method_btn_grp.addButton(value_wm_btn)
 
 #     # Basket weight
-#     weight_label = QLabel('Basket weight: ')
-#     weight = QSpinBox()
-#     weight.setMinimum(1)
-#     weight.setMaximum(100)
+    # weight_label = QLabel('Basket weight: ')
+    # weight = QSpinBox()
+    # weight.setMinimum(1)
+    # weight.setMaximum(100)
 
-#     # Confirm button
-#     def display_confirm_dialog():
-#         yes_or_no = baskets_message_box.exec()
-#         if yes_or_no == QMessageBox.Yes:
-#             print('OK clicked')
-#     create_basket_btn = QPushButton('Create Basket')
-#     create_basket_btn.setStyleSheet(
-#         """
-#         margin: 10px;
-#         height: 35px;
-#         width: 50px;
-#         """
-#     )
-#     create_basket_btn.clicked.connect(display_confirm_dialog)
+    # Confirm button
+    # def display_confirm_dialog():
+    #     yes_or_no = baskets_message_box.exec()
+    #     if yes_or_no == QMessageBox.Yes:
+    #         print('OK clicked')
+    # create_basket_btn = QPushButton('Create Basket')
+    # create_basket_btn.setStyleSheet(
+    #     """
+    #     margin: 10px;
+    #     height: 35px;
+    #     width: 50px;
+    #     """
+    # )
+    # create_basket_btn.clicked.connect(display_confirm_dialog)
 
 #     # Confirm pop-up
-#     baskets_message_box = QMessageBox()
-#     baskets_message_box.setText('Are you finished creating this basket?')
-#     baskets_message_box.setWindowTitle('Create Basket')
-#     baskets_message_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-#     # baskets_message_box.buttonClicked.connect(some_function)
+    # baskets_message_box = QMessageBox()
+    # baskets_message_box.setText('Are you finished creating this basket?')
+    # baskets_message_box.setWindowTitle('Create Basket')
+    # baskets_message_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+    # # baskets_message_box.buttonClicked.connect(some_function)
 
-#     # Add widgets to grid
-#     grid.addWidget(new_basket_label, 0, 0, 1, 4) # widget, row, col, occupy_num_rows, occupy_num_cols
-#     grid.addWidget(stock_label, 1, 0)
-#     grid.addWidget(symbol_input, 1, 1)
-#     grid.addWidget(new_stocks_label, 1, 2)
-#     grid.addWidget(weighting_method_label, 2, 0)
-#     grid.addWidget(equal_wm_btn, 2, 1)
-#     grid.addWidget(market_cap_wm_btn, 2, 2)
-#     grid.addWidget(value_wm_btn, 2, 3)
-#     grid.addWidget(weight_label, 3, 0)
-#     grid.addWidget(weight, 3, 1)
-#     grid.addWidget(create_basket_btn, 4, 0, 1, 4)
+    # # Add widgets to grid
+    # grid.addWidget(new_basket_label, 0, 0, 1, 4) # widget, row, col, occupy_num_rows, occupy_num_cols
+    # grid.addWidget(stock_label, 1, 0)
+    # grid.addWidget(symbol_input, 1, 1)
+    # grid.addWidget(new_stocks_label, 1, 2)
+    # grid.addWidget(weighting_method_label, 2, 0)
+    # grid.addWidget(equal_wm_btn, 2, 1)
+    # grid.addWidget(market_cap_wm_btn, 2, 2)
+    # grid.addWidget(value_wm_btn, 2, 3)
+    # grid.addWidget(weight_label, 3, 0)
+    # grid.addWidget(weight, 3, 1)
+    # grid.addWidget(create_basket_btn, 4, 0, 1, 4)
 
 
 
