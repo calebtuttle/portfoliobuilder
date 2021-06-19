@@ -17,46 +17,6 @@ from portfoliobuilder.builder import Portfolio, Basket
 # TODO: Bring portfoliobuilder.builder functionality into the GUI.
 
 
-
-
-class MyWindow(QMainWindow):
-    def __init__(self):
-        super(MyWindow, self).__init__()
-        self.setGeometry(200, 200, 500, 300)
-        self.setWindowTitle('Portfolio Builder')
-        self.initUI()
-
-        self.portfolios = []
-
-    def initUI(self):
-        self.label = QLabel(self)
-        self.label.setText('Portfolios')
-        self.label.move(10,10)
-
-        self.btn1 = QPushButton(self)
-        self.btn1.setGeometry(10, 10, 150, 35)
-        self.btn1.setText('This is a button')
-        self.btn1.clicked.connect(self.event_func)
-
-    def display_portfolio_list(self):
-        for portfolio in self.portfolios:
-            pass
-
-    def event_func(self):
-        self.label.setText('Button clicked. Event executed.')
-
-
-def window_func():
-    app = QApplication(sys.argv)
-    win = MyWindow()
-    win.show()
-    sys.exit(app.exec_())
-
-# window_func()
-
-
-
-
 def create_portfolio():
     basket = Basket(symbols=['GOOG', 'FB', 'AMZN'], weight=1)
     portfolio = Portfolio()
