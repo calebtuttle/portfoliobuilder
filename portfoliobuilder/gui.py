@@ -1,13 +1,12 @@
 import sys
 
 # from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QPushButton, 
-                            QWidget, QFileDialog, QGridLayout, QStackedLayout,
-                            QRadioButton, QButtonGroup, QSpinBox, QLineEdit,
-                            QMessageBox, QVBoxLayout)
-from PyQt5.QtGui import QPixmap, QCursor
+from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow, QGridLayout, 
+                            QVBoxLayout, QStackedLayout, QLabel, QLineEdit, 
+                            QPushButton,  QRadioButton, QButtonGroup, QSpinBox, 
+                            QMessageBox)
+from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt
-from PyQt5 import QtGui, QtCore
 
 from portfoliobuilder.builder import Portfolio, Basket
 
@@ -158,7 +157,7 @@ class HomeFrame(QWidget):
         ''' Return a QPushButton '''
         new_portfolio_btn = QPushButton()
         new_portfolio_btn.setText('New Portfolio')
-        new_portfolio_btn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        new_portfolio_btn.setCursor(QCursor(Qt.PointingHandCursor))
         new_portfolio_btn.setStyleSheet(
             """
             *{
@@ -220,7 +219,7 @@ class NewPortfolioFrame(QWidget):
 
     def new_basket_button_func(self):
         new_basket_button = QPushButton('New Basket')
-        new_basket_button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        new_basket_button.setCursor(QCursor(Qt.PointingHandCursor))
         new_basket_button.setStyleSheet(
             """
             *{
@@ -315,7 +314,7 @@ class NewBasketFrame(QWidget):
 
     def new_basket_header_func(self):
         new_basket_label = QLabel('Create New Basket')
-        new_basket_label.setAlignment(QtCore.Qt.AlignCenter) 
+        new_basket_label.setAlignment(Qt.AlignCenter) 
         new_basket_label.setStyleSheet(
             """
             text-decoration: underline;
