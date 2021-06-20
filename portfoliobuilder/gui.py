@@ -15,28 +15,42 @@ from portfoliobuilder.utils import copy_portfolio
 # TODO: Bring portfoliobuilder.builder functionality into the GUI.
 # TODO: Use a database to keep track of and access the different 
 #       portfolios (completed ones, in progress ones)
-# TODO: In NewPortfolioFrame, add a Finish Portfolio button,
+# TODO: In NewPortfolioFrame, add a Cancel Portfolio button,
 #       display the name of the portfolio, and display the weight
-#       of each basket 
+#       of each basket.
 
 
 _LIST_ELEMENT_STYLE_SHEET = """font-size: 20;
                             font-family: Arial;
                             color: '#001040';
                             """
-_BUTTON_STYLE_SHEET = """*{
+_BLUE_BUTTON_STYLE_SHEET = """*{
                     border: 4px solid '#001040';
                     border-radius: 15px;
                     font-family: Arial;
-                    font-size: 25px;
-                    font-family: Arial;
+                    font-size: 22px;
                     color: '#001040';
+                    padding: 5px;
                     }
                     *:hover{
-                        background: '#00107f';
+                        background: '#001040';
                         color: '#ffffff';
                     }
                     """
+_RED_BUTTON_STYLE_SHEET = """*{
+                    border: 4px solid '#500007';
+                    border-radius: 15px;
+                    font-family: Arial;
+                    font-size: 22px;
+                    color: '#500007';
+                    padding: 5px;
+                    }
+                    *:hover{
+                        background: '#500007';
+                        color: '#ffffff';
+                    }
+                    """
+
 
 
 class MainWindow(QWidget):
@@ -73,6 +87,7 @@ class MainWindow(QWidget):
 
         self.new_basket_frame = NewBasketFrame()
         self.new_basket_frame.basket_created.connect(self.on_basket_created)
+        self.new_basket_frame.basket_canceled.connect(self.on_basket_canceled)
         self.stacked_layout.addWidget(self.new_basket_frame)
 
         self.stacked_layout.setCurrentIndex(0)
@@ -129,6 +144,12 @@ class MainWindow(QWidget):
             self.new_portfolio_frame.portfolio.baskets.append(new_basket)
             # self.portfolios.append(self.new_portfolio_frame.portfolio)
             self.new_portfolio_frame.update_basket_labels()
+            self.switch_to_new_portfolio_frame()
+
+    @pyqtSlot(bool)
+    def on_basket_canceled(self, value):
+        if value:
+            self.new_basket_frame.basket = None
             self.switch_to_new_portfolio_frame()
 
     @pyqtSlot(bool)
@@ -204,7 +225,7 @@ class HomeFrame(QWidget):
     def init_new_portfolio_button(self):
         self.new_portfolio_button = QPushButton('New Portfolio')
         self.new_portfolio_button.setCursor(QCursor(Qt.PointingHandCursor))
-        self.new_portfolio_button.setStyleSheet(_BUTTON_STYLE_SHEET)
+        self.new_portfolio_button.setStyleSheet(_BLUE_BUTTON_STYLE_SHEET)
 
 
 class NewPortfolioFrame(QWidget):
@@ -273,7 +294,7 @@ class NewPortfolioFrame(QWidget):
     def init_new_basket_button(self):
         self.new_basket_button = QPushButton('New Basket')
         self.new_basket_button.setCursor(QCursor(Qt.PointingHandCursor))
-        self.new_basket_button.setStyleSheet(_BUTTON_STYLE_SHEET)
+        self.new_basket_button.setStyleSheet(_BLUE_BUTTON_STYLE_SHEET)
 
     def init_confirm_portfolio_message_box(self):
         self.confirm_portfolio_message_box = QMessageBox()
@@ -288,13 +309,14 @@ class NewPortfolioFrame(QWidget):
                 self.portfolio_created.emit(True)
         self.create_portfolio_button = QPushButton('Create Portfolio')
         self.create_portfolio_button.setCursor(QCursor(Qt.PointingHandCursor))
-        self.create_portfolio_button.setStyleSheet(_BUTTON_STYLE_SHEET)
+        self.create_portfolio_button.setStyleSheet(_BLUE_BUTTON_STYLE_SHEET)
         self.create_portfolio_button.clicked.connect(display_confirm_dialog)
 
 
 class NewBasketFrame(QWidget):
 
     basket_created = pyqtSignal(bool)
+    basket_canceled = pyqtSignal(bool)
     
     def __init__(self):
         super().__init__()
@@ -324,6 +346,9 @@ class NewBasketFrame(QWidget):
         self.init_name_label()
         self.init_name_field()
 
+        self.init_cancel_basket_message_box()
+        self.init_cancel_basket_button()
+
         self.init_confirm_basket_message_box()
         self.init_create_basket_button()
 
@@ -339,7 +364,8 @@ class NewBasketFrame(QWidget):
         self.grid.addWidget(self.weight, 3, 1)
         self.grid.addWidget(self.name_label, 4, 0)
         self.grid.addWidget(self.name_field, 4, 1)
-        self.grid.addWidget(self.create_basket_button, 5, 0, 1, 4)
+        self.grid.addWidget(self.cancel_basket_button, 5, 0, 1, 1)
+        self.grid.addWidget(self.create_basket_button, 5, 1, 1, 3)
 
     def init_new_basket_header(self):
         self.new_basket_header = QLabel('Create New Basket')
@@ -438,6 +464,23 @@ class NewBasketFrame(QWidget):
         self.name_field = QLineEdit()
         self.name_field.setPlaceholderText('S&P500 Basket')
 
+    def init_cancel_basket_message_box(self):
+        self.cancel_basket_message_box = QMessageBox()
+        self.cancel_basket_message_box.setText('Are you sure you want to cancel this basket?')
+        self.cancel_basket_message_box.setWindowTitle('Cancel Basket')
+        self.cancel_basket_message_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+    def init_cancel_basket_button(self):
+        def display_confirm_dialog():
+            yes_or_no = self.cancel_basket_message_box.exec()
+            if yes_or_no == QMessageBox.Yes:
+                self.new_stocks_label.setText('Stocks added:\n')
+                self.basket_canceled.emit(True)
+        self.cancel_basket_button = QPushButton('Cancel Basket')
+        self.cancel_basket_button.setCursor(QCursor(Qt.PointingHandCursor))
+        self.cancel_basket_button.setStyleSheet(_RED_BUTTON_STYLE_SHEET)
+        self.cancel_basket_button.clicked.connect(display_confirm_dialog)
+
     def init_confirm_basket_message_box(self):
         self.confirm_basket_message_box = QMessageBox()
         self.confirm_basket_message_box.setText('Are you finished creating this basket?')
@@ -457,7 +500,7 @@ class NewBasketFrame(QWidget):
                 self.basket_created.emit(True)
         self.create_basket_button = QPushButton('Create Basket')
         self.create_basket_button.setCursor(QCursor(Qt.PointingHandCursor))
-        self.create_basket_button.setStyleSheet(_BUTTON_STYLE_SHEET)
+        self.create_basket_button.setStyleSheet(_BLUE_BUTTON_STYLE_SHEET)
         self.create_basket_button.clicked.connect(display_confirm_dialog)
 
     def get_weighting_method_str(self):
@@ -475,7 +518,12 @@ class NewBasketFrame(QWidget):
         self.basket = basket
         return basket
     
-
+    def reset_fields_and_buttons(self):
+        # Add stock field
+        # Weighting method buttons
+        # Basket weight spin box
+        # Basket name
+        pass
 
 
 def run():
