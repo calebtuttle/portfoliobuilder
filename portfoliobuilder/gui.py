@@ -83,6 +83,7 @@ class MainWindow(QWidget):
         self.new_portfolio_frame = NewPortfolioFrame()
         self.new_portfolio_frame.new_basket_button.clicked.connect(self.switch_to_new_basket_frame)
         self.new_portfolio_frame.portfolio_created.connect(self.on_portfolio_created)
+        self.new_portfolio_frame.portfolio_canceled.connect(self.on_portfolio_canceled)
         self.stacked_layout.addWidget(self.new_portfolio_frame)
 
         self.new_basket_frame = NewBasketFrame()
@@ -163,6 +164,14 @@ class MainWindow(QWidget):
             self.new_portfolio_frame.update_basket_labels()
             self.switch_to_home_frame()
 
+    @pyqtSlot(bool)
+    def on_portfolio_canceled(self, value):
+        if value:
+            self.new_portfolio_frame.portfolio = None
+            self.home_frame.update_portfolio_labels()
+            self.new_portfolio_frame.update_basket_labels()
+            self.switch_to_home_frame()
+
 
 
 class HomeFrame(QWidget):
@@ -231,6 +240,7 @@ class HomeFrame(QWidget):
 class NewPortfolioFrame(QWidget):
 
     portfolio_created = pyqtSignal(bool)
+    portfolio_canceled = pyqtSignal(bool)
 
     def __init__(self):
         super().__init__()
@@ -247,7 +257,12 @@ class NewPortfolioFrame(QWidget):
 
         self.init_baskets_header()
         self.init_basket_labels()
+
         self.init_new_basket_button()
+
+        self.init_cancel_portfolio_message_box()
+        self.init_cancel_portfolio_button()
+
         self.init_confirm_portfolio_message_box()
         self.init_create_portfolio_button()
 
@@ -255,9 +270,10 @@ class NewPortfolioFrame(QWidget):
         self.grid.addWidget(self.baskets_header, 0, 0)
         for basket_label in enumerate(self.basket_labels):
             self.basket_box_layout.addWidget(basket_label)
-        self.grid.addLayout(self.basket_box_layout, 1, 0)
-        self.grid.addWidget(self.new_basket_button, 2, 0)
-        self.grid.addWidget(self.create_portfolio_button, 0, 1)
+        self.grid.addLayout(self.basket_box_layout, 1, 0, 1, 2)
+        self.grid.addWidget(self.new_basket_button, 2, 0, 1, 2)
+        self.grid.addWidget(self.cancel_portfolio_button, 3, 0, 1, 1)
+        self.grid.addWidget(self.create_portfolio_button, 3, 1, 1, 3)
 
     def init_baskets_header(self):
         self.baskets_header = QLabel('Baskets')
@@ -296,6 +312,22 @@ class NewPortfolioFrame(QWidget):
         self.new_basket_button.setCursor(QCursor(Qt.PointingHandCursor))
         self.new_basket_button.setStyleSheet(_BLUE_BUTTON_STYLE_SHEET)
 
+    def init_cancel_portfolio_message_box(self):
+        self.cancel_portfolio_message_box = QMessageBox()
+        self.cancel_portfolio_message_box.setText('Are you sure you want to cancel this portfolio?')
+        self.cancel_portfolio_message_box.setWindowTitle('Cancel Portfolio')
+        self.cancel_portfolio_message_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+    def init_cancel_portfolio_button(self):
+        def display_confirm_dialog():
+            yes_or_no = self.cancel_portfolio_message_box.exec()
+            if yes_or_no == QMessageBox.Yes:
+                self.portfolio_canceled.emit(True)
+        self.cancel_portfolio_button = QPushButton('Cancel Portfolio')
+        self.cancel_portfolio_button.setCursor(QCursor(Qt.PointingHandCursor))
+        self.cancel_portfolio_button.setStyleSheet(_RED_BUTTON_STYLE_SHEET)
+        self.cancel_portfolio_button.clicked.connect(display_confirm_dialog)
+
     def init_confirm_portfolio_message_box(self):
         self.confirm_portfolio_message_box = QMessageBox()
         self.confirm_portfolio_message_box.setText('Are you finished creating this portfolio?')
@@ -332,7 +364,6 @@ class NewBasketFrame(QWidget):
 
         self.init_new_basket_header()
 
-        # Collect stock symbols from user
         self.init_add_stock_label()
         self.init_new_stocks_label()
         self.init_add_stock_field()
