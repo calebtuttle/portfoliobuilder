@@ -13,3 +13,22 @@ Additionally, the size of the companies that manage these funds is concerning. I
 
 ## Requirements
 Python 3.7.6
+
+An Alpaca account, a Finnhub account, and API keys for each. You can create an Alpaca account here: https://alpaca.markets; and a Finnhub account here: https://finnhub.io. 
+
+## Installation
+1. Clone this GitHub repository, and navigate to the outermost portfoliobuilder/ directory.
+
+2. Run setup.py in the outermost portfoliobuilder/ directory:
+
+        portfoliobuilder$ python setup.py develop
+
+    This allows you to import portfoliobuilder.
+
+3. Set the following environment variables:
+
+        PORTFOLIOBUILDER_ALPACA_PAPER_KEY
+        PORTFOLIOBUILDER_ALPACA_PAPER_SECRET_KEY
+        PORTFOLIOBUILDER_FINNHUB_KEY
+
+    These are the API keys that will allow communication with Alpaca and Finnhub.
