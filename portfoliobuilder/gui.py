@@ -20,15 +20,23 @@ from portfoliobuilder.utils import copy_portfolio
 #       of each basket 
 
 
-def create_portfolio():
-    basket = Basket(symbols=['GOOG', 'FB', 'AMZN'], weight=1)
-    portfolio = Portfolio()
-    portfolio.baskets.append(basket)
-    portfolio.build_portfolio()
-
-
-
-
+_LIST_ELEMENT_STYLE_SHEET = """font-size: 20;
+                            font-family: Arial;
+                            color: '#001040';
+                            """
+_BUTTON_STYLE_SHEET = """*{
+                    border: 4px solid '#001040';
+                    border-radius: 15px;
+                    font-family: Arial;
+                    font-size: 25px;
+                    font-family: Arial;
+                    color: '#001040';
+                    }
+                    *:hover{
+                        background: '#00107f';
+                        color: '#ffffff';
+                    }
+                    """
 
 
 class MainWindow(QWidget):
@@ -67,8 +75,6 @@ class MainWindow(QWidget):
         self.new_basket_frame.basket_created.connect(self.on_basket_created)
         self.stacked_layout.addWidget(self.new_basket_frame)
 
-        # TODO: Put the below line in a method and change setCurrentIndex
-        # to a variable 
         self.stacked_layout.setCurrentIndex(0)
 
         self.box_layout.addLayout(self.header_layout)
@@ -177,12 +183,7 @@ class HomeFrame(QWidget):
         self.portfolio_labels = []
         for p in self.portfolios:
             p_label = QLabel()
-            p_label.setStyleSheet("""
-                font-size: 20;
-                font-family: Arial;
-                color: '#001040';
-                """
-            )
+            p_label.setStyleSheet(_LIST_ELEMENT_STYLE_SHEET)
             p_label.setText(p.name)
             self.portfolio_labels.append(p_label)
 
@@ -196,35 +197,14 @@ class HomeFrame(QWidget):
         self.portfolio_labels = []
         for i, p in enumerate(self.portfolios):
             p_label = QLabel(p.name)
-            p_label.setStyleSheet("""
-                font-size: 20;
-                font-family: Arial;
-                color: '#001040';
-                """
-            )
+            p_label.setStyleSheet(_LIST_ELEMENT_STYLE_SHEET)
             self.portfolio_labels.append(p_label)
             self.portfolio_box_layout.insertWidget(i, p_label)
 
     def init_new_portfolio_button(self):
-        self.new_portfolio_button = QPushButton()
-        self.new_portfolio_button.setText('New Portfolio')
+        self.new_portfolio_button = QPushButton('New Portfolio')
         self.new_portfolio_button.setCursor(QCursor(Qt.PointingHandCursor))
-        self.new_portfolio_button.setStyleSheet(
-            """
-            *{
-                border: 4px solid '#001040';
-                border-radius: 15px;
-                font-family: Arial;
-                font-size: 25px;
-                font-family: Arial;
-                color: '#001040';
-            }
-            *:hover{
-                background: '#00107f';
-                color: '#ffffff';
-            }
-            """
-        )
+        self.new_portfolio_button.setStyleSheet(_BUTTON_STYLE_SHEET)
 
 
 class NewPortfolioFrame(QWidget):
@@ -269,39 +249,11 @@ class NewPortfolioFrame(QWidget):
 
     def init_basket_labels(self):
         self.basket_labels = []
-        print(f'Printing new_portfolio_frame.portfolio.. {self.portfolio}') # TODO: Delete this line
-        if self.portfolio:                                                  # TODO: Delete this line
-            print(f'Printing portfolio.baskets... {self.portfolio.baskets}') # TODO: Delete this line
         if self.portfolio:
             for b in self.portfolio.baskets:
                 b_label = QLabel(b.name)
-                b_label.setStyleSheet("""
-                    font-size: 20;
-                    font-family: Arial;
-                    color: '#001040';
-                    """
-                )
+                b_label.setStyleSheet(_LIST_ELEMENT_STYLE_SHEET)
                 self.basket_labels.append(b_label)
-
-    def init_new_basket_button(self):
-        self.new_basket_button = QPushButton('New Basket')
-        self.new_basket_button.setCursor(QCursor(Qt.PointingHandCursor))
-        self.new_basket_button.setStyleSheet(
-            """
-            *{
-                border: 4px solid '#001040';
-                border-radius: 15px;
-                font-family: Arial;
-                font-size: 25px;
-                font-family: Arial;
-                color: '#001040';
-            }
-            *:hover{
-                background: '#00107f';
-                color: '#ffffff';
-            }
-            """
-        )
 
     def update_basket_labels(self):
         # Remove basket labels
@@ -314,14 +266,14 @@ class NewPortfolioFrame(QWidget):
             # Add labels for current baskets
             for i, b in enumerate(self.portfolio.baskets):
                 b_label = QLabel(b.name)
-                b_label.setStyleSheet("""
-                    font-size: 20;
-                    font-family: Arial;
-                    color: '#001040';
-                    """
-                )
+                b_label.setStyleSheet(_LIST_ELEMENT_STYLE_SHEET)
                 self.basket_labels.append(b_label)
                 self.basket_box_layout.insertWidget(i, b_label)
+
+    def init_new_basket_button(self):
+        self.new_basket_button = QPushButton('New Basket')
+        self.new_basket_button.setCursor(QCursor(Qt.PointingHandCursor))
+        self.new_basket_button.setStyleSheet(_BUTTON_STYLE_SHEET)
 
     def init_confirm_portfolio_message_box(self):
         self.confirm_portfolio_message_box = QMessageBox()
@@ -336,24 +288,8 @@ class NewPortfolioFrame(QWidget):
                 self.portfolio_created.emit(True)
         self.create_portfolio_button = QPushButton('Create Portfolio')
         self.create_portfolio_button.setCursor(QCursor(Qt.PointingHandCursor))
-        self.create_portfolio_button.setStyleSheet(
-            """
-            *{
-                border: 4px solid '#001040';
-                border-radius: 15px;
-                font-family: Arial;
-                font-size: 25px;
-                font-family: Arial;
-                color: '#001040';
-            }
-            *:hover{
-                background: '#00107f';
-                color: '#ffffff';
-            }
-            """
-        )
+        self.create_portfolio_button.setStyleSheet(_BUTTON_STYLE_SHEET)
         self.create_portfolio_button.clicked.connect(display_confirm_dialog)
-        # TODO: Connect to Portfolio constructor in builder.py
 
 
 class NewBasketFrame(QWidget):
@@ -377,9 +313,7 @@ class NewBasketFrame(QWidget):
         # Collect stock symbols from user
         self.init_add_stock_label()
         self.init_new_stocks_label()
-        self.symbol_input = QLineEdit()
-        self.symbols = []
-        self.symbol_input.returnPressed.connect(self.add_symbol_to_new_stocks_label)
+        self.init_add_stock_field()
         
         self.init_weighting_method_label()
         self.init_weighting_method_buttons()
@@ -387,12 +321,15 @@ class NewBasketFrame(QWidget):
         self.init_weight_label()
         self.init_weight()
 
+        self.init_name_label()
+        self.init_name_field()
+
         self.init_confirm_basket_message_box()
         self.init_create_basket_button()
 
         self.grid.addWidget(self.new_basket_header, 0, 0, 1, 4)
         self.grid.addWidget(self.add_stock_label, 1, 0)
-        self.grid.addWidget(self.symbol_input, 1, 1)
+        self.grid.addWidget(self.add_stock_field, 1, 1)
         self.grid.addWidget(self.new_stocks_label, 1, 2)
         self.grid.addWidget(self.weighting_method_label, 2, 0)
         self.grid.addWidget(self.equal_wm_btn, 2, 1)
@@ -400,7 +337,9 @@ class NewBasketFrame(QWidget):
         self.grid.addWidget(self.value_wm_btn, 2, 3)
         self.grid.addWidget(self.weight_label, 3, 0)
         self.grid.addWidget(self.weight, 3, 1)
-        self.grid.addWidget(self.create_basket_button, 4, 0, 1, 4)
+        self.grid.addWidget(self.name_label, 4, 0)
+        self.grid.addWidget(self.name_field, 4, 1)
+        self.grid.addWidget(self.create_basket_button, 5, 0, 1, 4)
 
     def init_new_basket_header(self):
         self.new_basket_header = QLabel('Create New Basket')
@@ -421,6 +360,12 @@ class NewBasketFrame(QWidget):
             color: '#001040';
             """
         )
+
+    def init_add_stock_field(self):
+        self.add_stock_field = QLineEdit()
+        self.add_stock_field.setPlaceholderText('AAPL')
+        self.symbols = []
+        self.add_stock_field.returnPressed.connect(self.add_symbol_to_new_stocks_label)
 
     def init_new_stocks_label(self):
         self.new_stocks_label = QLabel('Stocks added:\n')
@@ -476,10 +421,22 @@ class NewBasketFrame(QWidget):
         self.weight.setMaximum(100)
 
     def add_symbol_to_new_stocks_label(self):
-        self.symbols.append(self.symbol_input.text())
+        self.symbols.append(self.add_stock_field.text())
         new_stocks_str = self.new_stocks_label.text() + f'{self.symbols[-1]}\n'
         self.new_stocks_label.setText(new_stocks_str)
-        self.symbol_input.setText('')
+        self.add_stock_field.setText('')
+
+    def init_name_label(self):
+        self.name_label = QLabel('Basket name: ')
+        self.name_label.setStyleSheet("""
+            font-family: Arial;
+            color: '#001040';
+            """
+        )
+
+    def init_name_field(self):
+        self.name_field = QLineEdit()
+        self.name_field.setPlaceholderText('S&P500 Basket')
 
     def init_confirm_basket_message_box(self):
         self.confirm_basket_message_box = QMessageBox()
@@ -494,28 +451,13 @@ class NewBasketFrame(QWidget):
                 symbols = self.new_stocks_label.text().split('\n')[1:-1]
                 weighting_method = self.get_weighting_method_str()
                 if self.portfolio:
-                    name = f'Basket{len(self.portfolio.baskets)}'
+                    name = self.name_field.text()
                     self.create_basket(symbols, weighting_method, self.weight.value(), name)
                 self.new_stocks_label.setText('Stocks added:\n')
                 self.basket_created.emit(True)
         self.create_basket_button = QPushButton('Create Basket')
         self.create_basket_button.setCursor(QCursor(Qt.PointingHandCursor))
-        self.create_basket_button.setStyleSheet(
-            """
-            *{
-                border: 4px solid '#001040';
-                border-radius: 15px;
-                font-family: Arial;
-                font-size: 25px;
-                font-family: Arial;
-                color: '#001040';
-            }
-            *:hover{
-                background: '#00107f';
-                color: '#ffffff';
-            }
-            """
-        )
+        self.create_basket_button.setStyleSheet(_BUTTON_STYLE_SHEET)
         self.create_basket_button.clicked.connect(display_confirm_dialog)
 
     def get_weighting_method_str(self):
