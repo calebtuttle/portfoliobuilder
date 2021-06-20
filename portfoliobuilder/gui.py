@@ -203,13 +203,15 @@ class NewPortfolioFrame(QWidget):
         self.init_baskets_header()
         self.init_basket_labels()
         self.init_new_basket_button()
+        self.init_create_portfolio_button()
 
         # Add widgets to grid
         self.grid.addWidget(self.baskets_header, 0, 0)
         for basket_label in enumerate(self.basket_labels):
             self.basket_box_layout.addWidget(basket_label)
         self.grid.addLayout(self.basket_box_layout, 1, 0)
-        self.grid.addWidget(self.new_basket_button, 0, 1)
+        self.grid.addWidget(self.new_basket_button, 2, 0)
+        self.grid.addWidget(self.new_portfolio_button, 0, 1)
 
     def init_baskets_header(self):
         self.baskets_header = QLabel('Baskets')
@@ -227,8 +229,13 @@ class NewPortfolioFrame(QWidget):
             print(f'Printing portfolio.baskets... {self.portfolio.baskets}') # TODO: Delete this line
         if self.portfolio:
             for b in self.portfolio.baskets:
-                b_label = QLabel()
-                b_label.setText(b.name)
+                b_label = QLabel(b.name)
+                b_label.setStyleSheet("""
+                    font-size: 15;
+                    font-family: Arial;
+                    color: '#001040';
+                    """
+                )
                 self.basket_labels.append(b_label)
 
     def init_new_basket_button(self):
@@ -262,12 +269,35 @@ class NewPortfolioFrame(QWidget):
             for i, b in enumerate(self.portfolio.baskets):
                 b_label = QLabel(b.name)
                 b_label.setStyleSheet("""
+                    font-size: 15;
                     font-family: Arial;
                     color: '#001040';
                     """
                 )
                 self.basket_labels.append(b_label)
                 self.basket_box_layout.insertWidget(i, b_label)
+
+    def init_create_portfolio_button(self):
+        self.new_portfolio_button = QPushButton('Create Portfolio')
+        self.new_portfolio_button.setCursor(QCursor(Qt.PointingHandCursor))
+        self.new_portfolio_button.setStyleSheet(
+            """
+            *{
+                border: 4px solid '#001040';
+                border-radius: 15px;
+                font-family: Arial;
+                font-size: 25px;
+                font-family: Arial;
+                color: '#001040';
+            }
+            *:hover{
+                background: '#00107f';
+                color: '#ffffff';
+            }
+            """
+        )
+        # TODO: Add a message box for confirmation
+        # TODO: Connect to Portfolio constructor in builder.py
 
 
 class NewBasketFrame(QWidget):
