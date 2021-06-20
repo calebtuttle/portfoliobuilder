@@ -410,25 +410,16 @@ class NewBasketFrame(QWidget):
         )
 
     def init_weighting_method_buttons(self):
+        style_sheet = """font-family: Arial;
+                    color: '#001040';
+                    """
         self.weighting_method_btn_grp = QButtonGroup()
         self.equal_wm_btn = QRadioButton('Equal')
-        self.equal_wm_btn.setStyleSheet("""
-            font-family: Arial;
-            color: '#001040';
-            """
-        )
+        self.equal_wm_btn.setStyleSheet(style_sheet)
         self.market_cap_wm_btn = QRadioButton('Market Cap')
-        self.market_cap_wm_btn.setStyleSheet("""
-            font-family: Arial;
-            color: '#001040';
-            """
-        )
+        self.market_cap_wm_btn.setStyleSheet(style_sheet)
         self.value_wm_btn = QRadioButton('Value')
-        self.value_wm_btn.setStyleSheet("""
-            font-family: Arial;
-            color: '#001040';
-            """
-        )
+        self.value_wm_btn.setStyleSheet(style_sheet)
         self.weighting_method_btn_grp.addButton(self.equal_wm_btn)
         self.weighting_method_btn_grp.addButton(self.market_cap_wm_btn)
         self.weighting_method_btn_grp.addButton(self.value_wm_btn)
@@ -474,7 +465,7 @@ class NewBasketFrame(QWidget):
         def display_confirm_dialog():
             yes_or_no = self.cancel_basket_message_box.exec()
             if yes_or_no == QMessageBox.Yes:
-                self.new_stocks_label.setText('Stocks added:\n')
+                self.reset_labels_fields_and_buttons()
                 self.basket_canceled.emit(True)
         self.cancel_basket_button = QPushButton('Cancel Basket')
         self.cancel_basket_button.setCursor(QCursor(Qt.PointingHandCursor))
@@ -493,10 +484,9 @@ class NewBasketFrame(QWidget):
             if yes_or_no == QMessageBox.Yes:
                 symbols = self.new_stocks_label.text().split('\n')[1:-1]
                 weighting_method = self.get_weighting_method_str()
-                if self.portfolio:
-                    name = self.name_field.text()
-                    self.create_basket(symbols, weighting_method, self.weight.value(), name)
-                self.new_stocks_label.setText('Stocks added:\n')
+                name = self.name_field.text()
+                self.create_basket(symbols, weighting_method, self.weight.value(), name)
+                self.reset_labels_fields_and_buttons()
                 self.basket_created.emit(True)
         self.create_basket_button = QPushButton('Create Basket')
         self.create_basket_button.setCursor(QCursor(Qt.PointingHandCursor))
@@ -518,12 +508,19 @@ class NewBasketFrame(QWidget):
         self.basket = basket
         return basket
     
-    def reset_fields_and_buttons(self):
-        # Add stock field
+    def reset_labels_fields_and_buttons(self):
+        self.new_stocks_label.setText('Stocks added:\n')
+        self.add_stock_field.setText('')
+
         # Weighting method buttons
-        # Basket weight spin box
-        # Basket name
-        pass
+        self.weighting_method_btn_grp.setExclusive(False)
+        for wm_btn in self.weighting_method_btn_grp.buttons():
+            if wm_btn.isChecked():
+                wm_btn.setChecked(False)
+        self.weighting_method_btn_grp.setExclusive(True)
+
+        self.weight.setValue(1)
+        self.name_field.setText('')
 
 
 def run():
