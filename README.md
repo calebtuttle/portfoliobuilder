@@ -31,4 +31,4 @@ An Alpaca account, a Finnhub account, and API keys for each. You can create an A
         PORTFOLIOBUILDER_ALPACA_PAPER_SECRET_KEY
         PORTFOLIOBUILDER_FINNHUB_KEY
 
-    These are the API keys that will allow communication with Alpaca and Finnhub.
+    These are the API keys that will allow communication with Alpaca and Finnhub. If you are using conda, you can find instructions for setting environment variables here: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#saving-environment-variables.
