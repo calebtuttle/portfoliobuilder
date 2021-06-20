@@ -9,6 +9,7 @@ from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 
 from portfoliobuilder.builder import Portfolio, Basket
+from portfoliobuilder.utils import copy_portfolio
 
 
 # TODO: Bring portfoliobuilder.builder functionality into the GUI.
@@ -59,6 +60,7 @@ class MainWindow(QWidget):
 
         self.new_portfolio_frame = NewPortfolioFrame()
         self.new_portfolio_frame.new_basket_button.clicked.connect(self.switch_to_new_basket_frame)
+        self.new_portfolio_frame.portfolio_created.connect(self.on_portfolio_created)
         self.stacked_layout.addWidget(self.new_portfolio_frame)
 
         self.new_basket_frame = NewBasketFrame()
@@ -92,6 +94,10 @@ class MainWindow(QWidget):
             """
         )
 
+    def switch_to_home_frame(self):
+        self.frame_header.setText('Home')
+        self.stacked_layout.setCurrentIndex(0)
+
     def switch_to_new_portfolio_frame(self):
         from_home_frame = self.stacked_layout.currentIndex() == 0
         from_new_basket_frame = self.stacked_layout.currentIndex() == 2
@@ -119,6 +125,17 @@ class MainWindow(QWidget):
             self.new_portfolio_frame.update_basket_labels()
             self.switch_to_new_portfolio_frame()
 
+    @pyqtSlot(bool)
+    def on_portfolio_created(self, value):
+        if value:
+            new_portfolio = copy_portfolio(self.new_portfolio_frame.portfolio)
+            self.home_frame.portfolios.append(new_portfolio)
+            # self.portfolios.append(self.new_portfolio_frame.portfolio)
+            self.home_frame.update_portfolio_labels()
+            self.new_portfolio_frame.portfolio = None
+            self.new_portfolio_frame.update_basket_labels()
+            self.switch_to_home_frame()
+
 
 
 class HomeFrame(QWidget):
@@ -133,14 +150,17 @@ class HomeFrame(QWidget):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
+        self.portfolio_box_layout = QVBoxLayout()
+
         self.init_portfolio_list_header()
         self.init_portfolio_labels()
         self.init_new_portfolio_button()
 
         # Add widgets to grid
         self.grid.addWidget(self.portfolio_list_header, 0, 0)
-        for i, p in enumerate(self.portfolio_labels):
-            self.grid.addWidget(p, i+1, 0)
+        for p in self.portfolio_labels:
+            self.portfolio_box_layout.addWidget(p)
+        self.grid.addLayout(self.portfolio_box_layout, 1, 0)
         self.grid.addWidget(self.new_portfolio_button, 0, 1)
 
     def init_portfolio_list_header(self):
@@ -158,11 +178,32 @@ class HomeFrame(QWidget):
         for p in self.portfolios:
             p_label = QLabel()
             p_label.setStyleSheet("""
-                font-size: 15px;
+                font-size: 20;
                 font-family: Arial;
-                """)
+                color: '#001040';
+                """
+            )
             p_label.setText(p.name)
             self.portfolio_labels.append(p_label)
+
+    def update_portfolio_labels(self):
+        if self.portfolio_labels:
+            # Remove portfolio labels
+            for p_label in self.portfolio_labels:
+                self.portfolio_box_layout.removeWidget(p_label)
+
+        # Add portfolio labels
+        self.portfolio_labels = []
+        for i, p in enumerate(self.portfolios):
+            p_label = QLabel(p.name)
+            p_label.setStyleSheet("""
+                font-size: 20;
+                font-family: Arial;
+                color: '#001040';
+                """
+            )
+            self.portfolio_labels.append(p_label)
+            self.portfolio_box_layout.insertWidget(i, p_label)
 
     def init_new_portfolio_button(self):
         self.new_portfolio_button = QPushButton()
@@ -187,6 +228,9 @@ class HomeFrame(QWidget):
 
 
 class NewPortfolioFrame(QWidget):
+
+    portfolio_created = pyqtSignal(bool)
+
     def __init__(self):
         super().__init__()
 
@@ -203,6 +247,7 @@ class NewPortfolioFrame(QWidget):
         self.init_baskets_header()
         self.init_basket_labels()
         self.init_new_basket_button()
+        self.init_confirm_portfolio_message_box()
         self.init_create_portfolio_button()
 
         # Add widgets to grid
@@ -211,7 +256,7 @@ class NewPortfolioFrame(QWidget):
             self.basket_box_layout.addWidget(basket_label)
         self.grid.addLayout(self.basket_box_layout, 1, 0)
         self.grid.addWidget(self.new_basket_button, 2, 0)
-        self.grid.addWidget(self.new_portfolio_button, 0, 1)
+        self.grid.addWidget(self.create_portfolio_button, 0, 1)
 
     def init_baskets_header(self):
         self.baskets_header = QLabel('Baskets')
@@ -231,7 +276,7 @@ class NewPortfolioFrame(QWidget):
             for b in self.portfolio.baskets:
                 b_label = QLabel(b.name)
                 b_label.setStyleSheet("""
-                    font-size: 15;
+                    font-size: 20;
                     font-family: Arial;
                     color: '#001040';
                     """
@@ -259,17 +304,18 @@ class NewPortfolioFrame(QWidget):
         )
 
     def update_basket_labels(self):
-        if self.portfolio:
-            # Remove basket labels
-            for b_label in self.basket_labels:
-                self.basket_box_layout.removeWidget(b_label)
+        # Remove basket labels
+        for b_label in self.basket_labels:
+            self.basket_box_layout.removeWidget(b_label)
 
+        self.basket_labels = []
+        
+        if self.portfolio:
             # Add labels for current baskets
-            self.basket_labels = []
             for i, b in enumerate(self.portfolio.baskets):
                 b_label = QLabel(b.name)
                 b_label.setStyleSheet("""
-                    font-size: 15;
+                    font-size: 20;
                     font-family: Arial;
                     color: '#001040';
                     """
@@ -277,10 +323,20 @@ class NewPortfolioFrame(QWidget):
                 self.basket_labels.append(b_label)
                 self.basket_box_layout.insertWidget(i, b_label)
 
+    def init_confirm_portfolio_message_box(self):
+        self.confirm_portfolio_message_box = QMessageBox()
+        self.confirm_portfolio_message_box.setText('Are you finished creating this portfolio?')
+        self.confirm_portfolio_message_box.setWindowTitle('Create Portfolio')
+        self.confirm_portfolio_message_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
     def init_create_portfolio_button(self):
-        self.new_portfolio_button = QPushButton('Create Portfolio')
-        self.new_portfolio_button.setCursor(QCursor(Qt.PointingHandCursor))
-        self.new_portfolio_button.setStyleSheet(
+        def display_confirm_dialog():
+            yes_or_no = self.confirm_portfolio_message_box.exec()
+            if yes_or_no == QMessageBox.Yes:
+                self.portfolio_created.emit(True)
+        self.create_portfolio_button = QPushButton('Create Portfolio')
+        self.create_portfolio_button.setCursor(QCursor(Qt.PointingHandCursor))
+        self.create_portfolio_button.setStyleSheet(
             """
             *{
                 border: 4px solid '#001040';
@@ -296,7 +352,7 @@ class NewPortfolioFrame(QWidget):
             }
             """
         )
-        # TODO: Add a message box for confirmation
+        self.create_portfolio_button.clicked.connect(display_confirm_dialog)
         # TODO: Connect to Portfolio constructor in builder.py
 
 
@@ -443,6 +499,7 @@ class NewBasketFrame(QWidget):
                 self.new_stocks_label.setText('Stocks added:\n')
                 self.basket_created.emit(True)
         self.create_basket_button = QPushButton('Create Basket')
+        self.create_basket_button.setCursor(QCursor(Qt.PointingHandCursor))
         self.create_basket_button.setStyleSheet(
             """
             *{
