@@ -4,7 +4,7 @@ import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow, QGridLayout, 
                             QVBoxLayout, QStackedLayout, QLabel, QLineEdit, 
                             QPushButton,  QRadioButton, QButtonGroup, QSpinBox, 
-                            QMessageBox)
+                            QMessageBox, QInputDialog)
 from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 
@@ -128,6 +128,7 @@ class MainWindow(QWidget):
             new_portfolio = Portfolio(name=name)
             self.new_portfolio_frame.portfolio = new_portfolio
         elif from_new_basket_frame:
+            # TODO
             pass
         self.frame_header.setText('Create New Portfolio')
         self.stacked_layout.setCurrentIndex(1)
@@ -171,7 +172,6 @@ class MainWindow(QWidget):
             self.home_frame.update_portfolio_labels()
             self.new_portfolio_frame.update_basket_labels()
             self.switch_to_home_frame()
-
 
 
 class HomeFrame(QWidget):
@@ -255,6 +255,9 @@ class NewPortfolioFrame(QWidget):
 
         self.basket_box_layout = QVBoxLayout()
 
+        self.init_name_label()
+        self.init_edit_name_button()
+
         self.init_baskets_header()
         self.init_basket_labels()
 
@@ -267,13 +270,35 @@ class NewPortfolioFrame(QWidget):
         self.init_create_portfolio_button()
 
         # Add widgets to grid
-        self.grid.addWidget(self.baskets_header, 0, 0)
+        self.grid.addWidget(self.name_label, 0, 0)
+        self.grid.addWidget(self.edit_name_button, 0, 1)
+        self.grid.addWidget(self.baskets_header, 1, 0)
         for basket_label in enumerate(self.basket_labels):
             self.basket_box_layout.addWidget(basket_label)
-        self.grid.addLayout(self.basket_box_layout, 1, 0, 1, 2)
-        self.grid.addWidget(self.new_basket_button, 2, 0, 1, 2)
-        self.grid.addWidget(self.cancel_portfolio_button, 3, 0, 1, 1)
-        self.grid.addWidget(self.create_portfolio_button, 3, 1, 1, 3)
+        self.grid.addLayout(self.basket_box_layout, 2, 0, 1, 2)
+        self.grid.addWidget(self.new_basket_button, 3, 0, 1, 2)
+        self.grid.addWidget(self.cancel_portfolio_button, 4, 0, 1, 1)
+        self.grid.addWidget(self.create_portfolio_button, 4, 1, 1, 3)
+
+    def init_name_label(self):
+        self.name_label = QLabel('"Portfolio Name"')
+        self.name_label.setStyleSheet("""
+                font-size: 22px;
+                font-family: Arial;
+                color: '#001040';
+                """
+        )
+
+    def init_edit_name_button(self):
+        def get_name():
+            name, ok, = QInputDialog.getText(self, 'Edit Portfolio Name', 'New portfolio name: ')
+            if ok and name:
+                self.name_label.setText(f'"{name}"')
+        self.edit_name_button = QPushButton('Edit Portfolio Name')
+        self.edit_name_button.setCursor(QCursor(Qt.PointingHandCursor))
+        self.edit_name_button.setStyleSheet(_BLUE_BUTTON_STYLE_SHEET)
+        # TODO: Make edit_name_button font-size smaller
+        self.edit_name_button.clicked.connect(get_name)
 
     def init_baskets_header(self):
         self.baskets_header = QLabel('Baskets')
