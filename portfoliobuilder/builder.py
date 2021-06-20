@@ -158,7 +158,11 @@ class Basket():
 
         assert weight > 0 and weight <= 100
         assert weighting_method in ['equal', 'market_cap', 'value']
-        assert self.symbols_are_valid()
+        # assert self.symbols_are_valid()
+        assert self.symbols_are_tradable()
+
+    def __repr__(self):
+        return self.name
 
     def symbols_are_valid(self):
         '''
@@ -175,6 +179,16 @@ class Basket():
             return True
         return False
     
+    def symbols_are_tradable(self):
+        are_tradable = []
+        for symbol in self.symbols:
+            tradable = api_utils.tradable(symbol)
+            are_tradable.append(tradable)
+        if all(are_tradable):
+            return True
+        return False
+
+
 
 class Stock():
     def __init__(self, symbol):

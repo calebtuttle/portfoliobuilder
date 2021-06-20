@@ -32,6 +32,19 @@ def get_account():
     return response.json()
 
 @alpaca_call
+def tradable(symbol):
+    url = alpaca_endpoint + f'assets/{symbol}'
+    response = requests.get(url=url, headers=alpaca_headers)
+    response = response.json()
+    try:
+        if response['tradable']:
+            return True
+    except KeyError:
+        pass
+    return False
+    
+
+@alpaca_call
 def fractionable_tradable(symbol):
     '''
     Return True if the asset denoted by symbol is both fractionable 

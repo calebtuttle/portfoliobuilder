@@ -6,12 +6,14 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow, QGridLayout,
                             QPushButton,  QRadioButton, QButtonGroup, QSpinBox, 
                             QMessageBox)
 from PyQt5.QtGui import QCursor
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 
 from portfoliobuilder.builder import Portfolio, Basket
 
 
 # TODO: Bring portfoliobuilder.builder functionality into the GUI.
+# TODO: Use a database to keep track of and access the different 
+#       portfolios (completed ones, in progress ones)
 
 
 def create_portfolio():
@@ -20,14 +22,7 @@ def create_portfolio():
     portfolio.baskets.append(basket)
     portfolio.build_portfolio()
 
-def create_basket(portfolio, symbols):
-    if not portfolio:
-        return None
-    if not symbols:
-        symbols = ['GOOG', 'FB', 'AMZN']
-    basket = Basket(symbols, weight=1)
-    portfolio.baskets.append(basket)
-    return basket
+
 
 
 
@@ -37,6 +32,8 @@ class MainWindow(QWidget):
         super().__init__()
         self.setWindowTitle("Portfolio Builder")
         self.setFixedWidth(1000)
+
+        self.portfolios = []
 
         self.initUI()
         
@@ -62,6 +59,7 @@ class MainWindow(QWidget):
         self.stacked_layout.addWidget(self.new_portfolio_frame)
 
         self.new_basket_frame = NewBasketFrame()
+        self.new_basket_frame.basket_created.connect(self.on_basket_created)
         self.stacked_layout.addWidget(self.new_basket_frame)
 
         # TODO: Put the below line in a method and change setCurrentIndex
@@ -92,12 +90,31 @@ class MainWindow(QWidget):
         )
 
     def switch_to_new_portfolio_frame(self):
+        from_home_frame = self.stacked_layout.currentIndex() == 0
+        from_new_basket_frame = self.stacked_layout.currentIndex() == 2
+        if from_home_frame:
+            name = f'Portfolio{len(self.portfolios)}'
+            new_portfolio = Portfolio(name=name)
+            self.new_portfolio_frame.portfolio = new_portfolio
+        elif from_new_basket_frame:
+            pass
         self.frame_header.setText('Create New Portfolio')
         self.stacked_layout.setCurrentIndex(1)
 
     def switch_to_new_basket_frame(self):
+        portfolio = self.new_portfolio_frame.portfolio
+        self.new_basket_frame.portfolio = portfolio
         self.frame_header.setText('Create New Basket')
         self.stacked_layout.setCurrentIndex(2)
+
+    @pyqtSlot(bool)
+    def on_basket_created(self, value):
+        if value:
+            new_basket = self.new_basket_frame.basket
+            self.new_portfolio_frame.portfolio.baskets.append(new_basket)
+            # self.portfolios.append(self.new_portfolio_frame.portfolio)
+            self.new_portfolio_frame.init_basket_labels()  # TODO: Find a better way to do this. Find a way to just update basket labels
+            self.switch_to_new_portfolio_frame()
 
 
 
@@ -170,7 +187,7 @@ class NewPortfolioFrame(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.baskets = []
+        self.portfolio = None
 
         self.initUI()
 
@@ -199,10 +216,14 @@ class NewPortfolioFrame(QWidget):
 
     def init_basket_labels(self):
         self.basket_labels = []
-        for b in self.baskets:
-            b_label = QLabel()
-            b_label.setText(b.name)
-            self.basket_labels.append(b_label)
+        print(f'Printing new_portfolio_frame.portfolio.. {self.portfolio}') # TODO: Delete this line
+        if self.portfolio:                                                  # TODO: Delete this line
+            print(f'Printing portfolio.baskets... {self.portfolio.baskets}') # TODO: Delete this line
+        if self.portfolio:
+            for b in self.portfolio.baskets:
+                b_label = QLabel()
+                b_label.setText(b.name)
+                self.basket_labels.append(b_label)
 
     def init_new_basket_button(self):
         self.new_basket_button = QPushButton('New Basket')
@@ -226,8 +247,14 @@ class NewPortfolioFrame(QWidget):
 
 
 class NewBasketFrame(QWidget):
+
+    basket_created = pyqtSignal(bool)
+    
     def __init__(self):
         super().__init__()
+
+        self.portfolio = None
+        self.basket = None
 
         self.initUI()
 
@@ -354,7 +381,12 @@ class NewBasketFrame(QWidget):
         def display_confirm_dialog():
             yes_or_no = self.confirm_basket_message_box.exec()
             if yes_or_no == QMessageBox.Yes:
-                print('OK clicked')
+                symbols = self.new_stocks_label.text().split('\n')[1:-1]
+                weighting_method = self.get_weighting_method_str()
+                if self.portfolio:
+                    name = f'Basket{len(self.portfolio.baskets)}'
+                    self.create_basket(symbols, weighting_method, self.weight.value(), name)
+                self.basket_created.emit(True)
         self.create_basket_button = QPushButton('Create Basket')
         self.create_basket_button.setStyleSheet(
             """
@@ -374,6 +406,20 @@ class NewBasketFrame(QWidget):
         )
         self.create_basket_button.clicked.connect(display_confirm_dialog)
 
+    def get_weighting_method_str(self):
+        if self.equal_wm_btn.isChecked():
+            weighting_method = 'equal'
+        elif self.market_cap_wm_btn.isChecked():
+            weighting_method = 'market_cap'
+        elif self.value_wm_btn.isChecked():
+            weighting_method = 'value'
+        return weighting_method
+
+    def create_basket(self, symbols, weighting_method, weight, name='Basket'):
+        basket = Basket(symbols, weighting_method, weight, name)
+        print(f'new basket: {basket}')
+        self.basket = basket
+        return basket
     
 
 
