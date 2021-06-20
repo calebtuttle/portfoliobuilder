@@ -14,6 +14,9 @@ from portfoliobuilder.builder import Portfolio, Basket
 # TODO: Bring portfoliobuilder.builder functionality into the GUI.
 # TODO: Use a database to keep track of and access the different 
 #       portfolios (completed ones, in progress ones)
+# TODO: In NewPortfolioFrame, add a Finish Portfolio button,
+#       display the name of the portfolio, and display the weight
+#       of each basket 
 
 
 def create_portfolio():
@@ -113,7 +116,7 @@ class MainWindow(QWidget):
             new_basket = self.new_basket_frame.basket
             self.new_portfolio_frame.portfolio.baskets.append(new_basket)
             # self.portfolios.append(self.new_portfolio_frame.portfolio)
-            self.new_portfolio_frame.init_basket_labels()  # TODO: Find a better way to do this. Find a way to just update basket labels
+            self.new_portfolio_frame.update_basket_labels()
             self.switch_to_new_portfolio_frame()
 
 
@@ -195,14 +198,17 @@ class NewPortfolioFrame(QWidget):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
+        self.basket_box_layout = QVBoxLayout()
+
         self.init_baskets_header()
         self.init_basket_labels()
         self.init_new_basket_button()
 
         # Add widgets to grid
         self.grid.addWidget(self.baskets_header, 0, 0)
-        for i, p in enumerate(self.basket_labels):
-            self.grid.addWidget(p, i+1, 0)
+        for basket_label in enumerate(self.basket_labels):
+            self.basket_box_layout.addWidget(basket_label)
+        self.grid.addLayout(self.basket_box_layout, 1, 0)
         self.grid.addWidget(self.new_basket_button, 0, 1)
 
     def init_baskets_header(self):
@@ -244,6 +250,24 @@ class NewPortfolioFrame(QWidget):
             }
             """
         )
+
+    def update_basket_labels(self):
+        if self.portfolio:
+            # Remove basket labels
+            for b_label in self.basket_labels:
+                self.basket_box_layout.removeWidget(b_label)
+
+            # Add labels for current baskets
+            self.basket_labels = []
+            for i, b in enumerate(self.portfolio.baskets):
+                b_label = QLabel(b.name)
+                b_label.setStyleSheet("""
+                    font-family: Arial;
+                    color: '#001040';
+                    """
+                )
+                self.basket_labels.append(b_label)
+                self.basket_box_layout.insertWidget(i, b_label)
 
 
 class NewBasketFrame(QWidget):
@@ -386,6 +410,7 @@ class NewBasketFrame(QWidget):
                 if self.portfolio:
                     name = f'Basket{len(self.portfolio.baskets)}'
                     self.create_basket(symbols, weighting_method, self.weight.value(), name)
+                self.new_stocks_label.setText('Stocks added:\n')
                 self.basket_created.emit(True)
         self.create_basket_button = QPushButton('Create Basket')
         self.create_basket_button.setStyleSheet(
@@ -417,7 +442,7 @@ class NewBasketFrame(QWidget):
 
     def create_basket(self, symbols, weighting_method, weight, name='Basket'):
         basket = Basket(symbols, weighting_method, weight, name)
-        print(f'new basket: {basket}')
+        print(f'New basket: {basket}')  # TODO: Delete this line
         self.basket = basket
         return basket
     
