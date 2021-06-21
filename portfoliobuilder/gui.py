@@ -4,7 +4,7 @@ import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow, QGridLayout, 
                             QVBoxLayout, QHBoxLayout, QStackedLayout, QLabel, 
                             QLineEdit, QPushButton,  QRadioButton, QButtonGroup, 
-                            QSpinBox, QMessageBox, QInputDialog)
+                            QSpinBox, QScrollArea, QMessageBox, QInputDialog)
 from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 
@@ -420,6 +420,7 @@ class NewBasketFrame(QWidget):
 
         self.init_add_stock_label()
         self.init_new_stocks_label()
+        self.init_new_stocks_scroll_area()
         self.init_add_stock_field()
         
         self.init_weighting_method_label()
@@ -440,7 +441,8 @@ class NewBasketFrame(QWidget):
         self.grid.addWidget(self.new_basket_header, 0, 0, 1, 4)
         self.grid.addWidget(self.add_stock_label, 1, 0)
         self.grid.addWidget(self.add_stock_field, 1, 1)
-        self.grid.addWidget(self.new_stocks_label, 1, 2)
+        # self.grid.addWidget(self.new_stocks_label, 1, 2)
+        self.grid.addWidget(self.new_stocks_scroll_area, 1, 2)
         self.grid.addWidget(self.weighting_method_label, 2, 0)
         self.grid.addWidget(self.equal_wm_btn, 2, 1)
         self.grid.addWidget(self.market_cap_wm_btn, 2, 2)
@@ -479,12 +481,23 @@ class NewBasketFrame(QWidget):
         self.add_stock_field.returnPressed.connect(self.add_symbol_to_new_stocks_label)
 
     def init_new_stocks_label(self):
-        self.new_stocks_label = QLabel('Stocks added:\n')
+        # self.new_stocks_label = QLabel('Stocks added:\n') # TODO: Make a new label for 'Stocks Added:'
+        self.new_stocks_label = QLabel('')
         self.new_stocks_label.setStyleSheet("""
             font-family: Arial;
             color: '#001040';
             """
         )
+        hbox_layout = QHBoxLayout()
+        self.new_stocks_label.setLayout(hbox_layout)
+
+    def init_new_stocks_scroll_area(self):
+        self.new_stocks_scroll_area = QScrollArea()
+        self.new_stocks_scroll_area.setFixedHeight(100)
+        self.new_stocks_scroll_area.setFixedWidth(175)
+        self.new_stocks_scroll_area.setWidget(self.new_stocks_label)
+        # self.new_stocks_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        # self.new_stocks_scroll_area.show()
 
     def init_weighting_method_label(self):
         self.weighting_method_label = QLabel('Weighting Method: ')
