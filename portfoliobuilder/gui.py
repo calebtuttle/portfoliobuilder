@@ -15,12 +15,13 @@ from portfoliobuilder.utils import copy_portfolio
 # TODO: Bring portfoliobuilder.builder functionality into the GUI.
 # TODO: Use a database to keep track of and access the different 
 #       portfolios (completed ones, in progress ones)
-# TODO: In NewPortfolioFrame, add a Cancel Portfolio button,
-#       display the name of the portfolio, and display the weight
-#       of each basket.
+# TODO: In NewPortfolioFrame, display the weight
+#       of each basket, add the ability to edit a basket.
+# TODO: In HomeFrame, add the ability to edit a portfolio, the
+#       ability to build (execute) a portfolio.
 
 
-_LIST_ELEMENT_STYLE_SHEET = """font-size: 20;
+_LIST_ELEMENT_STYLE_SHEET = """font-size: 20px;
                             font-family: Arial;
                             color: '#001040';
                             """
@@ -57,7 +58,7 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Portfolio Builder")
-        self.setFixedWidth(1000)
+        self.setFixedWidth(700)
 
         self.portfolios = []
 
@@ -110,6 +111,8 @@ class MainWindow(QWidget):
         self.frame_header = QLabel('Home')
         self.frame_header.setStyleSheet(
             """
+            border-bottom: 4px solid '#001040';
+            border-radius: 0px;
             font-family: Arial;
             font-size: 30px;
             color: '#001040';
@@ -124,8 +127,7 @@ class MainWindow(QWidget):
         from_home_frame = self.stacked_layout.currentIndex() == 0
         from_new_basket_frame = self.stacked_layout.currentIndex() == 2
         if from_home_frame:
-            name = f'Portfolio{len(self.portfolios)}'
-            new_portfolio = Portfolio(name=name)
+            new_portfolio = Portfolio(name='Portfolio Name')
             self.new_portfolio_frame.portfolio = new_portfolio
         elif from_new_basket_frame:
             # TODO
@@ -159,6 +161,7 @@ class MainWindow(QWidget):
         if value:
             new_portfolio = copy_portfolio(self.new_portfolio_frame.portfolio)
             self.home_frame.portfolios.append(new_portfolio)
+            print(f'New portfolio: {new_portfolio.name}')
             # self.portfolios.append(self.new_portfolio_frame.portfolio)
             self.home_frame.update_portfolio_labels()
             self.new_portfolio_frame.portfolio = None
@@ -288,16 +291,18 @@ class NewPortfolioFrame(QWidget):
                 color: '#001040';
                 """
         )
+        if self.portfolio:
+            self.portfolio.name = self.name_label.text()
 
     def init_edit_name_button(self):
         def get_name():
             name, ok, = QInputDialog.getText(self, 'Edit Portfolio Name', 'New portfolio name: ')
             if ok and name:
                 self.name_label.setText(f'"{name}"')
+                self.portfolio.name = name
         self.edit_name_button = QPushButton('Edit Portfolio Name')
         self.edit_name_button.setCursor(QCursor(Qt.PointingHandCursor))
         self.edit_name_button.setStyleSheet(_BLUE_BUTTON_STYLE_SHEET)
-        # TODO: Make edit_name_button font-size smaller
         self.edit_name_button.clicked.connect(get_name)
 
     def init_baskets_header(self):
@@ -492,6 +497,7 @@ class NewBasketFrame(QWidget):
         self.weight = QSpinBox()
         self.weight.setMinimum(1)
         self.weight.setMaximum(100)
+        self.weight.setSuffix('%')
 
     def add_symbol_to_new_stocks_label(self):
         self.symbols.append(self.add_stock_field.text())
