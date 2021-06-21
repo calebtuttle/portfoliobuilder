@@ -2,9 +2,9 @@ import sys
 
 # from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow, QGridLayout, 
-                            QVBoxLayout, QStackedLayout, QLabel, QLineEdit, 
-                            QPushButton,  QRadioButton, QButtonGroup, QSpinBox, 
-                            QMessageBox, QInputDialog)
+                            QVBoxLayout, QHBoxLayout, QStackedLayout, QLabel, 
+                            QLineEdit, QPushButton,  QRadioButton, QButtonGroup, 
+                            QSpinBox, QMessageBox, QInputDialog)
 from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 
@@ -148,6 +148,7 @@ class MainWindow(QWidget):
             self.new_portfolio_frame.portfolio.baskets.append(new_basket)
             # self.portfolios.append(self.new_portfolio_frame.portfolio)
             self.new_portfolio_frame.update_basket_labels()
+            self.new_portfolio_frame.update_unallocated_label()
             self.switch_to_new_portfolio_frame()
 
     @pyqtSlot(bool)
@@ -214,11 +215,17 @@ class HomeFrame(QWidget):
 
     def init_portfolio_labels(self):
         self.portfolio_labels = []
-        for p in self.portfolios:
-            p_label = QLabel()
-            p_label.setStyleSheet(_LIST_ELEMENT_STYLE_SHEET)
-            p_label.setText(p.name)
-            self.portfolio_labels.append(p_label)
+        if self.portfolios:
+            for p in self.portfolios:
+                p_label = QLabel()
+                p_label.setStyleSheet(_LIST_ELEMENT_STYLE_SHEET)
+                p_label.setText(p.name)
+                self.portfolio_labels.append(p_label)
+        else:
+            no_portfolios_label = QLabel('No portfolios to show...')
+            style = _LIST_ELEMENT_STYLE_SHEET + '\nfont-size: 17px;'
+            no_portfolios_label.setStyleSheet(style)
+            self.portfolio_labels.append(no_portfolios_label)
 
     def update_portfolio_labels(self):
         if self.portfolio_labels:
@@ -261,6 +268,8 @@ class NewPortfolioFrame(QWidget):
         self.init_name_label()
         self.init_edit_name_button()
 
+        self.init_unallocated_label()
+
         self.init_baskets_header()
         self.init_basket_labels()
 
@@ -274,12 +283,13 @@ class NewPortfolioFrame(QWidget):
 
         # Add widgets to grid
         self.grid.addWidget(self.name_label, 0, 0)
-        self.grid.addWidget(self.edit_name_button, 0, 1)
+        self.grid.addWidget(self.edit_name_button, 0, 1, 1, 1)
+        self.grid.addWidget(self.unallocated_label, 1, 1)
         self.grid.addWidget(self.baskets_header, 1, 0)
         for basket_label in enumerate(self.basket_labels):
             self.basket_box_layout.addWidget(basket_label)
         self.grid.addLayout(self.basket_box_layout, 2, 0, 1, 2)
-        self.grid.addWidget(self.new_basket_button, 3, 0, 1, 2)
+        self.grid.addWidget(self.new_basket_button, 3, 0)
         self.grid.addWidget(self.cancel_portfolio_button, 4, 0, 1, 1)
         self.grid.addWidget(self.create_portfolio_button, 4, 1, 1, 3)
 
@@ -304,6 +314,20 @@ class NewPortfolioFrame(QWidget):
         self.edit_name_button.setCursor(QCursor(Qt.PointingHandCursor))
         self.edit_name_button.setStyleSheet(_BLUE_BUTTON_STYLE_SHEET)
         self.edit_name_button.clicked.connect(get_name)
+
+    def init_unallocated_label(self):
+        self.unallocated_label = QLabel('100% of this portfolio is unallocated')
+        style = _LIST_ELEMENT_STYLE_SHEET + '\nfont-size: 17px;'
+        self.unallocated_label.setStyleSheet(style)
+        if self.portfolio:
+            unallocated = 100 - sum([b.weight for b in self.portfolio.baskets])
+            unallocated_str = f'{unallocated}% of this portfolio is unallocated'
+            self.unallocated_label.setText(unallocated_str)
+
+    def update_unallocated_label(self):
+        unallocated = 100 - sum([b.weight for b in self.portfolio.baskets])
+        unallocated_str = f'{unallocated}% of this portfolio is unallocated'
+        self.unallocated_label.setText(unallocated_str)
 
     def init_baskets_header(self):
         self.baskets_header = QLabel('Baskets')
@@ -332,7 +356,7 @@ class NewPortfolioFrame(QWidget):
         if self.portfolio:
             # Add labels for current baskets
             for i, b in enumerate(self.portfolio.baskets):
-                b_label = QLabel(b.name)
+                b_label = QLabel(f'{b.name}  |  {b.weight}%')
                 b_label.setStyleSheet(_LIST_ELEMENT_STYLE_SHEET)
                 self.basket_labels.append(b_label)
                 self.basket_box_layout.insertWidget(i, b_label)
