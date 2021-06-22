@@ -142,5 +142,18 @@ def get_ev_to_fcf(symbol):
         ev_to_fcf = response['metric']['currentEv/freeCashFlowTTM']
         return ev_to_fcf
     except KeyError:
-        pass
-    return None
+        return None
+
+@finnhub_call
+def get_index_constituents(index_symbol):
+    '''
+    Return a list of the stock symbols, None if unsuccessful.
+    '''
+    url = finnhub_endpoint + 'index/constituents'
+    params = {'symbol': index_symbol, 'token': finnhub_key}
+    response = requests.get(url=url, params=params).json()
+    try:
+        symbols = response['constituents']
+        return symbols
+    except KeyError:
+        return None
