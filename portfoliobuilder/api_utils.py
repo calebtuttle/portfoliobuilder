@@ -13,14 +13,15 @@ def alpaca_call(func):
     '''
     Method to ensure the API call rate limit isn't reached.
     '''
-    global _last_alpaca_call
-    nex_available_call = _last_alpaca_call + 0.3
-    now = time.time()
-    if nex_available_call >= now:
-        time.sleep(nex_available_call - now)
-    _last_alpaca_call = time.time()
-
     def wrapper(*args, **kwargs):
+        global _last_alpaca_call
+        next_available_call = _last_alpaca_call + 0.3 # constant should be 0.3, right?
+        now = time.time()
+        if next_available_call >= now:
+            time.sleep(next_available_call - now)
+        _last_alpaca_call = time.time()
+        # print(f'Aplaca call at {_last_alpaca_call}s') #TODO: Delete this line
+
         return func(*args, **kwargs)
 
     return wrapper
@@ -35,15 +36,15 @@ def get_account():
 def tradable(symbol):
     url = alpaca_endpoint + f'assets/{symbol}'
     response = requests.get(url=url, headers=alpaca_headers)
-    response = response.json()
-    try:
-        if response['tradable']:
-            return True
-    except KeyError:
-        pass
+    if response.status_code in range(200, 226):
+        return response.json()['tradable']
+    print(f'Got status code {response.status_code} in tradable() for symbol {symbol}. Trying again.')
+    response = requests.get(url=url, headers=alpaca_headers)
+    if response.status_code in range(200, 226):
+        return response.json()['tradable']
+    print(f'Second attempt in tradable() for symbol {symbol} failed.')
     return False
     
-
 @alpaca_call
 def fractionable_tradable(symbol):
     '''
@@ -94,14 +95,14 @@ def finnhub_call(func):
     '''
     Method to ensure the API call rate limit isn't reached.
     '''
-    global _last_finnhub_call
-    nex_available_call = _last_finnhub_call + 0.0333334
-    now = time.time()
-    if nex_available_call >= now:
-        time.sleep(nex_available_call - now)
-    _last_finnhub_call = time.time()
-
     def wrapper(*args, **kwargs):
+        global _last_finnhub_call
+        next_available_call = _last_finnhub_call + 0.0333334
+        now = time.time()
+        if next_available_call >= now:
+            time.sleep(next_available_call - now)
+        _last_finnhub_call = time.time()
+
         return func(*args, **kwargs)
 
     return wrapper
