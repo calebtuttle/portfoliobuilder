@@ -3,6 +3,8 @@ A command line app for portfoliobuilder.
 '''
 
 from portfoliobuilder.builder import Portfolio, Basket
+from portfoliobuilder.supported_indices import (supported_indices_list, 
+                                                supported_indices_dict)
 
 
 print("Welcome to the portfoliobuilder command line application. " +
@@ -19,6 +21,7 @@ newbasket (<symbol0> <symbol1> <symboli>) <weighting_method> <basket_weight>
 listbaskets
 inspectbasket <basket_name>
 addbasket <portfolio_name> <basket_name>
+listindices
 
 Enter 'help' to see commands.
 Enter 'q' to quit, or kill with ^c.'''
@@ -121,6 +124,12 @@ def addbasket(command):
     else:
         print('Invalid command. Unknown portfolio.')
 
+def listindices():
+    print('Listing supported indices...')
+    print('Index | Symbol')
+    for symbol in supported_indices_list:
+        print(f'{supported_indices_dict[symbol]}  |  {symbol}')
+
 def parse_command(command):
     if command == 'help':
         print(help_str)
@@ -138,10 +147,13 @@ def parse_command(command):
         inspectbasket(command)
     elif 'addbasket' in command:
         addbasket(command)
+    elif command == 'listindices':
+        listindices()
 
 
+# TODO: Implement the ability to read a list of symbols from a file.
 # TODO: Implement buyportfolio, rebalance, savestate (which saves the portfolio to a database or something)
-#       and recoverstate (which reads the saved portfolios into this session's variables) 
+#       and recoverstate (which reads the saved portfolios into this session's variables).
 
 
 command = ''
