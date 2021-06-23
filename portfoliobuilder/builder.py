@@ -159,7 +159,7 @@ class Basket():
         assert weight > 0 and weight <= 100
         assert weighting_method in ['equal', 'market_cap', 'value']
         # assert self.symbols_are_valid()
-        assert self.symbols_are_tradable()
+        # assert self.symbols_are_tradable()
 
     def __repr__(self):
         return self.name
@@ -171,21 +171,27 @@ class Basket():
 
         Return True if all symbols in self.symbols are valid, False otherwise.
         '''
-        are_valid = []
+        valid = {} # 'symbol': <boolean>
         for symbol in self.symbols:
             valid = api_utils.fractionable_tradable(symbol)
-            are_valid.append(valid)
-        if all(are_valid):
+            valid[symbol] = valid
+        if all(valid.values()):
             return True
+        for symbol in valid:
+            if not valid[symbol]:
+                print(f"{symbol} is either not fractionable or not tradable.")
         return False
     
     def symbols_are_tradable(self):
-        are_tradable = []
+        tradable = {}
         for symbol in self.symbols:
-            tradable = api_utils.tradable(symbol)
-            are_tradable.append(tradable)
-        if all(are_tradable):
+            is_tradable = api_utils.tradable(symbol)
+            tradable[symbol] = is_tradable
+        if all(tradable.values()):
             return True
+        for symbol in tradable:
+            if not tradable[symbol]:
+                print(f"{symbol} is not tradable.")
         return False
 
 

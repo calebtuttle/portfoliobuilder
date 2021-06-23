@@ -15,7 +15,7 @@ def alpaca_call(func):
     '''
     def wrapper(*args, **kwargs):
         global _last_alpaca_call
-        next_available_call = _last_alpaca_call + 0.3 # constant should be 0.3, right?
+        next_available_call = _last_alpaca_call + 0.3
         now = time.time()
         if next_available_call >= now:
             time.sleep(next_available_call - now)
@@ -30,7 +30,9 @@ def alpaca_call(func):
 def get_account():
     url = alpaca_endpoint + 'account'
     response = requests.get(url=url, headers=alpaca_headers)
-    return response.json()
+    if response.status_code in range(200, 226):
+        return response.json()
+    return None
 
 @alpaca_call
 def tradable(symbol):
@@ -38,11 +40,7 @@ def tradable(symbol):
     response = requests.get(url=url, headers=alpaca_headers)
     if response.status_code in range(200, 226):
         return response.json()['tradable']
-    print(f'Got status code {response.status_code} in tradable() for symbol {symbol}. Trying again.')
-    response = requests.get(url=url, headers=alpaca_headers)
-    if response.status_code in range(200, 226):
-        return response.json()['tradable']
-    print(f'Second attempt in tradable() for symbol {symbol} failed.')
+    print(f'Got status code {response.status_code} in tradable() for symbol {symbol}.')
     return False
     
 @alpaca_call
@@ -53,12 +51,8 @@ def fractionable_tradable(symbol):
     '''
     url = alpaca_endpoint + f'assets/{symbol}'
     response = requests.get(url=url, headers=alpaca_headers)
-    response = response.json()
-    try:
-        if response['fractionable'] and response['tradable']:
-            return True
-    except KeyError:
-        pass
+    if response.status_code in range(200, 226):
+        return response.json()['fractionable'] and response.json()['tradable']
     return False
 
 @alpaca_call
@@ -80,10 +74,9 @@ def place_order(symbol, notional, side):
     payload = {'symbol': symbol, 'notional': str(notional), 'side': side,
                 'type': 'market', 'time_in_force': 'day'}
     response = requests.post(url=url, json=payload, headers=alpaca_headers)
-    response = response.json()
-    if 'code' in response.keys():
-        return None
-    return response
+    if response.status_code in range(200, 226):
+        return response.json()
+    return None
 
 
 ################# Finnhub utility functions #################
