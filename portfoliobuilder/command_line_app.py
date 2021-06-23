@@ -23,6 +23,7 @@ newbasket (<symbol0> <symbol1> <symboli>) <weighting_method> <basket_weight>
 newbasketfromindex <index_symbol> <weighting_method> <basket_weight>
 listbaskets
 inspectbasket <basket_name>
+buybasket <basket_name>
 listindices
 
 Enter 'help' to see commands.
@@ -38,12 +39,8 @@ def account():
 def linkaccount(command):
     if not cmd_utils.has_num_args(command, 2):
         return
-    try:
-        alpaca_paper_key = os.environ['PORTFOLIOBUILDER_ALPACA_PAPER_KEY']
-        alpaca_paper_secret = os.environ['PORTFOLIOBUILDER_ALPACA_PAPER_SECRET_KEY']
-    except KeyError:
-        os.environ['PORTFOLIOBUILDER_ALPACA_PAPER_KEY'] = command.split(' ')[1]
-        os.environ['PORTFOLIOBUILDER_ALPACA_PAPER_SECRET_KEY'] = command.split(' ')[2]
+    os.environ['PORTFOLIOBUILDER_ALPACA_PAPER_KEY'] = command.split(' ')[1]
+    os.environ['PORTFOLIOBUILDER_ALPACA_PAPER_SECRET_KEY'] = command.split(' ')[2]
     # Test that the account was actually connected
     acc = api_utils.get_account()
     if acc:
@@ -110,6 +107,20 @@ def inspectbasket(command):
     else:
         print('Invalid command. Unknown basket.')
 
+def buybasket(command):
+    if not cmd_utils.has_num_args(command, 1):
+        return
+    portfolio = Portfolio()
+    portfolio.update_cash()
+    basket_name = command.split(' ')[1]
+    basket = baskets[basket_name]
+    portfolio.buy_basket(basket)
+    print(f'Orders to purchase stocks in {basket_name} have been purchased.')
+    print(f'Weighting method: {basket.weighting_method}.')
+    print(f'Basket weight: {basket.weight}.')
+    print('Note: Some purchase orders might have failed.')
+    print('If no errors were printed, all stocks were purchased.')
+
 def listindices():
     print('Listing indices... (Note: some might not be supported by newbasketfromindex.)')
     print('Index | Symbol')
@@ -121,6 +132,8 @@ def parse_command(command):
         print(help_str)
     elif command == 'account':
         account()
+    elif 'linkaccount' in command:
+        linkaccount(command)
     elif 'newbasket ' in command:
         newbasket(command)
     elif 'newbasketfromindex ' in command:
@@ -129,6 +142,8 @@ def parse_command(command):
         listbaskets()
     elif 'inspectbasket ' in command:
         inspectbasket(command)
+    elif 'buybasket' in command:
+        buybasket(command)
     elif command == 'listindices':
         listindices()
     elif command == 'q':
