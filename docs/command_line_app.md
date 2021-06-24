@@ -13,10 +13,10 @@ Create a new basket of stocks and stores it locally; this does not place any ord
 Create a new basket of stocks from an index (e.g., the S&P500 (symbol: ^GSPC)). Calling this is identical to calling `newbasket` and replacing `<index_symbol>` with a list of the index's constituents.
 
 ### inspectbasket <basket_name>
-List the basket's weighting method, weight, and constituents.
+List the basket's weighting method, weight, constituents, and whether it is active.
 
 ### buybasket <basket_name>
-Buy each stock in the basket, and weight each one according to the weighting method of the basket. The total cost of the basket equals the basket weight multipled by the account equity (total cost = basket weight * equity). If there is not enough cash to cover the total cost, nothing in the basket is purchased.
+Buy each stock in the basket, and weight each one according to the weighting method of the basket. The total cost of the basket equals the basket weight multipled by the account equity (total cost = basket weight * equity). If there is not enough cash to cover the total cost, nothing in the basket is purchased. If the basket is already active, nothing will be done.
 
 ### rebalance
 Rebalance one's portfolio according to the weighting methods in the baskets that constitute one's portfolio.

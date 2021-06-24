@@ -27,7 +27,7 @@ listbaskets
 inspectbasket <basket_name>
 deletebasket <basket_name>
 buybasket <basket_name>
-rebalance
+rebalance <basket_name>
 listindices
 
 Enter 'help' to see commands.
@@ -35,14 +35,14 @@ Enter 'q' to quit, or kill with ^c.'''
 
 # baskets = {} # {'basket_name': Basket object}
 
-conn = sqlite3.connect('portfoliobuilder.db')
+conn = sqlite3.connect('portfoliobuilder/portfoliobuilder.db')
 cursor = conn.cursor()
 
 # Ensure essential tables exist
 # TODO: Maybe find a different way to store symbols?
 create_baskets_table = 'CREATE TABLE if not exists baskets' + \
                     ' (name text, weighting_method text,' + \
-                    ' weight real, symbols text)' 
+                    ' weight real, symbols text, active integer)' 
 cursor.execute(create_baskets_table)
 
 def account():
@@ -81,8 +81,8 @@ def newbasket(command):
         name = f'Basket{num_baskets}'
         basket = Basket(symbols, weighting_method, basket_weight, name)
         symbols_str = ' '.join(symbols)
-        sql_params = (name, weighting_method, basket_weight, symbols_str)
-        cursor.execute('INSERT INTO baskets VALUES (?,?,?,?)', sql_params)
+        sql_params = (name, weighting_method, basket_weight, symbols_str, 0)
+        cursor.execute('INSERT INTO baskets VALUES (?,?,?,?,?)', sql_params)
         print(f'{name} created.')
     except IndexError:
         print("Invalid command. Enter 'help' to see usage.")
@@ -124,10 +124,12 @@ def inspectbasket(command):
     if (basket_name,) in basket_names:
         cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
         basket = cursor.fetchone()
+        active = 'True' if basket[4] else 'False'
         print(f'Inspecting {basket_name}...')
         print(f'Basket weighting method: {basket[1]}')
         print(f'Basket weight: {basket[2]}%')
         print(f'Basket constituents: {basket[3]}')
+        print(f'Basket is active: {active}')
     else:
         print('Invalid command. Unknown basket.')
 
@@ -155,6 +157,9 @@ def buybasket(command):
     basket_name = command.split(' ')[1]
     cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
     basket = cursor.fetchone()
+    if basket[4]:
+        print(f'{basket_name} is already active. Exiting.')
+        return
     weighting_method = basket[1]
     basket_weight = basket[2]
     symbols = basket[3].split(' ')
