@@ -7,6 +7,7 @@ import sqlite3
 from portfoliobuilder import utils, api_utils
 from portfoliobuilder import command_line_utils as cmd_utils 
 from portfoliobuilder.builder import Portfolio, Basket
+from portfoliobuilder.command_line_builder import buy_basket
 from portfoliobuilder.supported_indices import (supported_indices_list, 
                                                 supported_indices_dict)
 
@@ -24,6 +25,7 @@ newbasket (<symbol0> <symbol1> <symboli>) <weighting_method> <basket_weight>
 newbasketfromindex <index_symbol> <weighting_method> <basket_weight>
 listbaskets
 inspectbasket <basket_name>
+deletebasket <basket_name>
 buybasket <basket_name>
 rebalance
 listindices
@@ -129,6 +131,22 @@ def inspectbasket(command):
     else:
         print('Invalid command. Unknown basket.')
 
+def deletebasket(command):
+    if 'deletebasket' != command.split(' ')[0]:
+        print('Invalid command.')
+        return
+    if not cmd_utils.has_num_args(command, 1):
+        return
+
+    basket_name = command.split(' ')[1]
+    cursor.execute('SELECT * FROM baskets WHERE name = (?)', (basket_name,))
+    basket = cursor.fetchone()
+    if basket:
+        cursor.execute('DELETE FROM baskets WHERE name = (?)', (basket_name,))
+        print(f'{basket_name} deleted.')
+    else:
+        print(f'No basket with the name "{basket_name}".')
+
 def buybasket(command):
     if not cmd_utils.has_num_args(command, 1):
         return
@@ -137,11 +155,11 @@ def buybasket(command):
     basket_name = command.split(' ')[1]
     cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
     basket = cursor.fetchone()
-    basket_obj = Basket(symbols=basket[3].split(' '), 
-                        weighting_method=basket[1], 
-                        weight=basket[2], name=basket[0])
-    portfolio.buy_basket(basket_obj)
-    print(f'Orders to purchase stocks in {basket_name} have been purchased.')
+    weighting_method = basket[1]
+    basket_weight = basket[2]
+    symbols = basket[3].split(' ')
+    buy_basket(basket_name, weighting_method, basket_weight, symbols)
+    print(f'Orders to purchase stocks in {basket_name} have been placed.')
     print(f'Weighting method: {basket[1]}.')
     print(f'Basket weight: {basket[2]}.')
     print('Note: Some purchase orders might have failed.')
@@ -177,6 +195,8 @@ def parse_command(command):
         listbaskets()
     elif 'inspectbasket ' in command:
         inspectbasket(command)
+    elif 'deletebasket' in command:
+        deletebasket(command)
     elif 'buybasket' in command:
         buybasket(command)
     elif command == 'rebalance':
