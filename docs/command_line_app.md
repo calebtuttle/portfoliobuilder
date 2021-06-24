@@ -15,6 +15,9 @@ Create a new basket of stocks from an index (e.g., the S&P500 (symbol: ^GSPC)). 
 ### inspectbasket <basket_name>
 List the basket's weighting method, weight, and constituents.
 
+### rebalance
+Rebalance one's portfolio according to the weighting methods in the baskets that constitute one's portfolio.
+
 ### listindices
 Print a list of stock indices. Most of these will be supported by `newbasketfromindex`.
 

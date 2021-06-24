@@ -24,6 +24,7 @@ newbasketfromindex <index_symbol> <weighting_method> <basket_weight>
 listbaskets
 inspectbasket <basket_name>
 buybasket <basket_name>
+rebalance
 listindices
 
 Enter 'help' to see commands.
@@ -119,7 +120,10 @@ def buybasket(command):
     print(f'Weighting method: {basket.weighting_method}.')
     print(f'Basket weight: {basket.weight}.')
     print('Note: Some purchase orders might have failed.')
-    print('If no errors were printed, all stocks were purchased.')
+    print('If no errors were printed above, all stocks were purchased.')
+
+def rebalance():
+    pass
 
 def listindices():
     print('Listing indices... (Note: some might not be supported by newbasketfromindex.)')
@@ -144,6 +148,8 @@ def parse_command(command):
         inspectbasket(command)
     elif 'buybasket' in command:
         buybasket(command)
+    elif command == 'rebalance':
+        rebalance()
     elif command == 'listindices':
         listindices()
     elif command == 'q':
@@ -153,7 +159,7 @@ def parse_command(command):
 
 
 # TODO: Implement the ability to read a list of symbols from a file.
-# TODO: Implement buyportfolio, rebalance, savestate (which saves the portfolio to a database or something)
+# TODO: Implement buyportfolio, rebalance, savestate (which saves the portfolio to a sqlite database)
 #       and recoverstate (which reads the saved portfolios into this session's variables).
 # TODO: Implement connection with your Alpaca account
 
