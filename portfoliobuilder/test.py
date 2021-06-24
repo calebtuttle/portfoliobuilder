@@ -1,23 +1,32 @@
-import time
-import threading
-import requests
+import sqlite3
 
-# from builder import Portfolio
+from portfoliobuilder.builder import Basket
 
-# portfolio = Portfolio()
+# Establish connection with database file
+conn = sqlite3.connect('portfoliobuilder.db')
 
-# portfolio.new_basket(['AAPL'], weighting_method='equal', weight=110)
-# portfolio.build_portfolio()
+# Create a Cursor object so that you can execute commands
+cursor = conn.cursor()
 
-# r = portfolio.place_order('AAPL', 10, 'buy')
-# print(r)
+# Save changes to database
+conn.commit()
 
+# Close connection
+conn.close()
 
+# Create table
+cursor.execute('''CREATE TABLE stocks
+             (date text, trans text, symbol text, qty real, price real)''')
 
-response = requests.get(url='https://finnhub.io/api/v1/stock/metric?symbol=AAPL&metric=all&token=bsk8trfrh5rb00eutvrg')
-response = response.json()
+# Insert 'RHAT' into the 'stocks' table
+t = ('RHAT',)
+cursor.execute('INSERT INTO stocks VALUES ?', t)
 
-for key in response['metric'].keys():
-    print(key)
+# Insert multiple rows into the 'stocks' table
+t = [('RHAT',), ('AAPL',), ('GOOG',)]
+cursor.execute('INSERT INTO stocks VALUES (?,?,?)')
 
-# response['metric']['ebitdPerShareTTM']
+# Print all rows in the 'stocks' table
+for row in cursor.execute('SELECT * FROM stocks'):
+    print(row)
+

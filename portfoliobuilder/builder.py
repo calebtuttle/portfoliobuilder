@@ -45,8 +45,10 @@ class Portfolio():
         num_constituents = len(basket.symbols)
         stock_weight = 1/num_constituents
         for symbol in basket.symbols:
+            print(f'Placing order to buy {symbol}...', end='\r')
             notional = self.cash * (basket.weight / 100) * stock_weight
-            api_utils.place_order(symbol, notional, 'buy')
+            if not api_utils.place_order(symbol, notional, 'buy'):
+                print(f'Order to buy {symbol} failed.')
 
     def buy_market_cap_basket(self, basket):
         ''' 
@@ -57,9 +59,11 @@ class Portfolio():
         market_caps = [stock.update_market_cap() for stock in stocks]
         basket_market_cap = sum(market_caps)
         for i, symbol in enumerate(basket.symbols):
+            print(f'Placing order to buy {symbol}...', end='\r')
             stock_weight = market_caps[i] / basket_market_cap
             notional = self.cash * (basket.weight / 100) * stock_weight
-            api_utils.place_order(symbol, notional, 'buy')
+            if not api_utils.place_order(symbol, notional, 'buy'):
+                print(f'Order to buy {symbol} failed.')
 
     def buy_value_basket(self, basket):
         ''' 
@@ -78,16 +82,18 @@ class Portfolio():
 
         basket_ev_to_fcf = sum(ev_to_fcfs)
         for i, symbol in enumerate(basket.symbols):
+            print(f'Placing order to buy {symbol}...', end='\r')
             stock_weight = 1 - (ev_to_fcfs[i] / basket_ev_to_fcf)
             notional = self.cash * (basket.weight / 100) * stock_weight
-            api_utils.place_order(symbol, notional, 'buy')
+            if not api_utils.place_order(symbol, notional, 'buy'):
+                print(f'Order to buy {symbol} failed.')
 
     def buy_basket(self, basket):
-        if basket.weighting_method is 'equal':
+        if basket.weighting_method == 'equal':
             self.buy_equal_basket(basket)
-        elif basket.weighting_method is 'market_cap':
+        elif basket.weighting_method == 'market_cap':
             self.buy_market_cap_basket(basket)
-        elif basket.weighting_method is 'value':
+        elif basket.weighting_method == 'value':
             self.buy_value_basket(basket)
         else:
             raise Exception('\n\tInvalid weighting method')
