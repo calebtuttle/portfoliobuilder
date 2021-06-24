@@ -2,6 +2,7 @@
 A command line app for portfoliobuilder.
 '''
 import os
+import sqlite3
 
 from portfoliobuilder import utils, api_utils
 from portfoliobuilder import command_line_utils as cmd_utils 
@@ -30,7 +31,17 @@ listindices
 Enter 'help' to see commands.
 Enter 'q' to quit, or kill with ^c.'''
 
-baskets = {} # {'basket_name': Basket object}
+# baskets = {} # {'basket_name': Basket object}
+
+conn = sqlite3.connect('portfoliobuilder.db')
+cursor = conn.cursor()
+
+# Ensure essential tables exist
+# TODO: Maybe find a different way to store symbols?
+create_baskets_table = 'CREATE TABLE if not exists baskets' + \
+                    ' (name text, weighting_method text,' + \
+                    ' weight real, symbols text)' 
+cursor.execute(create_baskets_table)
 
 def account():
     response = api_utils.get_account()
@@ -38,6 +49,7 @@ def account():
         print(f'{key}: {response[key]}')
 
 def linkaccount(command):
+    ''' NOTE: Not entered into database. '''
     if not cmd_utils.has_num_args(command, 2):
         return
     os.environ['PORTFOLIOBUILDER_ALPACA_PAPER_KEY'] = command.split(' ')[1]
@@ -62,9 +74,13 @@ def newbasket(command):
                 return
         weighting_method = command.split(') ')[1].split(' ')[0]
         basket_weight = int(command.split(') ')[1].split(' ')[1])
-        name = f'Basket{len(baskets)}'
+        num_baskets = cursor.execute('SELECT COUNT(*) FROM baskets')
+        num_baskets = cursor.fetchone()[0]
+        name = f'Basket{num_baskets}'
         basket = Basket(symbols, weighting_method, basket_weight, name)
-        baskets[name] = basket
+        symbols_str = ' '.join(symbols)
+        sql_params = (name, weighting_method, basket_weight, symbols_str)
+        cursor.execute('INSERT INTO baskets VALUES (?,?,?,?)', sql_params)
         print(f'{name} created.')
     except IndexError:
         print("Invalid command. Enter 'help' to see usage.")
@@ -85,9 +101,11 @@ def newbasketfromindex(command):
         print('Invalid command.')
 
 def listbaskets():
+    cursor.execute('SELECT * FROM baskets')
+    baskets = cursor.fetchall()
     if baskets:
         for b in baskets:
-            print(b)
+            print(b[0])
     else:
         print('No baskets.')
 
@@ -99,12 +117,15 @@ def inspectbasket(command):
         return
 
     basket_name = command.split(' ')[1]
-    if basket_name in baskets:
-        basket = baskets[basket_name]
+    cursor.execute('SELECT name FROM baskets')
+    basket_names = cursor.fetchall()
+    if (basket_name,) in basket_names:
+        cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
+        basket = cursor.fetchone()
         print(f'Inspecting {basket_name}...')
-        print(f'Basket weight: {basket.weight}%')
-        print(f'Basket weighting method: {basket.weighting_method}')
-        print(f'Basket constituents: {basket.symbols}')
+        print(f'Basket weighting method: {basket[1]}')
+        print(f'Basket weight: {basket[2]}%')
+        print(f'Basket constituents: {basket[3]}')
     else:
         print('Invalid command. Unknown basket.')
 
@@ -114,11 +135,15 @@ def buybasket(command):
     portfolio = Portfolio()
     portfolio.update_cash()
     basket_name = command.split(' ')[1]
-    basket = baskets[basket_name]
-    portfolio.buy_basket(basket)
+    cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
+    basket = cursor.fetchone()
+    basket_obj = Basket(symbols=basket[3].split(' '), 
+                        weighting_method=basket[1], 
+                        weight=basket[2], name=basket[0])
+    portfolio.buy_basket(basket_obj)
     print(f'Orders to purchase stocks in {basket_name} have been purchased.')
-    print(f'Weighting method: {basket.weighting_method}.')
-    print(f'Basket weight: {basket.weight}.')
+    print(f'Weighting method: {basket[1]}.')
+    print(f'Basket weight: {basket[2]}.')
     print('Note: Some purchase orders might have failed.')
     print('If no errors were printed above, all stocks were purchased.')
 
@@ -130,6 +155,12 @@ def listindices():
     print('Index | Symbol')
     for symbol in supported_indices_list:
         print(f'{supported_indices_dict[symbol]}  |  {symbol}')
+
+def exit():
+    print('Saving changes...')
+    conn.commit()
+    print('Exiting portfoliobuilder...')
+    conn.close()
 
 def parse_command(command):
     if command == 'help':
@@ -153,18 +184,24 @@ def parse_command(command):
     elif command == 'listindices':
         listindices()
     elif command == 'q':
-        print('Goodbye')
+        exit()
     else:
         print("Invalid command. Enter 'help' to see commands.")
 
 
 # TODO: Implement the ability to read a list of symbols from a file.
-# TODO: Implement buyportfolio, rebalance, savestate (which saves the portfolio to a sqlite database)
+# TODO: Implement rebalance, savestate (which saves the portfolio to a sqlite database)
 #       and recoverstate (which reads the saved portfolios into this session's variables).
+#       No, simply recover the state every time a new session starts. Save it every time
+#       savestate is called, and ask the user if they want to save everytime they exit
+#       with 'q'.
 # TODO: Implement connection with your Alpaca account
 
 
-command = ''
-while command is not 'q':
-    command = input('> ')
-    parse_command(command)
+try:
+    command = ''
+    while command is not 'q':
+        command = input('> ')
+        parse_command(command)
+except KeyboardInterrupt:
+    exit()
