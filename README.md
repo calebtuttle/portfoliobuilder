@@ -12,7 +12,7 @@ With the ability to automate trades and purchase fractional shares, an investor 
 Additionally, the size of the companies that manage these funds is concerning. I encourage anyone intrigued to see [this article by Annie Lowrey](https://www.theatlantic.com/ideas/archive/2021/04/the-autopilot-economy/618497/). 
 
 ## Requirements
-Python 3.7.6
+Python 3.6.8
 
 An Alpaca account, a Finnhub account, and API keys for each. You can create an Alpaca account [here](https://alpaca.markets) and a Finnhub account [here](https://finnhub.io). 
 
