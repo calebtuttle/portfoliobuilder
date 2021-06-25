@@ -99,7 +99,7 @@ def close_position(symbol):
 ################# Finnhub utility functions #################
 
 _last_finnhub_call = 0
-# _finnhub_limit = 30 # number of calls per second
+# _finnhub_limit = 1 # number of calls per second
 
 def finnhub_call(func):
     '''
@@ -107,7 +107,7 @@ def finnhub_call(func):
     '''
     def wrapper(*args, **kwargs):
         global _last_finnhub_call
-        next_available_call = _last_finnhub_call + 0.0333334
+        next_available_call = _last_finnhub_call + 1
         now = time.time()
         if next_available_call >= now:
             time.sleep(next_available_call - now)
