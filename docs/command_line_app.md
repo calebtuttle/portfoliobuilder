@@ -8,9 +8,11 @@ Store the user's API key and secret for the current session. This allows the use
 
 ### newbasket (\<symbol0> \<symbol1> \<symboli>) <weighting_method> <basket_weight>
 Create a new basket of stocks and stores it locally; this does not place any orders. Possible weighting methods are: market_cap, equal, and value. Basket weight must be greater than 0 and less than or equal to 100. 
+Example: `newbasket (AAPL MSFT AMZN FB GOOGL) equal 10`
 
 ### newbasketfromindex <index_symbol> <weighting_method> <basket_weight>
 Create a new basket of stocks from an index (e.g., the S&P500 (symbol: ^GSPC)). Calling this is identical to calling `newbasket` and replacing `<index_symbol>` with a list of the index's constituents.
+Example: `newbasketfromindex ^GSPC equal 80`
 
 ### inspectbasket <basket_name>
 List the basket's weighting method, weight, constituents, and whether it is active.
