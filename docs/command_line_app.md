@@ -4,7 +4,7 @@
 List the information of the linked account. If no account is linked, an error message is printed.
 
 ### linkaccount <alpaca_api_key> <alpaca_secret>
-Store the user's API key and secret for the current session. This allows the user to interact with their account (e.g., to place orders).
+Store the user's API key and secret for the current session. This allows the user to interact with their account (e.g., to place orders). Note: Executing this command is unnecessary if you have set the environment variables yourself.
 
 ### newbasket (\<symbol0> \<symbol1> \<symboli>) <weighting_method> <basket_weight>
 Create a new basket of stocks and stores it locally; this does not place any orders. Possible weighting methods are: market_cap, equal, and value. Basket weight must be greater than 0 and less than or equal to 100. 

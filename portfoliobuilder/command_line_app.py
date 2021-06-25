@@ -81,8 +81,7 @@ def newbasket(command):
         num_baskets = cursor.execute('SELECT COUNT(*) FROM baskets')
         num_baskets = cursor.fetchone()[0]
         name = f'Basket{num_baskets}'
-        basket = Basket(symbols, weighting_method, basket_weight, name)
-        symbols_str = ' '.join(symbols)
+        symbols_str = ' '.join(tradable_symbols)
         sql_params = (name, weighting_method, basket_weight, symbols_str, 0)
         cursor.execute('INSERT INTO baskets VALUES (?,?,?,?,?)', sql_params)
         print(f'{name} created.')
@@ -231,8 +230,20 @@ def rebalance(command):
         return
     weights = get_weights(weighting_method, symbols)
     for symbol in symbols:
-        notional = acc_value * (basket_weight / 100) * weights[symbol]
-        # TODO: Finish... buy, sell, whatever to rebalance.
+        goal_market_val = acc_value * (basket_weight / 100) * weights[symbol]
+        curr_position = api_utils.get_position(symbol)
+        if curr_position:
+            market_val = curr_position['market_value']
+            if goal_market_val < market_val:
+                notional = market_val - goal_market_val
+                if not api_utils.place_order(symbol, notional, 'sell'):
+                    print(f'Could not rebalance {symbol}')
+            elif goal_market_val > market_val:
+                notional = goal_market_val - market_val
+                if not api_utils.place_order(symbol, notional, 'buy'):
+                    print(f'Could not rebalance {symbol}')
+        else:
+            print(f'Could not get current position in {symbol}.')
 
 def listindices():
     print('Listing indices... (Note: some might not be supported by newbasketfromindex.)')
