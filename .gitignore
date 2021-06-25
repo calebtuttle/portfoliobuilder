@@ -2,4 +2,5 @@ portfoliobuilder.egg-info
 .vscode/
 portfoliobuilder.db
 __pycache__/
+*.pyc
 .ipynb_checkpoints/
