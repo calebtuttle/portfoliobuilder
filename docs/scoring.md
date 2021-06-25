@@ -10,7 +10,7 @@ The Valuation score increases as the stock's Valuation ratios decrease. For exam
 ## Valuation Measures
 Listed below are the items that influence the Valuation score.
 
-#### P/E 
+### P/E 
 Price to Earnings.
 
 ### EV/EBITDA 
