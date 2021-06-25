@@ -6,12 +6,11 @@ Each stock receives a score. A stock with a higher score receives more weight. E
 
 The Valuation score increases as the stock's Valuation ratios decrease. For example, a stock with a P/E of 20 will likely have a higher Valuation score than a stock with a P/E of 40. The Quality score increases as measures of Quality increase. For example, a stock with consistent YoY earnings growth of 15% will likely have a higher Quality score than a stock whose earnings have consistently decreased. 
 
----
 
 ## Valuation Measures
 Listed below are the items that influence the Valuation score.
 
-### P/E 
+#### P/E 
 Price to Earnings.
 
 ### EV/EBITDA 
