@@ -26,6 +26,7 @@ newbasket (<symbol0> <symbol1> <symboli>) <weighting_method> <basket_weight>
 newbasketfromindex <index_symbol> <weighting_method> <basket_weight>
 listbaskets
 inspectbasket <basket_name>
+addsymbols <basket_name> <symbol1> <symboli>
 buybasket <basket_name>
 sellbasket <basket_name>
 deletebasket <basket_name>
@@ -133,6 +134,45 @@ def inspectbasket(command):
         print(f'Basket constituents: {basket[3]}')
     else:
         print('Invalid command. Unknown basket.')
+
+def addsymbols(command):
+    if 'addsymbols' != command.split(' ')[0]:
+        print('Invalid command.')
+        return
+    
+    basket_name = command.split(' ')[1]
+    cursor.execute('SELECT * FROM baskets WHERE name=?',(basket_name,))
+    basket = cursor.fetchone()
+    if not basket:
+        print(f'No basket with the name {basket_name}.')
+        return
+    if basket[4]:
+        print(f'{basket_name} is active. Cannot add symbols.')
+        return
+
+    new_symbols = command.split(' ')[2:]
+    untradable_new_symbols = []
+    for symbol in new_symbols:
+        print(f'Determining whether {symbol} is tradable...', end='\r')
+        if not api_utils.tradable(symbol):
+            print(f'{symbol} appears to not be tradable.')
+            untradable_new_symbols.append(symbol)
+    tradable_new_symbols = set(new_symbols) - set(untradable_new_symbols)
+
+    curr_symbols = basket[3].split(' ')
+    intersection = tradable_new_symbols.intersection(set(curr_symbols))
+    if intersection:
+        print(f'The following stocks are already in {basket_name}:')
+        intersection_str = ' '.join(intersection)
+        print(intersection_str)
+    new_symbols = tradable_new_symbols - intersection
+    all_symbols = set(curr_symbols).union(new_symbols)
+    all_symbols_str = ' '.join(all_symbols)
+    
+    new_symbols = ' '.join(new_symbols)
+    sql_params = (all_symbols_str, basket_name)
+    cursor.execute('UPDATE baskets SET symbols=? WHERE name=?', sql_params)
+    print(f'Added the following symbols to {basket_name}: {new_symbols}')
 
 def buybasket(command):
     if not cmd_utils.has_num_args(command, 1):
@@ -272,6 +312,8 @@ def parse_command(command):
         listbaskets()
     elif 'inspectbasket ' in command:
         inspectbasket(command)
+    elif 'addsymbols' in command:
+        addsymbols(command)
     elif 'buybasket' in command:
         buybasket(command)
     elif 'sellbasket' in command:
