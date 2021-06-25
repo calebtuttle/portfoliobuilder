@@ -18,6 +18,7 @@ import portfoliobuilder
 
 
 REVENUE_CONCEPTS = ['SalesRevenueNet', 'Revenues',
+
     'TotalRevenuesAndOtherIncome', 'SalesRevenueGoodsNet',
     'RegulatedAndUnregulatedOperatingRevenue',
     'RevenueFromContractWithCustomerExcludingAssessedTax',
@@ -28,17 +29,17 @@ REVENUE_CONCEPTS notes:
 - 'ElectricUtilityRevenue' is revenue for AES
 - 'SalesRevenueServicesGross' is revenue for CCL
 - No single total revenue item for MTB
-- No revenue field for DHI
 - No revenue field for some of WU's income statements
 - 'HealthCareOrganizationPatientServiceRevenue' is revenue for HCA
-- 'SalesRevenueServicesNet' is revenue for ROL
+- 'SalesRevenueServicesNet' is revenue for ROL and RHI
 - 'RevenueMineralSales' is revenue for NEM
 - No single revenue field for HBAN
-- 
+- 'RefiningAndMarketingRevenue' is revenue for VLO
 '''
 
 REVENUE_LABELS = ['sales', 'net sales', 'revenue', 'revenues',
-    'total revenue', 'total revenues', 'revenue from operations']
+    'revenues:', 'total revenue', 'total revenues', 
+    'total net revenues', 'revenue from operations']
 
 
 def _find_revenue(income_statement, symbol):
@@ -84,35 +85,15 @@ def get_revenues(symbol):
     '''
     response = api_utils.get_financials_as_reported(symbol)
     data = response['data']
-    income_statements = [item['report']['ic'] for item in data]
+    # Ensure we get only one report per year
+    new_data = []
+    years_covered = []
+    for item in data:
+        if item['year'] not in years_covered:
+            new_data.append(item)
+            years_covered.append(item['year'])
+    
+    income_statements = [item['report']['ic'] for item in new_data]
     revenues = [_find_revenue(stmnt, symbol) for stmnt in income_statements]
     return revenues
 
-
-# sp500_stocks = api_utils.get_index_constituents('^GSPC')
-
-# flagged_stocks = []
-# for symbol in sp500_stocks:
-#     print(f'Getting revenues for {symbol}...', end='\r')
-#     sys.stdout.write("\033[K")
-#     try:
-#         revenues = get_revenues(symbol)
-#         if None in revenues:
-#             flagged_stocks.append(symbol)
-#     except TypeError:
-#         print(f'TypeError for {symbol}')
-#         flagged_stocks.append(symbol)
-
-# for symbol in flagged_stocks:
-#     print(f'{symbol}', end=' ')
-
-
-# from portfoliobuilder.deleteme import stocks as flagged_stocks
-
-# flagged_stocks = flagged_stocks.split(' ')
-# stock = flagged_stocks[0]
-# print(f'len(flagged_stocks):{len(flagged_stocks)}')
-# print(f'Stock: {stock}')
-# r = get_revenues(stock)
-# for i in r:
-#     print(i)
