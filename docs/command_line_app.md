@@ -19,6 +19,7 @@ List the basket's weighting method, weight, constituents, and whether it is acti
 
 ### addsymbols <basket_name> <symbol1> <symboli>
 Add stocks to the designated basket. Only works if the basket is not active.
+Example `addsymbols Basket0 AAPL`
 
 ### buybasket <basket_name>
 Buy each stock in the basket, and weight each one according to the weighting method of the basket. The total cost of the basket equals the basket weight multipled by the account equity (total cost = basket weight * equity). If there is not enough cash to cover the total cost, nothing in the basket is purchased. If the basket is already active, nothing will be done.

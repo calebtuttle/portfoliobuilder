@@ -330,12 +330,7 @@ def parse_command(command):
         print("Invalid command. Enter 'help' to see commands.")
 
 
-# TODO: Implement the ability to read a list of symbols from a file.
-# TODO: Implement rebalance, savestate (which saves the portfolio to a sqlite database)
-#       and recoverstate (which reads the saved portfolios into this session's variables).
-#       No, simply recover the state every time a new session starts. Save it every time
-#       savestate is called, and ask the user if they want to save everytime they exit
-#       with 'q'.
+# TODO: Test rebalance()
 
 
 try:
