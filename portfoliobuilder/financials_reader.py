@@ -3,10 +3,7 @@ This module provides functions to help read the response
 from the Financials as Reported Finnhub endpoint.
 '''
 
-import sys
-
 from portfoliobuilder import api_utils
-import portfoliobuilder
 
 
 # TODO: Plan for implementing this module: Iterate over each
