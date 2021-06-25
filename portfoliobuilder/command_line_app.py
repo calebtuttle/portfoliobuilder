@@ -8,7 +8,7 @@ import sqlite3
 from portfoliobuilder import utils, api_utils
 from portfoliobuilder import command_line_utils as cmd_utils 
 from portfoliobuilder.builder import Portfolio, Basket
-from portfoliobuilder.command_line_builder import buy_basket
+from portfoliobuilder.command_line_builder import get_weights, buy_basket
 from portfoliobuilder.supported_indices import (supported_indices_list, 
                                                 supported_indices_dict)
 
@@ -206,8 +206,33 @@ def deletebasket(command):
     else:
         print(f'No basket with the name "{basket_name}".')
 
-def rebalance():
-    pass
+def rebalance(command):
+    if 'rebalance' != command.split(' ')[0]:
+        print('Invalid command.')
+        return
+    if not cmd_utils.has_num_args(command, 1):
+        return
+    
+    basket_name = command.split(' ')[1]
+    cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
+    basket = cursor.fetchone()
+    if not basket:
+        print(f'No basket named {basket_name}.')
+        return
+    weighting_method = basket[1]
+    basket_weight = basket[2]
+    symbols = basket[3].split(' ')
+    # TODO: Turn this into a method, and move it to command_line_builder.py
+    account = api_utils.get_account()
+    if account:
+        acc_value = float(account['equity'])
+    else:
+        print('Could not access account.')
+        return
+    weights = get_weights(weighting_method, symbols)
+    for symbol in symbols:
+        notional = acc_value * (basket_weight / 100) * weights[symbol]
+        # TODO: Finish... buy, sell, whatever to rebalance.
 
 def listindices():
     print('Listing indices... (Note: some might not be supported by newbasketfromindex.)')
@@ -242,8 +267,8 @@ def parse_command(command):
         sellbasket(command)
     elif 'deletebasket' in command:
         deletebasket(command)
-    elif command == 'rebalance':
-        rebalance()
+    elif 'rebalance' in command:
+        rebalance(command)
     elif command == 'listindices':
         listindices()
     elif command == 'q':
