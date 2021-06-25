@@ -18,8 +18,14 @@ List the basket's weighting method, weight, constituents, and whether it is acti
 ### buybasket <basket_name>
 Buy each stock in the basket, and weight each one according to the weighting method of the basket. The total cost of the basket equals the basket weight multipled by the account equity (total cost = basket weight * equity). If there is not enough cash to cover the total cost, nothing in the basket is purchased. If the basket is already active, nothing will be done.
 
-### rebalance
-Rebalance one's portfolio according to the weighting methods in the baskets that constitute one's portfolio.
+### sellbasket <basket_name>
+Sell all shares of each stock in the basket. Note: this will cause unexpected behavior if multiple active baskets have overlapping holdings; when creating baskets, ensure each basket's stocks are unique to that basket, or reimplement some of this program.
+
+### deletebasket <basket_name>
+Sell the basket and delete it from the database.
+
+### rebalance <basket_name>
+Rebalance the basket according to its weighting method.
 
 ### listindices
 Print a list of stock indices. Most of these will be supported by `newbasketfromindex`.

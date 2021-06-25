@@ -78,6 +78,15 @@ def place_order(symbol, notional, side):
         return response.json()
     return None
 
+@alpaca_call
+def close_position(symbol):
+    url = alpaca_endpoint + f'positions/{symbol}'
+    payload = {'percentage': 100}
+    response = requests.delete(url=url, json=payload, headers=alpaca_headers)
+    if response.status_code in range(200, 226):
+        return response.json()
+    return None
+
 
 ################# Finnhub utility functions #################
 

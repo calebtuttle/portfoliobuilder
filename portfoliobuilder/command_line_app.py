@@ -1,5 +1,6 @@
 '''
 A command line app for portfoliobuilder.
+Documentation for each command can be found in docs/command_line_app.md.
 '''
 import os
 import sqlite3
@@ -25,8 +26,9 @@ newbasket (<symbol0> <symbol1> <symboli>) <weighting_method> <basket_weight>
 newbasketfromindex <index_symbol> <weighting_method> <basket_weight>
 listbaskets
 inspectbasket <basket_name>
-deletebasket <basket_name>
 buybasket <basket_name>
+sellbasket <basket_name>
+deletebasket <basket_name>
 rebalance <basket_name>
 listindices
 
@@ -128,26 +130,10 @@ def inspectbasket(command):
         print(f'Inspecting {basket_name}...')
         print(f'Basket weighting method: {basket[1]}')
         print(f'Basket weight: {basket[2]}%')
-        print(f'Basket constituents: {basket[3]}')
         print(f'Basket is active: {active}')
+        print(f'Basket constituents: {basket[3]}')
     else:
         print('Invalid command. Unknown basket.')
-
-def deletebasket(command):
-    if 'deletebasket' != command.split(' ')[0]:
-        print('Invalid command.')
-        return
-    if not cmd_utils.has_num_args(command, 1):
-        return
-
-    basket_name = command.split(' ')[1]
-    cursor.execute('SELECT * FROM baskets WHERE name = (?)', (basket_name,))
-    basket = cursor.fetchone()
-    if basket:
-        cursor.execute('DELETE FROM baskets WHERE name = (?)', (basket_name,))
-        print(f'{basket_name} deleted.')
-    else:
-        print(f'No basket with the name "{basket_name}".')
 
 def buybasket(command):
     if not cmd_utils.has_num_args(command, 1):
@@ -160,6 +146,7 @@ def buybasket(command):
     if basket[4]:
         print(f'{basket_name} is already active. Exiting.')
         return
+    cursor.execute('UPDATE baskets SET active=? WHERE name=?', (1,basket_name))
     weighting_method = basket[1]
     basket_weight = basket[2]
     symbols = basket[3].split(' ')
@@ -167,8 +154,57 @@ def buybasket(command):
     print(f'Orders to purchase stocks in {basket_name} have been placed.')
     print(f'Weighting method: {basket[1]}.')
     print(f'Basket weight: {basket[2]}.')
-    print('Note: Some purchase orders might have failed.')
-    print('If no errors were printed above, all stocks were purchased.')
+    print('Note: Some purchase orders might not have been placed.', end=' ')
+    print('If no errors were printed above, all stocks were placed successfully.')
+
+def sellbasket(command):
+    if 'sellbasket' != command.split(' ')[0]:
+        print('Invalid command.')
+        return
+    if not cmd_utils.has_num_args(command, 1):
+        return
+    
+    basket_name = command.split(' ')[1]
+    cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
+    basket = cursor.fetchone()
+    if not basket:
+        print(f'No basket with name {basket_name}.')
+        return
+    if not basket[4]:
+        print(f'{basket_name} is not active.')
+        return
+    symbols = basket[3].split(' ')
+    for symbol in symbols:
+        if api_utils.close_position(symbol):
+            print('Successfully placed an order to sell '\
+                    f'all shares of {symbol}.', end='\r')
+        else:
+            print(f'Could not place an order to sell {symbol}.')
+            print('Exiting. Try again or place orders manually in Alpaca.')
+            return
+    print(f'Setting active to False for {basket_name}.')
+    print('If some orders were not placed, you must manually place them in Alpaca.')
+    sql_params = (0, basket_name)
+    cursor.execute('UPDATE baskets SET active=? WHERE name=?', sql_params)
+    
+def deletebasket(command):
+    if 'deletebasket' != command.split(' ')[0]:
+        print('Invalid command.')
+        return
+    if not cmd_utils.has_num_args(command, 1):
+        return
+
+    basket_name = command.split(' ')[1]
+    cursor.execute('SELECT * FROM baskets WHERE name = (?)', (basket_name,))
+    basket = cursor.fetchone()
+    if basket:
+        symbols = basket[3]
+        for symbol in symbols:
+            api_utils.close_position(symbol)
+        cursor.execute('DELETE FROM baskets WHERE name = (?)', (basket_name,))
+        print(f'{basket_name} deleted.')
+    else:
+        print(f'No basket with the name "{basket_name}".')
 
 def rebalance():
     pass
@@ -200,10 +236,12 @@ def parse_command(command):
         listbaskets()
     elif 'inspectbasket ' in command:
         inspectbasket(command)
-    elif 'deletebasket' in command:
-        deletebasket(command)
     elif 'buybasket' in command:
         buybasket(command)
+    elif 'sellbasket' in command:
+        sellbasket(command)
+    elif 'deletebasket' in command:
+        deletebasket(command)
     elif command == 'rebalance':
         rebalance()
     elif command == 'listindices':
@@ -220,7 +258,6 @@ def parse_command(command):
 #       No, simply recover the state every time a new session starts. Save it every time
 #       savestate is called, and ask the user if they want to save everytime they exit
 #       with 'q'.
-# TODO: Implement connection with your Alpaca account
 
 
 try:
