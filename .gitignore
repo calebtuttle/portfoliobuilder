@@ -1,3 +1,4 @@
 portfoliobuilder.egg-info
 .vscode/
 portfoliobuilder.db
+__pycache__
