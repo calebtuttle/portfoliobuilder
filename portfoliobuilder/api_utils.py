@@ -156,6 +156,19 @@ def get_ev_to_fcf(symbol):
         return None
 
 @finnhub_call
+def get_financials_as_reported(symbol):
+    '''
+    Return the response from the Financials as Reported
+    endpoint.
+    '''
+    url = finnhub_endpoint + 'stock/financials-reported'
+    params = {'symbol': symbol, 'token': finnhub_key}
+    response = requests.get(url=url, params=params)
+    if response.status_code in range(200, 226):
+        return response.json()
+    return None
+
+@finnhub_call
 def get_index_constituents(index_symbol):
     '''
     Return a list of the stock symbols, None if unsuccessful.
