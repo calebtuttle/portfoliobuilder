@@ -207,6 +207,8 @@ def polygon_call(func):
 @polygon_call
 def get_financials(symbol):
     url = polygon_endpoint + f'financials/{symbol}'
-    params = {'limit': 10, 'apiKey': polygon_key}
+    params = {'limit': 10, 'type': 'Y', 
+                'sort':'reportPeriod', 
+                'apiKey': polygon_key}
     response = requests.get(url, params=params)
     return response.json()
