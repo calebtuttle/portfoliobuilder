@@ -1,7 +1,8 @@
 import requests
 import time
 
-from portfoliobuilder import alpaca_endpoint, alpaca_headers, finnhub_endpoint, finnhub_key
+from portfoliobuilder import (alpaca_endpoint, alpaca_headers, 
+    finnhub_endpoint, finnhub_key, polygon_endpoint, polygon_key)
 
 
 ################# Alpaca utility functions #################
@@ -20,7 +21,6 @@ def alpaca_call(func):
         if next_available_call >= now:
             time.sleep(next_available_call - now)
         _last_alpaca_call = time.time()
-        # print(f'Aplaca call at {_last_alpaca_call}s') #TODO: Delete this line
 
         return func(*args, **kwargs)
 
@@ -181,3 +181,32 @@ def get_index_constituents(index_symbol):
         return symbols
     except KeyError:
         return None
+
+
+################# Polygon utility functions #################
+
+_last_polygon_call = 0
+# _polygon_limit = 0.084 # number of calls per second
+
+def polygon_call(func):
+    '''
+    Method to ensure the API call rate limit isn't reached.
+    '''
+    def wrapper(*args, **kwargs):
+        global _last_polygon_call
+        next_available_call = _last_polygon_call + 12
+        now = time.time()
+        if next_available_call >= now:
+            time.sleep(next_available_call - now)
+        _last_polygon_call = time.time()
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+@polygon_call
+def get_financials(symbol):
+    url = polygon_endpoint + f'financials/{symbol}'
+    params = {'limit': 10, 'apiKey': polygon_key}
+    response = requests.get(url, params=params)
+    return response.json()

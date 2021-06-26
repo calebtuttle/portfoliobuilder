@@ -16,3 +16,11 @@ alpaca_headers = {'APCA-API-KEY-ID': alpaca_paper_key, 'APCA-API-SECRET-KEY': al
 finnhub_endpoint = 'https://finnhub.io/api/v1/'
 
 finnhub_key = os.environ['PORTFOLIOBUILDER_FINNHUB_KEY']
+
+
+############### Polygon constants ###############
+
+polygon_endpoint = 'https://api.polygon.io/v2/reference/'
+
+polygon_key = os.environ['PORTFOLIOBUILDER_POLYGON_KEY']
+
