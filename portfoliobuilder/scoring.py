@@ -13,15 +13,27 @@ class Scorer():
 
 
 
-def get_info(symbol):
+def get_measures(symbol):
+    #TODO: For each endpoint, ensure the results are expected.
+    # For example, ensure market cap is not a multiple of 1 million.
+    # Finnhub endpoint
     metrics = api_utils.get_metrics(symbol)
     metrics = metrics['metric']
 
+    # Polygon endpoint
+    polygon_financials = api_utils.get_financials(symbol)
+
+    market_cap = metrics['marketCapitalization']
+    ev = polygon_financials['enterpriseValue']
+
     pe_ttm = metrics['peBasicExclExtraTTM']
 
-    # EV/EBITDA
+    # EV/EBITDA last year
+    ev_ebitda = polygon_financials[0]['enterpriseValueOverEBITDA']
 
-    # P/FCF TTM
+    # P/FCF last year
+    fcf_last_year = polygon_financials[0]['freeCashFlow']
+    p_fcf_last_year = market_cap / fcf_last_year
 
     ev_fcf = metrics['currentEv/freeCashFlowTTM']
 

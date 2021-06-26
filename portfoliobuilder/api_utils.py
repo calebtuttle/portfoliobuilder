@@ -206,9 +206,10 @@ def polygon_call(func):
 
 @polygon_call
 def get_financials(symbol):
+    # TODO: Test that this method returns data for the expected years
     url = polygon_endpoint + f'financials/{symbol}'
     params = {'limit': 10, 'type': 'Y', 
-                'sort':'reportPeriod', 
+                'sort':'-reportPeriod', 
                 'apiKey': polygon_key}
     response = requests.get(url, params=params)
     return response.json()
