@@ -39,6 +39,22 @@ REVENUE_LABELS = ['sales', 'net sales', 'revenue', 'revenues',
     'total net revenues', 'revenue from operations']
 
 
+def get_income_statements(symbol):
+    '''
+    Return a list of income statements from the Financials
+    as Reported Finnhub endpoint.
+    '''
+    response = api_utils.get_financials_as_reported(symbol)
+    data = response['data']
+    # Ensure we get only one report per year
+    new_data = []
+    years_covered = []
+    for item in data:
+        if item['year'] not in years_covered:
+            new_data.append(item)
+            years_covered.append(item['year'])
+    return [item['report']['ic'] for item in new_data]
+
 def _find_revenue(income_statement, symbol):
     '''
     Given an income statement, use Finnhub's 'concept' and
@@ -80,17 +96,7 @@ def get_revenues(symbol):
     such that the most recent annual revenue is first in the list
     and the oldest last in the list.
     '''
-    response = api_utils.get_financials_as_reported(symbol)
-    data = response['data']
-    # Ensure we get only one report per year
-    new_data = []
-    years_covered = []
-    for item in data:
-        if item['year'] not in years_covered:
-            new_data.append(item)
-            years_covered.append(item['year'])
-    
-    income_statements = [item['report']['ic'] for item in new_data]
-    revenues = [_find_revenue(stmnt, symbol) for stmnt in income_statements]
-    return revenues
+    inc_statements = get_income_statements(symbol)
+    return [_find_revenue(stmnt, symbol) for stmnt in inc_statements]
+
 
