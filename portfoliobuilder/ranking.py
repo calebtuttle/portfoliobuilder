@@ -136,7 +136,7 @@ def rank(measures_series_list):
     # Maybe move the following line to a few steps down
     df[df_no_measure_type.columns] = df_no_measure_type
 
-    # Generate a weight for each measure for each stock
+    # Generate a score for each measure for each stock
     for measure in df_no_measure_type.index:
         measure_sum = df_no_measure_type.loc[measure].sum()
         row_name = measure + '_score'
@@ -145,126 +145,9 @@ def rank(measures_series_list):
         elif df.loc[measure]['measure_type'] == 'quality':
             df_no_measure_type.loc[row_name] = df_no_measure_type.loc[measure] / measure_sum
 
+    # Aggregate valuation measures and quality measures to
+    # get a valuation score and quality score for each stock.
 
-def rank(stocks_and_measures):
-    '''
-    stocks_and_measures : list
-        A list where each element is a return value of get_measures()
-    '''
-    # Rank according to valuation
-    valuation_measures_lists = {
-        'pe_ttm': [s['valuation_measures']['pe_ttm'] for s in stocks_and_measures.values()],
-        'ev_ebitda': [s['valuation_measures']['ev_ebitda'] for s in stocks_and_measures.values()],
-        'p_fcf_last_year': [s['valuation_measures']['p_fcf_last_year'] for s in stocks_and_measures.values()],
-        'ev_fcf': [s['valuation_measures']['ev_fcf'] for s in stocks_and_measures.values()],
-        'ps_ttm': [s['valuation_measures']['ps_ttm'] for s in stocks_and_measures.values()],
-        'ev_s': [s['valuation_measures']['ev_s'] for s in stocks_and_measures.values()],
-        'pb': [s['valuation_measures']['pb'] for s in stocks_and_measures.values()],
-    }
-    largest_dict = {}
-    smallest_dict = {}
-    for measure in valuation_measures_lists:
-        # Handle Nones
-        largest = max([i if i else 0.1 for i in valuation_measures_lists[measure]])
-        valuation_measures_lists[measure] = [i if i else largest for i in valuation_measures_lists[measure]]
-        smallest = min([i if i else 0.1 for i in valuation_measures_lists[measure]])
-        largest_dict[measure] = largest
-        smallest_dict[measure] = smallest
-    valuation_measures_totals = {
-        'pe_ttm': sum(valuation_measures_lists['pe_ttm']),
-        'ev_ebitda': sum(valuation_measures_lists['ev_ebitda']),
-        'p_fcf_last_year': sum(valuation_measures_lists['p_fcf_last_year']),
-        'ev_fcf': sum(valuation_measures_lists['ev_fcf']),
-        'ps_ttm': sum(valuation_measures_lists['ps_ttm']),
-        'ev_s': sum(valuation_measures_lists['ev_s']),
-        'pb': sum(valuation_measures_lists['pb'])
-    }
-    valuation_rankings = {}
-    for symbol in stocks_and_measures:
-        valuation_measures = stocks_and_measures[symbol]['valuation_measures']
-        valuation_rankings[symbol] = {}
-        for measure in valuation_measures:
-            val = valuation_measures[measure]
-            if not val:
-                val = largest_dict[measure]
-            # Add the smallest number to every value to ensure all numbers are >0
-            val += abs(smallest_dict[measure])
-            total = valuation_measures_totals[measure]
-            valuation_rankings[symbol][measure] = val / total
-
-    # Rank according to quality
-    quality_measures_lists = {
-        'profit_margin': [s['quality_measures']['profit_margin'] for s in stocks_and_measures.values()],
-        'revenue_growth': [s['quality_measures']['revenue_growth'] for s in stocks_and_measures.values()],
-        'ebitda_growth': [s['quality_measures']['ebitda_growth'] for s in stocks_and_measures.values()],
-        'roe_income': [s['quality_measures']['roe_income'] for s in stocks_and_measures.values()],
-        'roaa_income': [s['quality_measures']['roaa_income'] for s in stocks_and_measures.values()],
-        'roic_income': [s['quality_measures']['roic_income'] for s in stocks_and_measures.values()],
-        'roe_ebitda': [s['quality_measures']['roe_ebitda'] for s in stocks_and_measures.values()],
-        'roa_ebitda': [s['quality_measures']['roa_ebitda'] for s in stocks_and_measures.values()],
-        'roic_ebitda': [s['quality_measures']['roic_ebitda'] for s in stocks_and_measures.values()],
-        'current_ratio': [s['quality_measures']['current_ratio'] for s in stocks_and_measures.values()],
-        'assets_to_liabilities': [s['quality_measures']['assets_to_liabilities'] for s in stocks_and_measures.values()]
-    }
-    smallest_dict = {}
-    for measure in quality_measures_lists:
-        # Handle negative numbers
-        smallest = min([i if i else 0.1 for i in quality_measures_lists[measure]])
-        removed_nones = [i if i else smallest for i in quality_measures_lists[measure]]
-        quality_measures_lists[measure] = [i+abs(smallest) for i in removed_nones]
-        smallest_dict[measure] = smallest
-    quality_measures_totals = {
-        'profit_margin': sum(quality_measures_lists['profit_margin']),
-        'revenue_growth': sum(quality_measures_lists['profit_margin']),
-        'ebitda_growth': sum(quality_measures_lists['profit_margin']),
-        'roe_income': sum(quality_measures_lists['profit_margin']),
-        'roaa_income': sum(quality_measures_lists['profit_margin']),
-        'roic_income': sum(quality_measures_lists['profit_margin']),
-        'roe_ebitda': sum(quality_measures_lists['profit_margin']),
-        'roa_ebitda': sum(quality_measures_lists['profit_margin']),
-        'roic_ebitda': sum(quality_measures_lists['profit_margin']),
-        'current_ratio': sum(quality_measures_lists['profit_margin']),
-        'assets_to_liabilities': sum(quality_measures_lists['profit_margin'])
-    }
-    quality_rankings = {}
-    for symbol in stocks_and_measures:
-        quality_measures = stocks_and_measures[symbol]['quality_measures']
-        quality_rankings[symbol] = {}
-        for measure in quality_measures:
-            val = quality_measures[measure]
-            if not val:
-                val = smallest_dict[measure]
-            # Add the smallest number to every value to ensure all numbers are >0
-            val += abs(smallest_dict[measure])
-            total = quality_measures_totals[measure]
-            quality_rankings[symbol][measure] = val / total
+    # Generate a final, single weight for each stock
     
-    return {
-        'valuation_rankings': valuation_rankings,
-        'quality_rankings': quality_rankings
-    }
 
-
-
-
-
-
-'''
-psuedo code for score()
-
-for each Valuation measure: 
-    rank stocks according to the measure
-(each rank will be between 0 and 1)
-for each stock:
-    valuation score = sum of all valuation measure rankings
-    (i.e., p/e rank + p/s rank + p/b rank, etc.)
-
-for each quality measure:
-    rank stocks according to the measure
-for each stock:
-    quality score = sum of all quality measure rankings
-
-for each stock:
-    score = (valuation score * 0.5) + (quality score * 0.5)
-
-'''
