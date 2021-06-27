@@ -111,6 +111,9 @@ def rank(measures_series_list):
     '''
     measures_series_list : list
         A list of return values from get_measures().
+
+    Return a pd.DataFrame where each column represents a different
+    stock and the last row contains the weights.
     '''
     df = pd.concat(measures_series_list, axis=1)
     measure_type_col = ['quality' if i in QUALITY_MEASURES else 'valuation' for i in df.index]
@@ -137,17 +140,38 @@ def rank(measures_series_list):
     df[df_no_measure_type.columns] = df_no_measure_type
 
     # Generate a score for each measure for each stock
+    valuation_score_rows = []
+    quality_score_rows = []
     for measure in df_no_measure_type.index:
         measure_sum = df_no_measure_type.loc[measure].sum()
         row_name = measure + '_score'
         if df.loc[measure]['measure_type'] == 'valuation':
             df_no_measure_type.loc[row_name] = 1 - (df_no_measure_type.loc[measure] / measure_sum)
+            valuation_score_rows.append(row_name)
         elif df.loc[measure]['measure_type'] == 'quality':
             df_no_measure_type.loc[row_name] = df_no_measure_type.loc[measure] / measure_sum
+            quality_score_rows.append(row_name)
 
     # Aggregate valuation measures and quality measures to
     # get a valuation score and quality score for each stock.
+    final_valuation_score_row = {}
+    for col in df_no_measure_type.columns:
+        final_valuation_score = df_no_measure_type.loc[valuation_score_rows][col].sum()
+        final_valuation_score_row[col] = final_valuation_score
+    final_valuation_score_row = pd.Series(final_valuation_score_row)
+    final_quality_score_row = {}
+    for col in df_no_measure_type.columns:
+        final_quality_score = df_no_measure_type.loc[quality_score_rows][col].sum()
+        final_quality_score_row[col] = final_quality_score
+    final_quality_score_row = pd.Series(final_quality_score_row)
+    df_no_measure_type.loc['final_valuation_score'] = final_valuation_score_row / final_valuation_score_row.sum()
+    df_no_measure_type.loc['final_quality_score'] = final_quality_score_row / final_quality_score_row.sum()
 
     # Generate a final, single weight for each stock
+    val_row = df_no_measure_type.loc['final_valuation_score']
+    quality_row = df_no_measure_type.loc['final_quality_score']
+    df_no_measure_type.loc['weight'] = (val_row/2) + (quality_row/2)
+
+    return df_no_measure_type
     
 
