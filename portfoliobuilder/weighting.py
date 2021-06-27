@@ -1,7 +1,6 @@
 '''
 A module with functions for ranking each stock in a basket.
 '''
-import numpy as np
 import pandas as pd
 
 from portfoliobuilder import api_utils
@@ -107,7 +106,7 @@ def get_measures(symbol):
     return measures_series
 
 
-def rank(measures_series_list):
+def get_weighting_data(measures_series_list):
     '''
     measures_series_list : list
         A list of return values from get_measures().
@@ -175,3 +174,15 @@ def rank(measures_series_list):
     return df_no_measure_type
     
 
+def generate_weights(symbols):
+    '''
+    Given a list of stock symbols, generate a weight for each
+    stock such that the total weights add up to 1 (100%).
+    '''
+    measures_series_list = []
+    for symbol in symbols:
+        measures = get_measures(symbol)
+        measures_series_list.append(measures)
+    
+    data = get_weighting_data(measures_series_list)
+    return data.loc['weight']
