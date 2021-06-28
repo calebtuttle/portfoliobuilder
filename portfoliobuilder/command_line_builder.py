@@ -2,7 +2,7 @@
 builder.py reimplemented to suite the command line app.
 '''
 
-from portfoliobuilder import api_utils
+from portfoliobuilder import api_utils, weighting
 
 
 def get_weights(weighting_method, symbols):
@@ -12,7 +12,7 @@ def get_weights(weighting_method, symbols):
     stock _within_ the basket.
 
     weighting_method : str
-        Must be either 'market_cap', 'equal', or 'value' (value isn't robust yet)
+        Must be either 'market_cap', 'equal', 'value' (naively implemented), or 'value_quality'
     symbols : list of strings
         The list of stocks to purchase. All elements must be valid ticker symbols.
     
@@ -54,6 +54,11 @@ def get_weights(weighting_method, symbols):
             weights[symbol] = stock_weight
         return weights
 
+    elif weighting_method == 'value_quality':
+        return weighting.generate_weights(symbols)
+
+    raise Exception('Invalid weighting method')
+
 def buy_basket(basket_name, weighting_method, basket_weight, symbols):
     '''
     Buy a basket of stocks (designated by the symbols argument). 
@@ -63,7 +68,7 @@ def buy_basket(basket_name, weighting_method, basket_weight, symbols):
     basket_name : str
         The name of the basket
     weighting_method : str
-        Must be either 'market_cap', 'equal', or 'value' (value isn't robust yet)
+        Must be either 'market_cap', 'equal', 'value' (naively implemented), or 'value_quality'
     basket_weight : float
         The weight of the basket within the user's account. Designated as a number
         n such that 0 > n <= 100.
@@ -85,48 +90,18 @@ def buy_basket(basket_name, weighting_method, basket_weight, symbols):
         return
 
     # Ensure weighting_method is valid
-    if weighting_method not in ['equal', 'market_cap', 'value']:
+    if weighting_method not in ['equal', 'market_cap', 'value', 'value_quality']:
         print('Invalid weighting_method. Exiting.')
         return
 
     weights = get_weights(weighting_method, symbols)
 
-    # Equal weighting
-    # TODO: Turn this into a function
-    if weighting_method == 'equal':
-        ''' Buy all stocks in basket, weighting them equally. '''
-        for symbol in symbols:
-            print(f'Placing order to buy {symbol}...', end='\r')
-            notional = acc_value * (basket_weight / 100) * weights[symbol]
-            if not api_utils.place_order(symbol, notional, 'buy'):
-                print(f'Order to buy {symbol} failed.')
+    failed_symbols = set(symbols) - set(weights.keys())
+    print(f'Data could not be gathered on the following symbols: {failed_symbols}')
 
-    # Market cap weighting
-    # TODO: Turn this into a function
-    elif weighting_method == 'market_cap':
-        ''' 
-        Buy all stocks in basket, weighting them by market cap. 
-        The greater the market cap, the greater the weight.
-        '''
-        for i, symbol in enumerate(symbols):
-            print(f'Placing order to buy {symbol}...', end='\r')
-            notional = acc_value * (basket_weight / 100) * weights[symbol]
-            if not api_utils.place_order(symbol, notional, 'buy'):
-                print(f'Order to buy {symbol} failed.')
-
-    # Value weighting
-    # TODO: Turn this into a function
-    # TODO: Make this method more robust
-    elif weighting_method == 'value':
-        ''' 
-        Buy all stocks in basket, weighting them by value.
-        Value is determined by current Enterprise Value to
-        Trailing Twelve Months Free Cash Flow. The smaller
-        the EV/FCF, the greater the weight.
-        '''
-        for i, symbol in enumerate(symbols):
-            print(f'Placing order to buy {symbol}...', end='\r')
-            notional = acc_value * (basket_weight / 100) * weights[symbol]
-            if not api_utils.place_order(symbol, notional, 'buy'):
-                print(f'Order to buy {symbol} failed.')
+    for symbol in weights.keys():
+        print(f'Placing order to buy {symbol}...', end='\r')
+        notional = acc_value * (basket_weight / 100) * weights[symbol]
+        if not api_utils.place_order(symbol, notional, 'buy'):
+            print(f'Order to buy {symbol} failed.')
 

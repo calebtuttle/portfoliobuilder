@@ -22,7 +22,7 @@ Commands:
 account
 linkaccount <alpaca_api_key> <alpaca_secret> 
 newbasket (<symbol0> <symbol1> <symboli>) <weighting_method> <basket_weight>
-        weighting_method options: equal market_cap value
+        weighting_method options: equal market_cap value value_quality
 newbasketfromindex <index_symbol> <weighting_method> <basket_weight>
 listbaskets
 inspectbasket <basket_name>
