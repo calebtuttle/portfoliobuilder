@@ -87,6 +87,14 @@ def get_position(symbol):
     return None
 
 @alpaca_call
+def get_positions():
+    url = alpaca_endpoint + f'positions'
+    response = requests.get(url=url, headers=alpaca_headers)
+    if response.status_code in range(200, 226):
+        return response.json()
+    return None
+
+@alpaca_call
 def close_position(symbol):
     url = alpaca_endpoint + f'positions/{symbol}'
     payload = {'percentage': 100}
