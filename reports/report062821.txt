@@ -2,6 +2,7 @@
 
 First report. First basket purchase. 
 Purchased all stocks in ^NDX less GOOG, PTON, BIDU, and PDD.
+Total cost: $99,198.50613678011
 
 Bought 2.090353988 shares of ZM for avg price of 392.87, resulting in a total cost of 821.23737126556
 Bought 7.638004833 shares of XLNX for avg price of 135.54, resulting in a total cost of 1035.25517506482
