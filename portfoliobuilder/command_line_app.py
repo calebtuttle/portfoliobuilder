@@ -78,7 +78,7 @@ def newbasket(command):
                 print('Basket canceled.')
                 return
         weighting_method = command.split(') ')[1].split(' ')[0]
-        basket_weight = int(command.split(') ')[1].split(' ')[1])
+        basket_weight = float(command.split(') ')[1].split(' ')[1])
         num_baskets = cursor.execute('SELECT COUNT(*) FROM baskets')
         num_baskets = cursor.fetchone()[0]
         name = f'Basket{num_baskets}'
