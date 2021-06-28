@@ -39,16 +39,17 @@ An Alpaca account, a Finnhub account, a polygon account, and API keys for each. 
 ## Quickstart
 The following demonstrates how to construct, inspect, and purchase a basket of stocks. 
 
-To run Portfolio Builder, execute the command_line_app script with:
+To run Portfolio Builder, run the command_line_app script with:
 
     portfoliobuilder/portfoliobuilder$ python command_line_app.py
 
-You should be presented with a short welcome message followed by a prompt:
+You should be presented with a short welcome message and prompt:
 
-    Welcome to the portfoliobuilder command line application. Enter 'help' to see commands. Enter 'q' to quit, or kill with ^c.
+    Welcome to the portfoliobuilder command line application. 
+    Enter 'help' to see commands. Enter 'q' to quit, or kill with ^c.
     > 
 
-For this example, let us buy all the stocks in the S&P500, but instead of weighting those stocks by market cap (like the S&P500 does), we will weight them equally. First, we create a basket from an index:
+For this example, we will buy all the stocks in the S&P500, but instead of weighting those stocks by market cap (like the S&P500 does), we will weight them equally. First, we create a basket from an index:
 
     > newbasketfromindex ^GSPC equal 50
 
@@ -56,7 +57,7 @@ This command says, "Construct a basket of all the stocks in the S&P500. When I b
 
     Basket0 created.
 
-We can double check that the basket was created with `inspectbasket` (I'm omitting the entire list of S&P500 constituents).
+We can double check that the basket was created with `inspectbasket` (I'm omitting the entire list of basket constituents).
 
     > inspectbasket Basket0
     Inspecting Basket0...
@@ -71,11 +72,12 @@ Now we buy the basket:
     Orders to purchase stocks in Basket0 have been placed.
     Weighting method: equal.
     Basket weight: 50.0%.
-    Note: Some purchase orders might not have been placed. If no errors were printed above, all stocks were placed successfully.
+    Note: Some purchase orders might not have been placed. 
+    If no errors were printed above, all stocks were placed successfully.
 
 If all of the above ran without errors or exceptions, you successfully purchased the ~500 stocks in the S&P500 and weighted them equally. For further information, see the command line app documentation.
 
 ## A Note on the API Keys
-What are the API keys for? The two Alpaca keys are used to trade stocks within your Alpaca account. The Alpaca API keys are the only strictly necessary ones for this application; if you do not connect to the other APIs, however, the 'equal' weighting method will be the only weighting method available. Note that each Alpaca account comes with two sub-accounts: a paper account and a live account. The paper account uses fake money to simulate buying and selling of stocks; this let's you test programmatic trading. The live account uses real money, and you can only trade within it once you've funded it. I discourage anyone from using this application with their live account until it has been sufficiently tested.
+What are the API keys for? The two Alpaca keys are used to trade stocks within your Alpaca account. The Alpaca API keys are the only strictly necessary ones for this application; if you do not connect to the other APIs, however, the 'equal' weighting method will be the only weighting method available. Note that each Alpaca account comes with two sub-accounts: a paper account and a live account. The paper account uses fake money to simulate buying and selling of stocks; this let's you test programmatic trading. The live account uses real money, and you can only trade within it once you've funded it. I discourage anyone from using Portfolio Builder with their live account until the app has been sufficiently tested.
 
 The Finnhub and Polygon API keys are used to collect stock data (e.g., market capitalizations and P/E ratios). This data is used by the weighting methods other than the 'equal' weighting method.
