@@ -34,10 +34,10 @@ Price to Sales.
 Enterprise Value to Sales.
 
 ### P/E 5
-Price to 5-year average earnings.
+(Not implemented.) Price to 5-year average earnings.
 
 ### EV/EBITDA 5
-Price to 5-year average earnings.
+(Not implemented.) Price to 5-year average earnings.
 
 ### P/B
 Price to Book value. NOTE: Give this a small weight.
