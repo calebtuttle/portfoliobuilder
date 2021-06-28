@@ -30,7 +30,7 @@ cursor = conn.cursor()
 # for row in cursor.execute('SELECT * FROM stocks'):
 #     print(row)
 
-cursor.execute('UPDATE baskets SET active=? WHERE name=?', (0,'Basket0'))
+# cursor.execute('UPDATE baskets SET active=? WHERE name=?', (0,'Basket0'))
 # cursor.execute('UPDATE baskets SET weighting_method=? WHERE name=?', ('value_quality','Basket1'))
 
 
