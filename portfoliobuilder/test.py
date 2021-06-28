@@ -3,10 +3,10 @@ import sqlite3
 from portfoliobuilder.builder import Basket
 
 # Establish connection with database file
-conn = sqlite3.connect('portfoliobuilder/portfoliobuilder.db')
+# conn = sqlite3.connect('portfoliobuilder/portfoliobuilder.db')
 
-# Create a Cursor object so that you can execute commands
-cursor = conn.cursor()
+# # Create a Cursor object so that you can execute commands
+# cursor = conn.cursor()
 
 # # Save changes to database
 # conn.commit()
@@ -34,5 +34,5 @@ cursor = conn.cursor()
 # cursor.execute('UPDATE baskets SET weighting_method=? WHERE name=?', ('value_quality','Basket1'))
 
 
-conn.commit()
-conn.close()
+# conn.commit()
+# conn.close()

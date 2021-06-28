@@ -14,7 +14,7 @@ Additionally, the size of the companies that manage these funds is concerning. I
 ## Requirements
 Python 3.6.8
 
-An Alpaca account, a Finnhub account, and API keys for each. You can create an Alpaca account [here](https://alpaca.markets) and a Finnhub account [here](https://finnhub.io). 
+An Alpaca account, a Finnhub account, a polygon account, and API keys for each. You can create an Alpaca account [here](https://alpaca.markets), a Finnhub account [here](https://finnhub.io), and a Polygon account [here](https://polygon.io). See [A Note on the API Keys](#A-Note-on-the-API-Keys) for more info.
 
 ## Installation
 1. Clone this GitHub repository, and navigate to the outermost portfoliobuilder/ directory.
@@ -25,10 +25,16 @@ An Alpaca account, a Finnhub account, and API keys for each. You can create an A
 
     This allows you to import portfoliobuilder.
 
-3. Set the following environment variables to your Alpaca API key for paper trading, your Alpaca secret key for paper trading, and your Finnhub API key, respectively:
+3. Set the following environment variables to your Alpaca API key for paper trading, your Alpaca secret key for paper trading, your Finnhub API key, and your Polygon key, respectively:
 
         PORTFOLIOBUILDER_ALPACA_PAPER_KEY
         PORTFOLIOBUILDER_ALPACA_PAPER_SECRET_KEY
         PORTFOLIOBUILDER_FINNHUB_KEY
+        PORTFOLIOBUILDER_POLYGON_KEY
 
-    These are the API keys that will allow communication with Alpaca and Finnhub. If you are using conda, you can find instructions for setting environment variables [here](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#saving-environment-variables).
+    If you are using conda, you can find instructions for setting environment variables [here](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#saving-environment-variables).
+
+## A Note on the API Keys
+What are the API keys for? The two Alpaca keys are used to trade stocks within your Alpaca account. The Alpaca API keys are the only strictly necessary ones for this application; if you do not connect to the other APIs, however, the 'equal' weighting method will be the only weighting method available. Note that each Alpaca account comes with two sub-accounts: a paper account and a live account. The paper account uses fake money to simulate buying and selling of stocks; this let's you test programmatic trading. The live account uses real money, and you can only trade within it once you've funded it. I discourage anyone from using this application with their live account until it has been sufficiently tested.
+
+The Finnhub and Polygon API keys are used to collect stock data (e.g., market capitalizations and P/E ratios). This data is used by the weighting methods other than the 'equal' weighting method.
