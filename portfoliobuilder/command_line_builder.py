@@ -97,7 +97,8 @@ def buy_basket(basket_name, weighting_method, basket_weight, symbols):
     weights = get_weights(weighting_method, symbols)
 
     failed_symbols = set(symbols) - set(weights.keys())
-    print(f'Data could not be gathered on the following symbols: {failed_symbols}')
+    if failed_symbols:
+        print(f'Data could not be gathered on the following symbols: {failed_symbols}')
 
     for symbol in weights.keys():
         print(f'Placing order to buy {symbol}...', end='\r')
