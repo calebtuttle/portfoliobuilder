@@ -45,7 +45,7 @@ To run Portfolio Builder, run the command_line_app script with:
 
 You should be presented with a short welcome message and prompt:
 
-    Welcome to the portfoliobuilder command line application. 
+    Welcome to the portfoliobuilder command line application.
     Enter 'help' to see commands. Enter 'q' to quit, or kill with ^c.
     > 
 
@@ -72,7 +72,7 @@ Now we buy the basket:
     Orders to purchase stocks in Basket0 have been placed.
     Weighting method: equal.
     Basket weight: 50.0%.
-    Note: Some purchase orders might not have been placed. 
+    Note: Some purchase orders might not have been placed.
     If no errors were printed above, all stocks were placed successfully.
 
 If all of the above ran without errors or exceptions, you successfully purchased the ~500 stocks in the S&P500 and weighted them equally. For further information, see the command line app documentation.
