@@ -1,5 +1,5 @@
 # Portfolio Builder
-Portfolio Builder is a tool for creating and maintaining a diversified stock portfolio. It provides functions for weighting and rebalancing.
+Portfolio Builder is a tool for creating and maintaining a diversified stock portfolio.
 
 ## Overview
 There are two basic ideas behind Portfolio Builder: Basket-based investing is superior to stock picking, and the current options for basket-based investing are insufficient. Portfolio Builder allows an investor to easily buy a basket of stocks and gives the investor a few options with respect to weighting those stocks. This ability to quickly buy a basket of stocks gives an investor the ability to construct a portfolio that is as diversified as one consisting of ETFs, and with Portfolio Builder, there are no annual fees. 
