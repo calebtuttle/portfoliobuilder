@@ -6,7 +6,6 @@ import os
 import sqlite3
 
 from portfoliobuilder import utils, api_utils
-from portfoliobuilder import command_line_utils as cmd_utils
 from portfoliobuilder.basket_functions import get_weights, buy_basket
 from portfoliobuilder.supported_indices import (supported_indices_list, 
                                                 supported_indices_dict)
@@ -52,7 +51,7 @@ def account():
 
 def linkaccount(command):
     ''' NOTE: Not entered into database. '''
-    if not cmd_utils.has_num_args(command, 2):
+    if not utils.has_num_args(command, 2):
         return
     os.environ['PORTFOLIOBUILDER_ALPACA_PAPER_KEY'] = command.split(' ')[1]
     os.environ['PORTFOLIOBUILDER_ALPACA_PAPER_SECRET_KEY'] = command.split(' ')[2]
@@ -115,7 +114,7 @@ def inspectbasket(command):
     if command.split(' ')[0] != 'inspectbasket':
         print('Invalid command.')
         return
-    if not cmd_utils.has_num_args(command, 1):
+    if not utils.has_num_args(command, 1):
         return
 
     basket_name = command.split(' ')[1]
@@ -173,7 +172,7 @@ def addsymbols(command):
     print(f'Added the following symbols to {basket_name}: {new_symbols}')
 
 def buybasket(command):
-    if not cmd_utils.has_num_args(command, 1):
+    if not utils.has_num_args(command, 1):
         return
     basket_name = command.split(' ')[1]
     cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
@@ -196,7 +195,7 @@ def sellbasket(command):
     if 'sellbasket' != command.split(' ')[0]:
         print('Invalid command.')
         return
-    if not cmd_utils.has_num_args(command, 1):
+    if not utils.has_num_args(command, 1):
         return
     
     basket_name = command.split(' ')[1]
@@ -226,7 +225,7 @@ def deletebasket(command):
     if 'deletebasket' != command.split(' ')[0]:
         print('Invalid command.')
         return
-    if not cmd_utils.has_num_args(command, 1):
+    if not utils.has_num_args(command, 1):
         return
 
     basket_name = command.split(' ')[1]
@@ -245,7 +244,7 @@ def rebalance(command):
     if 'rebalance' != command.split(' ')[0]:
         print('Invalid command.')
         return
-    if not cmd_utils.has_num_args(command, 1):
+    if not utils.has_num_args(command, 1):
         return
     
     basket_name = command.split(' ')[1]
