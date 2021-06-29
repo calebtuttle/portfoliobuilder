@@ -53,11 +53,11 @@ For this example, we will buy all the stocks in the S&P500, but instead of weigh
 
     > newbasketfromindex ^GSPC equal 50
 
-This command says, "Construct a basket of all the stocks in the S&P500. When I buy this basket, I want those stocks to be weighted equally. And when I buy the basket, I want to allocate exactly 50% of my portfolio to it." After Portfolio Builder ensures all stocks in the S&P500 can be traded through Alpaca, you should get an output that looks like this:
+This command says, "Construct a basket of all the stocks in the _^GSPC_ index (which is the symbol for the S&P500). When I buy this basket, I want those stocks to be weighted _equally_. And when I buy the basket, I want to allocate exactly _50%_ of my portfolio to it." After Portfolio Builder ensures all stocks in the S&P500 can be traded through Alpaca, you should get an output that looks like this:
 
     Basket0 created.
 
-We can double check that the basket was created with `inspectbasket` (I'm omitting the entire list of basket constituents).
+We can double check that the basket was created with `inspectbasket` (I'm omitting the entire list of basket constituents here).
 
     > inspectbasket Basket0
     Inspecting Basket0...
