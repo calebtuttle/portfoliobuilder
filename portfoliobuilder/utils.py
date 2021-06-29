@@ -12,7 +12,7 @@ def tradable_symbols_from(symbols):
     tradable_symbols = []
     for symbol in symbols:
         print(f'Determining whether {symbol} is tradable...', end=f'\r')
-        is_tradable = api_utils.tradable(symbol)
+        is_tradable = api_utils.get_asset(symbol)['tradable']
         if is_tradable:
             tradable_symbols.append(symbol)
     sys.stdout.write("\033[K")

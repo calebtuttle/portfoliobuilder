@@ -12,7 +12,8 @@ _last_alpaca_call = 0
 
 def alpaca_call(func):
     '''
-    Method to ensure the API call rate limit isn't reached.
+    Method to ensure the API call rate limit isn't reached and
+    to return None in the event that the call fails.
     '''
     def wrapper(*args, **kwargs):
         global _last_alpaca_call
@@ -22,38 +23,22 @@ def alpaca_call(func):
             time.sleep(next_available_call - now)
         _last_alpaca_call = time.time()
 
-        return func(*args, **kwargs)
+        response = func(*args, **kwargs)
+        if response.status_code in range(200, 226):
+            return response.json()
+        return None
 
     return wrapper
 
 @alpaca_call
 def get_account():
     url = alpaca_endpoint + 'account'
-    response = requests.get(url=url, headers=alpaca_headers)
-    if response.status_code in range(200, 226):
-        return response.json()
-    return None
+    return requests.get(url=url, headers=alpaca_headers)
 
 @alpaca_call
-def tradable(symbol):
+def get_asset(symbol):
     url = alpaca_endpoint + f'assets/{symbol}'
-    response = requests.get(url=url, headers=alpaca_headers)
-    if response.status_code in range(200, 226):
-        return response.json()['tradable']
-    print(f'Got status code {response.status_code} in tradable() for symbol {symbol}.')
-    return False
-    
-@alpaca_call
-def fractionable_tradable(symbol):
-    '''
-    Return True if the asset denoted by symbol is both fractionable 
-    and tradable, False otherwise.
-    '''
-    url = alpaca_endpoint + f'assets/{symbol}'
-    response = requests.get(url=url, headers=alpaca_headers)
-    if response.status_code in range(200, 226):
-        return response.json()['fractionable'] and response.json()['tradable']
-    return False
+    return requests.get(url=url, headers=alpaca_headers)
 
 @alpaca_call
 def place_order(symbol, notional, side):
@@ -73,35 +58,23 @@ def place_order(symbol, notional, side):
     url = alpaca_endpoint + 'orders'
     payload = {'symbol': symbol, 'notional': str(notional), 'side': side,
                 'type': 'market', 'time_in_force': 'day'}
-    response = requests.post(url=url, json=payload, headers=alpaca_headers)
-    if response.status_code in range(200, 226):
-        return response.json()
-    return None
+    return requests.post(url=url, json=payload, headers=alpaca_headers)
 
 @alpaca_call
 def get_position(symbol):
     url = alpaca_endpoint + f'positions/{symbol}'
-    response = requests.get(url=url, headers=alpaca_headers)
-    if response.status_code in range(200, 226):
-        return response.json()
-    return None
+    return requests.get(url=url, headers=alpaca_headers)
 
 @alpaca_call
 def get_positions():
     url = alpaca_endpoint + f'positions'
-    response = requests.get(url=url, headers=alpaca_headers)
-    if response.status_code in range(200, 226):
-        return response.json()
-    return None
+    return requests.get(url=url, headers=alpaca_headers)
 
 @alpaca_call
 def close_position(symbol):
     url = alpaca_endpoint + f'positions/{symbol}'
     payload = {'percentage': 100}
-    response = requests.delete(url=url, json=payload, headers=alpaca_headers)
-    if response.status_code in range(200, 226):
-        return response.json()
-    return None
+    return requests.delete(url=url, json=payload, headers=alpaca_headers)
 
 
 ################# Finnhub utility functions #################
