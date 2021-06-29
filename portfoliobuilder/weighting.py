@@ -54,8 +54,10 @@ class Value():
     '''
     @staticmethod
     def get_weights(symbols):
-        get_ev_to_fcf = api_utils.get_ev_to_fcf
-        ev_to_fcfs = [get_ev_to_fcf(symbol) for symbol in symbols]
+        get_metrics = api_utils.get_metrics
+        
+        metrics_ls = [get_metrics(symbol)['metric'] for symbol in symbols]
+        ev_to_fcfs = [metrics['currentEv/freeCashFlowTTM'] for metrics in metrics_ls]
         
         # If a stock's EV/FCF is negative (i.e., None), give it as much
         # weight as the most expensive (highest EV/FCF) stock.

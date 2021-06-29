@@ -114,23 +114,6 @@ def get_metrics(symbol):
     params = {'symbol': symbol, 'metric': 'all', 'token': finnhub_key}
     return requests.get(url=url, params=params).json()
 
-# TODO: Fix this
-@finnhub_call
-def get_ev_to_fcf(symbol):
-    ''' 
-    Get current Enterprise Value / TTM Free Cash Flow. 
-    
-    Return EV/FCF if number is positive, None if negative.
-    '''
-    url = finnhub_endpoint + 'stock/metric'
-    params = {'symbol': symbol, 'metric': 'all', 'token': finnhub_key}
-    response = requests.get(url=url, params=params).json()
-    try:
-        ev_to_fcf = response['metric']['currentEv/freeCashFlowTTM']
-        return ev_to_fcf
-    except KeyError:
-        return None
-
 @finnhub_call
 def get_financials_as_reported(symbol):
     '''
