@@ -1,5 +1,5 @@
-# Stock Scoring Methodology
-This document describes the methodology of the scoring system used by the value weighting method.
+# Valuation and Quality Measures
+This page describes the valuation and quality measures that are part of the 'value_quality' weighting method.
 
 ## Overview
 Each stock receives a score. A stock with a higher score receives more weight. A score only has meaning in relation to other stocks in the same basket. Each stock's score consists of two sub-scores, Valuation and Quality, such that the total score = (Valuation * 0.5) + (Quality * 0.5). 

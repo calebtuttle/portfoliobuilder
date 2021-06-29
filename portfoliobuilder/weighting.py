@@ -95,9 +95,21 @@ class ValueQuality():
             'assets_to_liabilities': np.nan
         })
 
+    @staticmethod
     def _get_measures(symbol):
+        '''
+        Get measures of valuation and quality for the given stock.
+        See docs/measures.md for more info.
+
+        symbol : str
+            A stock ticker symbol (e.g., 'AAPL')
+
+        Return a pd.Series where the indices are the measure names
+        and the series name is symbol.
+        '''
         #TODO: For each endpoint, ensure the results are expected.
         # For example, ensure market cap is not a multiple of 1 million.
+        
         # Finnhub endpoint
         metrics = api_utils.get_metrics(symbol)
         metrics = metrics['metric']
@@ -189,6 +201,7 @@ class ValueQuality():
         measures_series.name = symbol
         return measures_series
 
+    @staticmethod
     def _get_weighting_data(measures_series_list):
         '''
         measures_series_list : list
@@ -214,13 +227,11 @@ class ValueQuality():
         # the smallest number in a row to every element in the row. 
         symbols_cols = [True for i in range(len(df.columns)-1)]
         symbols_cols.append(False)
-        df_no_measure_type = df.loc[:,symbols_cols].copy()
+        df_no_measure_type = df.loc[:,symbols_cols].copy() # excludes 'measure_type' column
         mins = df_no_measure_type.min(axis=1)
         for measure in mins.index:
             df_no_measure_type.loc[measure] += abs(mins.loc[measure])
-        # Maybe move the following line to a few steps down
-        df[df_no_measure_type.columns] = df_no_measure_type
-
+        
         # Generate a score for each measure for each stock
         valuation_score_rows = []
         quality_score_rows = []
@@ -235,7 +246,8 @@ class ValueQuality():
                 quality_score_rows.append(row_name)
 
         # Aggregate valuation measures and quality measures to
-        # get a valuation score and quality score for each stock.
+        # get a single valuation score and a single quality score 
+        # for each stock.
         final_valuation_score_row = {}
         for col in df_no_measure_type.columns:
             final_valuation_score = df_no_measure_type.loc[valuation_score_rows][col].sum()
@@ -249,13 +261,14 @@ class ValueQuality():
         df_no_measure_type.loc['final_valuation_score'] = final_valuation_score_row / final_valuation_score_row.sum()
         df_no_measure_type.loc['final_quality_score'] = final_quality_score_row / final_quality_score_row.sum()
 
-        # Generate a final, single weight for each stock
+        # Generate a single weight for each stock
         val_row = df_no_measure_type.loc['final_valuation_score']
         quality_row = df_no_measure_type.loc['final_quality_score']
         df_no_measure_type.loc['weight'] = (val_row/2) + (quality_row/2)
 
         return df_no_measure_type
-        
+    
+    @staticmethod
     def get_weights(symbols):
         '''
         Given a list of stock symbols, generate a weight for each

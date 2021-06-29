@@ -10,13 +10,13 @@ _WEIGHTING_METHODS = {'equal': weighting.Equal,
                     'value': weighting.Value, 
                     'value_quality': weighting.ValueQuality}
 
-def get_weights(method, symbols):
+def get_weights(weighting_method, symbols):
     '''
     Get the weight for each stock according to the weighting method.
     Does not account for basket_weight, only for the weight of each
     stock _within_ the basket.
 
-    method : str
+    weighting_method : str
         Must be either 'market_cap', 'equal', 'value' (naively implemented), or 'value_quality'
     symbols : list of strings
         The list of stocks to purchase. All elements must be valid ticker symbols.
@@ -27,7 +27,7 @@ def get_weights(method, symbols):
     and where each weight is a positive number <= 1.
     '''
     try:
-        return _WEIGHTING_METHODS[method].get_weights(symbols)
+        return _WEIGHTING_METHODS[weighting_method].get_weights(symbols)
     except KeyError:
         raise Exception('Invalid weighting method')
 
