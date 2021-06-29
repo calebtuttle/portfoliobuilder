@@ -6,9 +6,8 @@ import os
 import sqlite3
 
 from portfoliobuilder import utils, api_utils
-from portfoliobuilder import command_line_utils as cmd_utils 
-from portfoliobuilder.builder import Portfolio, Basket
-from portfoliobuilder.command_line_builder import get_weights, buy_basket
+from portfoliobuilder import command_line_utils as cmd_utils
+from portfoliobuilder.basket_functions import get_weights, buy_basket
 from portfoliobuilder.supported_indices import (supported_indices_list, 
                                                 supported_indices_dict)
 
@@ -177,8 +176,6 @@ def addsymbols(command):
 def buybasket(command):
     if not cmd_utils.has_num_args(command, 1):
         return
-    portfolio = Portfolio()
-    portfolio.update_cash()
     basket_name = command.split(' ')[1]
     cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
     basket = cursor.fetchone()
