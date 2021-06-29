@@ -28,9 +28,18 @@ class MarketCap():
     '''
     @staticmethod
     def get_weights(symbols):
-        get_market_cap = api_utils.get_market_cap
-        market_caps = [get_market_cap(symbol) for symbol in symbols]
-        market_caps = [i if i else 1 for i in market_caps] # Remove Nones
+        get_profile = api_utils.get_profile2
+        
+        market_caps = []
+        for symbol in symbols:
+            profile = get_profile(symbol)
+            if profile:
+                # Finnhub reports a multiple of a million
+                market_cap = profile['marketCapitalization'] * 1000000
+                market_caps.append(market_cap)
+            else:
+                market_caps.append(1)
+
         basket_market_cap = sum(market_caps)
         weights = {}
         for i, symbol in enumerate(symbols):

@@ -93,7 +93,8 @@ def newbasketfromindex(command):
     try:
         split_command = command.split(' ')
         index = split_command[1]
-        symbols = api_utils.get_index_constituents(index)
+        response = api_utils.get_index_constituents(index)
+        symbols = response['constituents']
         symbols = '(' + ' '.join(symbols) + ')'
         split_command[1] = symbols
         new_command = ' '.join(split_command)

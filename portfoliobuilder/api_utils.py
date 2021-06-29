@@ -94,32 +94,27 @@ def finnhub_call(func):
             time.sleep(next_available_call - now)
         _last_finnhub_call = time.time()
 
-        return func(*args, **kwargs)
+        response = func(*args, **kwargs)
+        if response.status_code in range(200, 226):
+            return response.json()
+        return None
 
     return wrapper
 
 @finnhub_call
-def get_market_cap(symbol):
+def get_profile2(symbol):
     url = finnhub_endpoint + 'stock/profile2'
     params = {'symbol': symbol, 'token': finnhub_key}
-    response = requests.get(url=url, params=params)
-    try: 
-        market_cap = response.json()['marketCapitalization']
-        market_cap *= 1_000_000 # Finnhub reports a multiple of a million
-        return market_cap
-    except KeyError:
-        return None
+    return requests.get(url=url, params=params)
 
 @finnhub_call
 def get_metrics(symbol):
     ''' Return the JSON response from the stock/metrics Finnhub endpoint. '''
     url = finnhub_endpoint + 'stock/metric'
     params = {'symbol': symbol, 'metric': 'all', 'token': finnhub_key}
-    response = requests.get(url=url, params=params).json()
-    if not response['metric'] and not response['series']:
-        return None
-    return response
+    return requests.get(url=url, params=params).json()
 
+# TODO: Fix this
 @finnhub_call
 def get_ev_to_fcf(symbol):
     ''' 
@@ -144,10 +139,7 @@ def get_financials_as_reported(symbol):
     '''
     url = finnhub_endpoint + 'stock/financials-reported'
     params = {'symbol': symbol, 'token': finnhub_key}
-    response = requests.get(url=url, params=params)
-    if response.status_code in range(200, 226):
-        return response.json()
-    return None
+    return requests.get(url=url, params=params)
 
 @finnhub_call
 def get_index_constituents(index_symbol):
@@ -156,12 +148,7 @@ def get_index_constituents(index_symbol):
     '''
     url = finnhub_endpoint + 'index/constituents'
     params = {'symbol': index_symbol, 'token': finnhub_key}
-    response = requests.get(url=url, params=params).json()
-    try:
-        symbols = response['constituents']
-        return symbols
-    except KeyError:
-        return None
+    return requests.get(url=url, params=params).json()
 
 
 ################# Polygon utility functions #################
