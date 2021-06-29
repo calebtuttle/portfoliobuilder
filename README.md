@@ -7,11 +7,11 @@ There are two basic ideas behind Portfolio Builder: Basket-based investing is su
 I want the benefit of the passive investment strategies of ETFs without the disadvantage of fees. I created this app with the goal of copying and executing those strategies for free.
 
 ## Background
-As of November 2020, the exchange traded fund (ETF) market is about $5 trillion, and the mutual fund market is about $21 trillion ([source](https://www.cnbc.com/2020/11/17/us-etf-market-tops-5-trillion-in-assets-as-investors-stampede-into-stocks-on-vaccine-hopes.html)). The average expense ratio for a fund in 2019 was 0.45% ([source](https://newsroom.morningstar.com/newsroom/news-archive/press-release-details/2020/Morningstars-Annual-Fund-Fee-Study-Finds-Investors-Saved-Nearly-6-Billion-in-Fund-Fees-in-2019/default.aspx)). Thus, the institutions that collectively manage $26 trillion of assets earn over $11 billion per year in fees.
+There are two primary motivations for this project: reducing fees and reclaiming ownership of the stocks in my portfolio.
 
-With the ability to automate trades and purchase fractional shares, an investor can copy these ETFs without paying the fees.
+The institutions that collectively manage $26 trillion of assets earn over $11 billion per year in fees ([$26 trillion AUM](https://www.cnbc.com/2020/11/17/us-etf-market-tops-5-trillion-in-assets-as-investors-stampede-into-stocks-on-vaccine-hopes.html) x [0.45% expense ratio](https://newsroom.morningstar.com/newsroom/news-archive/press-release-details/2020/Morningstars-Annual-Fund-Fee-Study-Finds-Investors-Saved-Nearly-6-Billion-in-Fund-Fees-in-2019/default.aspx) ~= $11 billion). A portion of those fees are used to manage index funds which are entirely automated. With the ability to automate trades and purchase fractional shares, an investor can copy these index funds without paying the fees.
 
-Additionally, the size of the companies that manage these funds is concerning. I encourage anyone intrigued to see [this article by Annie Lowrey](https://www.theatlantic.com/ideas/archive/2021/04/the-autopilot-economy/618497/). 
+Additionally, the popularity of index funds has resulted in the concentration of voting power. The top three mutual fund firms cast about 25% of the shareholder votes for companies in the S&P500. Such a high level of concentrated power is not good for competition in markets. I encourage anyone intrigued to see [this article by Annie Lowrey](https://www.theatlantic.com/ideas/archive/2021/04/the-autopilot-economy/618497/). Portfolio Builder allows an investor to purchase shares of companies directly; an investor therefore retains his or her voting power.
 
 ## Requirements
 Python 3.6.8
