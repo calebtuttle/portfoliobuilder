@@ -15,67 +15,67 @@ TODO: Discuss methodology--how you get a single weight from all these measures.
 ## Valuation Measures
 Listed below are the items that influence the Valuation score.
 
-### P/E TTM
+ __P/E TTM__.
 Price to Earnings trailing twelve months.
 
-### EV/EBITDA 
+__EV/EBITDA__.
 Enterprise Value to Earnings Before Interest Taxes and Depreciation.
 
-### P/FCF
+__P/FCF__.
 Price to Free Cash Flow.
 
-### EV/FCF
+__EV/FCF__.
 Enterprise Value to Free Cash Flow.
 
-### P/S 
+__P/S__.
 Price to Sales.
 
-### EV/S
+__EV/S__.
 Enterprise Value to Sales.
 
-### P/E 5
+__P/E 5__.
 (Not implemented.) Price to 5-year average earnings.
 
-### EV/EBITDA 5
+__EV/EBITDA 5__.
 (Not implemented.) Price to 5-year average earnings.
 
-### P/B
+__P/B__.
 Price to Book value. NOTE: Give this a small weight.
 
 
 ## Quality Measures
 Listed below are the items that influence the Quality score.
 
-### Profit Margin
+__Profit Margin__.
 Average profit margin for last 5 years.
 
-### Revenue Growth Rate
+__Revenue Growth Rate__.
 Annualized YoY revenue growth rate for last 5 years.
 
-### EBITDA Growth Rate
+__EBITDA Growth Rate__.
 Average YoY growth rate for last 10 years. This measure will be 0 if the company is not profitable.
 
-### ROE (using net income)
+__ROE (using net income)__.
 Return on Equity where the numerator is Net Income.
 
-### ROA (using net income)
+__ROA (using net income)__.
 Return on Assets where the numerator is Net Income.
 
-### ROIC (using net income)
+__ROIC (using net income)__.
 Return on Invested Capital where the numerator is Net Income.
 
-### ROE (using EBITDA)
+__ROE (using EBITDA)__.
 Return on Equity where the numerator is EBITDA.
 
-### ROA (using EBITDA)
+__ROA (using EBITDA)__.
 Return on Assets where the numerator is EBITDA.
 
-### ROIC (using EBITDA)
+__ROIC (using EBITDA)__.
 Return on Invested Capital where the numerator is EBITDA.
 
-### Current Ratio
+__Current Ratio__.
 Current Assets / Current Liabilities.
 
-### Total Debt / Total Assets
+__Total Debt / Total Assets__.
 
 
