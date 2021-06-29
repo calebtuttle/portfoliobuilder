@@ -35,8 +35,6 @@ listindices
 Enter 'help' to see commands.
 Enter 'q' to quit, or kill with ^c.'''
 
-# baskets = {} # {'basket_name': Basket object}
-
 conn = sqlite3.connect('portfoliobuilder/portfoliobuilder.db')
 cursor = conn.cursor()
 
@@ -258,7 +256,7 @@ def rebalance(command):
     weighting_method = basket[1]
     basket_weight = basket[2]
     symbols = basket[3].split(' ')
-    # TODO: Turn this into a method, and move it to command_line_builder.py
+    # TODO: Turn this into a method, and move it to basket_functions.py
     account = api_utils.get_account()
     if account:
         acc_value = float(account['equity'])

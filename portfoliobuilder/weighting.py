@@ -275,5 +275,4 @@ class ValueQuality():
 
         for symbol in failed_symbols:
             weights[symbol] = 0
-
         return weights
