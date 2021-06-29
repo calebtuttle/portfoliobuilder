@@ -1,15 +1,20 @@
-# Valuation and Quality Measures
-This page describes the valuation and quality measures that are part of the 'value_quality' weighting method.
+# Valuation and Quality Weighting Method
+This page describes the valuation and quality ('Value-Quality,' 'value_quality') weighting method and lists the measures that are part of it.
 
 ## Overview
-Each stock receives a score. A stock with a higher score receives more weight. A score only has meaning in relation to other stocks in the same basket. Each stock's score consists of two sub-scores, Valuation and Quality, such that the total score = (Valuation * 0.5) + (Quality * 0.5). 
+There are a few steps in the Valuation and Quality weighting method.
 
-The Valuation score increases as the stock's Valuation ratios decrease. For example, a stock with a P/E of 20 will likely have a higher Valuation score than a stock with a P/E of 40. The Quality score increases as measures of Quality increase. For example, a stock with consistent YoY earnings growth of 15% will likely have a higher Quality score than a stock whose earnings have consistently decreased. 
+First, valuation and quality data is gathered on each stock. The valuation data measures how inexpensive the stock is. The quality data measures how good the company is, mainly, how good it is at generating earnings.
 
+Second, each stock is given a score for each measure. That is, a stock will receive a score for its P/E ratio, one for its EV/EBITDA ratio, and so on. This score is a function of the measure for this stock relative to the total value for this measure for all stocks. For instance, if a basket contains only 2 stocks (AAPL and FB, say), and if AAPL's ROE is 3x that of FB, AAPL's ROE score will be 3x FB's ROE score.
 
+Third, the scores for the individual measures are summed to produce two weights for each stock: a valuation weight and a quality weight. The valuation weight formula is:\
+stock valuation weight = sum(all valuation scores for some stock) / sum(all valuation scores for all stocks)\
+The quality weight formula is:\
+stock quality weight = sum(all quality scores for some stock) / sum(all quality scores for all stocks)
 
-TODO: Discuss methodology--how you get a single weight from all these measures.
-
+Fourth, a final, single weight is generated for each stock using this formula:\
+stock weight = (stock valuation weight)/2 + (stock quality weight)/2
 
 
 ## Valuation Measures

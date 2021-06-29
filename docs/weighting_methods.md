@@ -43,4 +43,4 @@ As of writing AAPL's EV/FCF is 35.74 and FB's is 34.91, so we would allocate $24
 ## Value-Quality
 Weight each stock according to both its valuation and its quality. Give stocks with lower valuations and higher quality more weight, stocks with higher valuations and lower quality less weight.
 
-This weighting method is significantly more involved than the others. For detailed information, see the docs/measures.md page.
+This weighting method is significantly more involved than the others. For detailed information, see the [Valuation and Quality Weighting Method](docs/value_quality_method.md) page.
