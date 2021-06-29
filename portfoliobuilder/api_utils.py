@@ -112,7 +112,7 @@ def get_metrics(symbol):
     ''' Return the JSON response from the stock/metrics Finnhub endpoint. '''
     url = finnhub_endpoint + 'stock/metric'
     params = {'symbol': symbol, 'metric': 'all', 'token': finnhub_key}
-    return requests.get(url=url, params=params).json()
+    return requests.get(url=url, params=params)
 
 @finnhub_call
 def get_financials_as_reported(symbol):
