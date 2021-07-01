@@ -3,6 +3,8 @@ import sqlite3
 
 from portfoliobuilder import commands
 
+# TODO: change help_str: 'exit' is now the exit command, not 'q'
+
 
 command_executables = {
     'inspectaccount': commands.InspectAccount,
@@ -17,7 +19,7 @@ command_executables = {
     'deletebasket': commands.DeleteBasket,
     'rebalance': commands.Rebalance,
     'listindices': commands.ListIndices,
-    'q': commands.Exit
+    'exit': commands.Exit
 }
 
 
@@ -38,12 +40,10 @@ def parse_user_input(user_input):
     except (IndexError, KeyError):
         print('Invalid command.')
 
-
 try:
     user_input = ''
-    while user_input is not 'q':
+    while user_input is not 'exit':
         user_input = input('> ')
         parse_user_input(user_input)
 except KeyboardInterrupt:
-    # TODO: change to: command_executables['exit'].execute()
-    exit()
+    command_executables['exit'].execute()
