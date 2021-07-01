@@ -18,7 +18,7 @@ from portfoliobuilder.supported_indices import (supported_indices_list,
 
 class InspectAccount():
     '''
-    Namespace for the inspectaccount command.
+    Namespace for the methods that execute the inspectaccount command.
     '''
     @staticmethod
     def execute():
@@ -32,7 +32,7 @@ class InspectAccount():
 
 class LinkAccount():
     '''
-    Namespace for the linkaccount command.
+    Namespace for the methods that execute the linkaccount command.
     '''
     @staticmethod
     def execute():
@@ -65,7 +65,7 @@ class LinkAccount():
 
 class NewBasket():
     '''
-    Namespace for the newbasket command.
+    Namespace for the methods that execute the newbasket command.
 
     newbasket <weighting_method> <basket_weight> (<symbol0> <symbol1> <symboli>)
         weighting_method options: equal market_cap value value_quality
@@ -134,7 +134,7 @@ class NewBasket():
 
 class NewBasketFromIndex():
     '''
-    Namespace for the newbasketfromindex command
+    Namespace for the methods that execute the newbasketfromindex command
 
     newbasketfromindex <weighting_method> <basket_weight> <index_symbol>
     '''
@@ -161,3 +161,19 @@ class NewBasketFromIndex():
         user_input = user_input.split(' ')
         user_input[3] = symbols
         user_input = ' '.join(user_input)
+
+
+class ListBaskets():
+    '''
+    Namespace for the methods that execute the listbaskets command.
+    '''
+    @staticmethod
+    def execute():
+        cursor.execute('SELECT * FROM baskets')
+        baskets = cursor.fetchall()
+        if baskets:
+            for b in baskets:
+                print(b[0])
+        else:
+            print('No baskets.')
+
