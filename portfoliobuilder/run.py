@@ -8,6 +8,16 @@ command_executables = {
     'inspectaccount': commands.InspectAccount,
     'linkaccount': commands.LinkAccount,
     'newbasket': commands.NewBasket,
+    'newbasketfromindex': commands.NewBasketFromIndex,
+    'listbaskets': commands.ListBaskets,
+    'inspectbasket': commands.InspectBasket,
+    'addsymbols': commands.AddSymbols,
+    'buybasket': commands.BuyBasket,
+    'sellbasket': commands.SellBasket,
+    'deletebasket': commands.DeleteBasket,
+    'rebalance': commands.Rebalance,
+    'listindices': commands.ListIndices,
+    'q': commands.Exit
 }
 
 
