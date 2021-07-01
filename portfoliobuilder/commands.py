@@ -4,6 +4,7 @@ NOTE: Most of the classes here make use of the cursor and user_input
 variables from the run.py module.
 '''
 import os
+import sys
 import sqlite3
 
 from portfoliobuilder import utils, api_utils
@@ -389,4 +390,63 @@ class DeleteBasket(BasketCommand):
         cursor.execute('DELETE FROM baskets WHERE name=(?)', (basket[0],))
         print(f'{basket[0]} deleted.')
 
-    
+
+class Rebalance(BasketCommand):
+    '''
+    Namespace for the methods that execute the rebalance command.
+    '''
+    @staticmethod
+    def execute():
+        if not utils.has_num_args(user_input, 1):
+            return
+        basket = Rebalance.get_basket_from_user_input()
+        if not basket:
+            print(f'No basket with name {basket[0]}.')
+            return
+        acc_value = Rebalance.get_account_value()
+        if acc_value <= 0:
+            print('Nothing to rebalance')
+            return
+
+        weighting_method = basket[1]
+        basket_weight = basket[2]
+        symbols = basket[3].split(' ')
+        weights = get_weights(weighting_method, symbols)
+
+        for symbol in symbols:
+            curr_position = api_utils.get_position(symbol)
+            if curr_position:
+                print(f'Rebalancing {symbol}...', end='\r')
+                goal_market_val = acc_value * (basket_weight / 100) * weights[symbol]
+                curr_market_val = curr_position['market_value']
+                Rebalance.rebalance(symbol, goal_market_val, curr_market_val)
+                sys.stdout.write("\033[K")
+            else:
+                print(f'Could not rebalance {symbol}.')
+        print(f'{basket[0]} rebalanced. See above for stocks that might not have been rebalanced.')
+
+    @staticmethod
+    def get_account_value():
+        account = api_utils.get_account()
+        if account:
+            return float(account['equity'])
+        else:
+            print('Could not access account.')
+            return 0
+
+    @staticmethod
+    def rebalance(symbol, goal_market_val, curr_market_val):
+        '''
+        Sell or buy symbol so that the account holds
+        $goal_market_val instead of $curr_market_val of
+        symbol.
+        '''
+        if goal_market_val < curr_market_val:
+            notional = curr_market_val - goal_market_val
+            if not api_utils.place_order(symbol, notional, 'sell'):
+                print(f'Could not rebalance {symbol}')
+        elif goal_market_val > curr_market_val:
+            notional = goal_market_val - curr_market_val
+            if not api_utils.place_order(symbol, notional, 'buy'):
+                print(f'Could not rebalance {symbol}')
+
