@@ -26,7 +26,6 @@ class BasketCommand():
         return cursor.fetchone()
     
 
-
 class InspectAccount():
     '''
     Namespace for the methods that execute the inspectaccount command.
@@ -460,3 +459,4 @@ class ListIndices():
         print('Index | Symbol')
         for symbol in supported_indices_dict:
             print(f'{supported_indices_dict[symbol]}  |  {symbol}')
+
