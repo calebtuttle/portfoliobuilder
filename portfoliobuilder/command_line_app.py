@@ -17,7 +17,7 @@ print("Welcome to the portfoliobuilder command line application. " +
 help_str = '''Usage: <command>
 
 Commands:
-account
+inspectaccount
 linkaccount <alpaca_api_key> <alpaca_secret> 
 newbasket (<symbol0> <symbol1> <symboli>) <weighting_method> <basket_weight>
         weighting_method options: equal market_cap value value_quality
@@ -39,12 +39,13 @@ cursor = conn.cursor()
 
 # Ensure essential tables exist
 # TODO: Maybe find a different way to store symbols?
+# TODO: Change 'name' field to 'id', and make it an int
 create_baskets_table = 'CREATE TABLE if not exists baskets' + \
                     ' (name text, weighting_method text,' + \
                     ' weight real, symbols text, active integer)' 
 cursor.execute(create_baskets_table)
 
-def account():
+def inspectaccount():
     response = api_utils.get_account()
     for key in response:
         print(f'{key}: {response[key]}')
@@ -295,8 +296,8 @@ def exit():
 def parse_command(command):
     if command == 'help':
         print(help_str)
-    elif command == 'account':
-        account()
+    elif command == 'inspectaccount':
+        inspectaccount()
     elif 'linkaccount' in command:
         linkaccount(command)
     elif 'newbasket ' in command:

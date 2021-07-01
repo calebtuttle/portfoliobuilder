@@ -1,6 +1,6 @@
 
 ## Commands
-### account
+### inspectaccount
 List the information of the linked account. If no account is linked, an error message is printed.
 
 ### linkaccount <alpaca_api_key> <alpaca_secret>

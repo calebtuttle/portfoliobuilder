@@ -1,6 +1,3 @@
-'''
-Functions for baskets.
-'''
 
 from portfoliobuilder import api_utils, weighting
 
@@ -9,6 +6,17 @@ _WEIGHTING_METHODS = {'equal': weighting.Equal,
                     'market_cap': weighting.MarketCap, 
                     'value': weighting.Value, 
                     'value_quality': weighting.ValueQuality}
+
+class Basket():
+    def __init__(self, name, weighting_method, weight, symbols, active):
+        self.name = name
+        self.weighting_method = weighting_method
+        self.weight = weight
+        self.symbols = symbols
+        self.active = active
+
+        assert len(symbols) > 0
+
 
 def get_weights(weighting_method, symbols):
     '''
