@@ -177,3 +177,36 @@ class ListBaskets():
         else:
             print('No baskets.')
 
+
+class InspectBasket():
+    '''
+    Namespace for the methods that execute the inspectbasket command.
+    '''
+    @staticmethod
+    def execute():
+        if not utils.has_num_args(user_input, 1):
+            return
+        basket = InspectBasket.get_basket_from_user_input()
+        if basket:
+            InspectBasket.print_basket_info(basket)
+        else:
+            print('Invalid command. Unknown basket.')
+
+    @staticmethod
+    def get_basket_from_user_input():
+        basket_name = user_input.split(' ')[1]
+        cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
+        return cursor.fetchone()
+
+    @staticmethod
+    def print_basket_info(basket):
+        '''
+        basket : tuple
+            An entry in the baskets table in the database
+        '''
+        active = 'True' if basket[4] else 'False'
+        print(f'Inspecting {basket[0]}...')
+        print(f'Basket weighting method: {basket[1]}')
+        print(f'Basket weight: {basket[2]}%')
+        print(f'Basket is active: {active}')
+        print(f'Basket constituents: {basket[3]}')
