@@ -5,6 +5,23 @@ from portfoliobuilder import (alpaca_endpoint, alpaca_headers,
     finnhub_endpoint, finnhub_key, polygon_endpoint, polygon_key)
 
 
+def call_api(func, *args, **kwargs):
+    '''
+    A method to handle errors and exceptions that might
+    arise from an API call.
+    '''
+    try:
+        response = func(*args, **kwargs)
+    except requests.exceptions.ConnectionError:
+        print('API call failed due to ConnectionError.')
+        print('Pleasure make sure you are connected to the internet.')
+        return None
+    
+    if response.status_code in range(200, 226):
+        return response.json()
+    return None
+
+
 ################# Alpaca utility functions #################
 
 _last_alpaca_call = 0
@@ -23,10 +40,7 @@ def alpaca_call(func):
             time.sleep(next_available_call - now)
         _last_alpaca_call = time.time()
 
-        response = func(*args, **kwargs)
-        if response.status_code in range(200, 226):
-            return response.json()
-        return None
+        return call_api(func, *args, **kwargs)
 
     return wrapper
 
@@ -131,7 +145,7 @@ def get_index_constituents(index_symbol):
     '''
     url = finnhub_endpoint + 'index/constituents'
     params = {'symbol': index_symbol, 'token': finnhub_key}
-    return requests.get(url=url, params=params).json()
+    return requests.get(url=url, params=params)
 
 
 ################# Polygon utility functions #################
@@ -151,7 +165,7 @@ def polygon_call(func):
             time.sleep(next_available_call - now)
         _last_polygon_call = time.time()
 
-        return func(*args, **kwargs)
+        return call_api(func, *args, **kwargs)
 
     return wrapper
 
@@ -163,4 +177,4 @@ def get_financials(symbol):
                 'sort':'-reportPeriod', 
                 'apiKey': polygon_key}
     response = requests.get(url, params=params)
-    return response.json()
+    return response
