@@ -132,4 +132,32 @@ class NewBasket():
         print(f'{basket.name} created.')
 
 
+class NewBasketFromIndex():
+    '''
+    Namespace for the newbasketfromindex command
 
+    newbasketfromindex <weighting_method> <basket_weight> <index_symbol>
+    '''
+    @staticmethod
+    def execute():
+        if not utils.has_num_args(user_input, 4):
+            return
+        symbols = NewBasketFromIndex.get_symbols_in_index()
+        NewBasketFromIndex.replace_index_with_symbols_in_user_input(symbols)
+        NewBasket.execute()
+
+    @staticmethod
+    def get_symbols_in_index():
+        split_input = user_input.split(' ')
+        index = split_input[3]
+        response = api_utils.get_index_constituents(index)
+        return response['constituents']
+
+    @staticmethod
+    def replace_index_with_symbols_in_user_input(symbols):
+        ''' Modify user_input so that NewBasket.execute() can be called. '''
+        symbols = '(' + ' '.join(symbols) + ')'
+        global user_input
+        user_input = user_input.split(' ')
+        user_input[3] = symbols
+        user_input = ' '.join(user_input)
