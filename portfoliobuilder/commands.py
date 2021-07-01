@@ -1,14 +1,14 @@
 '''
 NOTE: This module and run.py are being written as a refactor of command_line_app.py.
 NOTE: Most of the classes here make use of the cursor and user_input
-variables from the run.py module.
+variables from the run.py module. Exit makes use of the conn variable.
 '''
 import os
 import sys
 import sqlite3
 
 from portfoliobuilder import utils, api_utils
-from portfoliobuilder.run import cursor, user_input
+from portfoliobuilder.run import conn, cursor, user_input
 from portfoliobuilder.basket import Basket
 from portfoliobuilder.basket_functions import get_weights, buy_basket
 from portfoliobuilder.supported_indices import supported_indices_dict
@@ -460,3 +460,14 @@ class ListIndices():
         for symbol in supported_indices_dict:
             print(f'{supported_indices_dict[symbol]}  |  {symbol}')
 
+
+class Exit():
+    '''
+    Namespace for the methods that execute the exit command.
+    '''
+    @staticmethod
+    def execute():
+        print('Saving changes...')
+        conn.commit()
+        print('Exiting portfoliobuilder...')
+        conn.close()
