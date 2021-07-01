@@ -287,3 +287,43 @@ class AddSymbols(BasketCommand):
         new_symbols_str = ' '.join(new_symbols)
         print('Adding the following symbols:', end='')
         print(new_symbols_str)
+
+
+class BuyBasket(BasketCommand):
+    '''
+    Namespace for the methods that execute the buybasket command.
+    '''
+    @staticmethod
+    def execute():
+        if not utils.has_num_args(user_input, 1):
+            return
+            
+        basket = BuyBasket.get_basket_from_user_input()
+        if basket[4]:
+            print(f'{basket[0]} is already active. Exiting.')
+            return
+        BuyBasket.buy(basket)
+        cursor.execute('UPDATE baskets SET active=? WHERE name=?', (1,basket[0]))
+        BuyBasket.print_basket_and_purchase_info(basket)
+
+    @staticmethod
+    def buy(basket):
+        '''
+        basket : tuple
+            An entry from the baskets table in the database
+        '''
+        name = basket[0]
+        weighting_method = basket[1]
+        basket_weight = basket[2]
+        symbols = basket[3].split(' ')
+        buy_basket(name, weighting_method, basket_weight, symbols)
+    
+    @staticmethod
+    def print_basket_and_purchase_info(basket):
+        print(f'Orders to purchase stocks in {basket[0]} have been placed.')
+        print(f'Weighting method: {basket[1]}.')
+        print(f'Basket weight: {basket[2]}.')
+        print('Note: Some purchase orders might not have been placed.', end=' ')
+        print('If no errors were printed above, all orders were placed successfully.')
+
+
