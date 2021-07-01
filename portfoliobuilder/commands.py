@@ -373,3 +373,20 @@ class SellBasket(BasketCommand):
         sql_params = (0, basket[0])
         cursor.execute('UPDATE baskets SET active=? WHERE name=?', sql_params)
 
+
+class DeleteBasket(BasketCommand):
+    '''
+    Namespace for the methods that execute the deletebasket command.
+    '''
+    @staticmethod
+    def execute():
+        if not utils.has_num_args(user_input, 1):
+            return
+        basket = DeleteBasket.get_basket_from_user_input()
+        if not basket:
+            print(f'No basket with name {basket[0]}.')
+        SellBasket.sell(basket)
+        cursor.execute('DELETE FROM baskets WHERE name=(?)', (basket[0],))
+        print(f'{basket[0]} deleted.')
+
+    
