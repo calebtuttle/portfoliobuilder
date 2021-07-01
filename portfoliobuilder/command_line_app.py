@@ -7,8 +7,7 @@ import sqlite3
 
 from portfoliobuilder import utils, api_utils
 from portfoliobuilder.basket_functions import get_weights, buy_basket
-from portfoliobuilder.supported_indices import (supported_indices_list, 
-                                                supported_indices_dict)
+from portfoliobuilder.supported_indices import supported_indices_dict
 
 
 print("Welcome to the portfoliobuilder command line application. " +
@@ -284,7 +283,7 @@ def rebalance(command):
 def listindices():
     print('Listing indices... (Note: some might not be supported by newbasketfromindex.)')
     print('Index | Symbol')
-    for symbol in supported_indices_list:
+    for symbol in supported_indices_dict:
         print(f'{supported_indices_dict[symbol]}  |  {symbol}')
 
 def exit():

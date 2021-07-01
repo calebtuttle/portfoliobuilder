@@ -11,8 +11,7 @@ from portfoliobuilder import utils, api_utils
 from portfoliobuilder.run import cursor, user_input
 from portfoliobuilder.basket import Basket
 from portfoliobuilder.basket_functions import get_weights, buy_basket
-from portfoliobuilder.supported_indices import (supported_indices_list, 
-                                                supported_indices_dict)
+from portfoliobuilder.supported_indices import supported_indices_dict
 
 
 class BasketCommand():
@@ -450,3 +449,14 @@ class Rebalance(BasketCommand):
             if not api_utils.place_order(symbol, notional, 'buy'):
                 print(f'Could not rebalance {symbol}')
 
+
+class ListIndices():
+    '''
+    Namespace for methods that execute the listindices command.
+    '''
+    @staticmethod
+    def execute():
+        print('Listing indices... (Note: some might not be supported by newbasketfromindex.)')
+        print('Index | Symbol')
+        for symbol in supported_indices_dict:
+            print(f'{supported_indices_dict[symbol]}  |  {symbol}')

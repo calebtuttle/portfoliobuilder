@@ -34,5 +34,3 @@ supported_indices_dict = {'^GSPC': 'S&P 500',
 '^AXJO': 'S&P/ASX 200',
 'TX60.TS': 'S&P/TSX 60'}
 # '^FTSE': 'FTSE 100'}
-
-supported_indices_list = supported_indices_dict.keys()
