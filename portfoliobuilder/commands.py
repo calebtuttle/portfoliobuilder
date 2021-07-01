@@ -14,6 +14,17 @@ from portfoliobuilder.supported_indices import (supported_indices_list,
                                                 supported_indices_dict)
 
 
+class BasketCommand():
+    '''
+    A class inherited by commands where <basket_name>
+    is the first parameter.
+    '''
+    @staticmethod
+    def get_basket_from_user_input():
+        basket_name = user_input.split(' ')[1]
+        cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
+        return cursor.fetchone()
+    
 
 
 class InspectAccount():
@@ -178,7 +189,7 @@ class ListBaskets():
             print('No baskets.')
 
 
-class InspectBasket():
+class InspectBasket(BasketCommand):
     '''
     Namespace for the methods that execute the inspectbasket command.
     '''
@@ -193,12 +204,6 @@ class InspectBasket():
             print('Invalid command. Unknown basket.')
 
     @staticmethod
-    def get_basket_from_user_input():
-        basket_name = user_input.split(' ')[1]
-        cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
-        return cursor.fetchone()
-
-    @staticmethod
     def print_basket_info(basket):
         '''
         basket : tuple
@@ -210,3 +215,75 @@ class InspectBasket():
         print(f'Basket weight: {basket[2]}%')
         print(f'Basket is active: {active}')
         print(f'Basket constituents: {basket[3]}')
+
+
+class AddSymbols(BasketCommand):
+    '''
+    Namespace for the methods that execute the addsymbols command.
+    '''
+    @staticmethod
+    def execute():
+        basket = AddSymbols.get_basket_from_user_input()
+        if not AddSymbols.basket_is_modifiable(basket):
+            return
+        new_symbols = AddSymbols.get_symbols_from_user_input()
+        AddSymbols.add_new_symbols_not_in_basket(new_symbols, basket)
+
+    @staticmethod
+    def basket_is_modifiable(basket):
+        if not basket:
+            print(f'No basket with the name {basket[0]}.')
+            return False
+        if basket[4]:
+            print(f'{basket[0]} is active. Cannot add symbols.')
+            return False
+        return True
+        
+    @staticmethod
+    def get_symbols_from_user_input():
+        '''
+        Return a set of the tradable symbols from the symbols
+        passed as arguments in user_input.
+        '''
+        new_symbols = user_input.split(' ')[2:]
+        untradable_new_symbols = []
+        for symbol in new_symbols:
+            print(f'Determining whether {symbol} is tradable...', end='\r')
+            if not api_utils.tradable(symbol):
+                print(f'{symbol} appears to not be tradable.')
+                untradable_new_symbols.append(symbol)
+        return set(new_symbols) - set(untradable_new_symbols)
+
+    @staticmethod
+    def add_new_symbols_not_in_basket(new_symbols, basket):
+        '''
+        new_symbols : set
+            Set of tradable symbols designated by user_input
+        basket : tuple
+            An entry in the basket table in the database
+        '''
+        new_symbols = AddSymbols.get_new_symbols_not_in_basket(new_symbols, basket)
+        AddSymbols.print_new_symbols(new_symbols)
+        curr_symbols = basket[3].split(' ')
+        all_symbols = set(curr_symbols).union(new_symbols)
+        all_symbols_str = ' '.join(all_symbols)
+        
+        sql_params = (all_symbols_str, basket[0])
+        cursor.execute('UPDATE baskets SET symbols=? WHERE name=?', sql_params)
+
+    @staticmethod
+    def get_new_symbols_not_in_basket(new_symbols, basket):
+        curr_symbols = basket[3].split(' ')
+        intersection = new_symbols.intersection(set(curr_symbols))
+        if intersection:
+            print(f'The following stocks are already in {basket[0]}', end=' ')
+            print(f'and will not be added to {basket[0]}:', end=' ')
+            intersection_str = ' '.join(intersection)
+            print(intersection_str)
+        return new_symbols - intersection
+
+    @staticmethod
+    def print_new_symbols(new_symbols):
+        new_symbols_str = ' '.join(new_symbols)
+        print('Adding the following symbols:', end='')
+        print(new_symbols_str)
