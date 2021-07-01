@@ -327,3 +327,49 @@ class BuyBasket(BasketCommand):
         print('If no errors were printed above, all orders were placed successfully.')
 
 
+class SellBasket(BasketCommand):
+    '''
+    Namespace for the methods that execute the sellbasket command.
+    '''
+    @staticmethod
+    def execute():
+        if not utils.has_num_args(user_input, 1):
+            return
+        basket = SellBasket.get_basket_from_user_input()
+        if not SellBasket.basket_is_modifiable(basket):
+            return
+        SellBasket.sell(basket)
+        SellBasket.update_active_for_basket_in_db(basket)
+        
+    @staticmethod
+    def basket_is_modifiable(basket):
+        if not basket:
+            print(f'No basket with name {basket[0]}.')
+            return False
+        if not basket[4]:
+            print(f'{basket[0]} is not active. Cannot sell.')
+            return False
+        return True
+
+    @staticmethod
+    def sell(basket):
+        '''
+        basket : tuple
+            An entry from the baskets table in the database
+        '''
+        symbols = basket[3].split(' ')
+        for symbol in symbols:
+            if api_utils.close_position(symbol):
+                print('Successfully placed an order to sell '\
+                        f'all shares of {symbol}.', end='\r')
+            else:
+                print(f'Could not place an order to sell {symbol}.')
+                print('Place order manually in Alpaca.')
+
+    @staticmethod
+    def update_active_for_basket_in_db(basket):
+        print(f'Setting active to False for {basket[0]}.')
+        print('If some orders were not placed, you must manually place them in Alpaca.')
+        sql_params = (0, basket[0])
+        cursor.execute('UPDATE baskets SET active=? WHERE name=?', sql_params)
+
