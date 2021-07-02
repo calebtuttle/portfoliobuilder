@@ -10,11 +10,17 @@ To create a command:
 '''
 import os
 import sys
-import sqlite3
+# import sqlite3
+from sqlalchemy import create_engine
 
 from portfoliobuilder import utils, api_utils
 from portfoliobuilder.basket_utils import Basket
 from portfoliobuilder.supported_indices import supported_indices_dict
+
+
+engine = create_engine('sqlite:////home/caleb/Desktop/myprograms' +\
+                                '/portfoliobuilder/sqlalchemy.db',
+                                    echo=True, future=True)
 
 
 conn = sqlite3.connect('portfoliobuilder/portfoliobuilder.db')
