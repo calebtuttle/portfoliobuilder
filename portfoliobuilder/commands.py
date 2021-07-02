@@ -14,6 +14,7 @@ import sys
 from sqlalchemy import create_engine
 
 from portfoliobuilder import utils, api_utils
+from portfoliobuilder.models import Basket, Stock
 from portfoliobuilder.basket_utils import Basket
 from portfoliobuilder.supported_indices import supported_indices_dict
 
@@ -21,16 +22,17 @@ from portfoliobuilder.supported_indices import supported_indices_dict
 engine = create_engine('sqlite:////home/caleb/Desktop/myprograms' +\
                                 '/portfoliobuilder/sqlalchemy.db',
                                     echo=True, future=True)
+# TODO: Figure out how to use sqlalchemy to modify the db
 
 
-conn = sqlite3.connect('portfoliobuilder/portfoliobuilder.db')
-cursor = conn.cursor()
-# Ensure essential tables exist
-# TODO: Change 'name' field to 'id', and make it an int
-create_baskets_table = 'CREATE TABLE if not exists baskets' + \
-                    ' (name text, weighting_method text,' + \
-                    ' weight real, symbols text, active integer)' 
-cursor.execute(create_baskets_table)
+# conn = sqlite3.connect('portfoliobuilder/portfoliobuilder.db')
+# cursor = conn.cursor()
+# # Ensure essential tables exist
+# # TODO: Change 'name' field to 'id', and make it an int
+# create_baskets_table = 'CREATE TABLE if not exists baskets' + \
+#                     ' (name text, weighting_method text,' + \
+#                     ' weight real, symbols text, active integer)' 
+# cursor.execute(create_baskets_table)
 
 
 # This variable is set in run.py everytime the user enters input
