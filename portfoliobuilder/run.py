@@ -1,5 +1,6 @@
-
-# import sqlite3
+'''
+TODO: Test thoroughly. Then delete basket_functions.py and command_line_app.py.
+'''
 
 from portfoliobuilder import commands
 

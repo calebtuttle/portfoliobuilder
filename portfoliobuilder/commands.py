@@ -14,7 +14,6 @@ import sqlite3
 
 from portfoliobuilder import utils, api_utils
 from portfoliobuilder.basket_utils import Basket
-# from portfoliobuilder.basket_functions import get_weights, buy_basket
 from portfoliobuilder.supported_indices import supported_indices_dict
 
 

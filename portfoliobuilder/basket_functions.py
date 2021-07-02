@@ -1,4 +1,6 @@
 '''
+NOTE: Legacy implementation. Superceded by basket_utils.py.
+
 Functions for baskets.
 '''
 

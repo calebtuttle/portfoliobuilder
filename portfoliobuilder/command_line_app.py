@@ -1,4 +1,6 @@
 '''
+NOTE: Legacy implementation. Superceded by commands.py and run.py.
+
 A command line app for portfoliobuilder.
 Documentation for each command can be found in docs/command_line_app.md.
 '''
