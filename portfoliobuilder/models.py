@@ -16,7 +16,7 @@ class Basket(Base):
     # TODO: Figure out what back_populates does
     stocks = relationship('Stock', back_populates='basket')
 
-    
+
 class Stock(Base):
     __tablename__ = 'stock'
 
