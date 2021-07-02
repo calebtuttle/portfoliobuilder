@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, Integer, Float, Boolean, String
+from sqlalchemy import Column, ForeignKey, Integer, Float, Boolean, String
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -13,15 +13,14 @@ class Basket(Base):
     weighting_method = Column(String) # TODO: Add a constraint for this
     weight = Column(Float)
 
-    # TODO: Figure out what back_populates does
-    stocks = relationship('Stock', back_populates='basket')
+    stocks = relationship('Stock', cascade='all, delete')
 
 
 class Stock(Base):
     __tablename__ = 'stock'
 
     id = Column(Integer, primary_key=True)
+    basket_id = Column(Integer, ForeignKey('basket.id'))
 
     symbol = Column(String, unique=True)
 
-    basket = relationship('Basket', back_populates='stocks')
