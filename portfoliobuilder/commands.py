@@ -1,17 +1,35 @@
 '''
-NOTE: This module and run.py are being written as a refactor of command_line_app.py.
-NOTE: Most of the classes here make use of the cursor and user_input
-variables from the run.py module. Exit makes use of the conn variable.
+This module implements the commands for the command line app.
+
+To create a command:
+- Create a class with the name of the command.
+- Add an 'execute()' method to the class that executes the command.
+- Add the command keyword and the class to the command_executables
+    dictionary in run.py.
+- Update the help string in the Help class to include the command.
 '''
 import os
 import sys
 import sqlite3
 
 from portfoliobuilder import utils, api_utils
-from portfoliobuilder.run import conn, cursor, user_input
-from portfoliobuilder.basket import Basket
-from portfoliobuilder.basket_functions import get_weights, buy_basket
+from portfoliobuilder.basket_utils import Basket
+# from portfoliobuilder.basket_functions import get_weights, buy_basket
 from portfoliobuilder.supported_indices import supported_indices_dict
+
+
+conn = sqlite3.connect('portfoliobuilder/portfoliobuilder.db')
+cursor = conn.cursor()
+# Ensure essential tables exist
+# TODO: Change 'name' field to 'id', and make it an int
+create_baskets_table = 'CREATE TABLE if not exists baskets' + \
+                    ' (name text, weighting_method text,' + \
+                    ' weight real, symbols text, active integer)' 
+cursor.execute(create_baskets_table)
+
+
+# This variable is set in run.py everytime the user enters input
+user_input = ''
 
 
 class BasketCommand():
@@ -25,6 +43,31 @@ class BasketCommand():
         cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
         return cursor.fetchone()
     
+
+class Help():
+    '''
+    Namespace for functions that execute the help command.
+    '''
+    @staticmethod
+    def execute():
+        print('Usage: <command>\n\n' + \
+            'Commands:\n' + \
+            'inspectaccount\n' + \
+            'linkaccount <alpaca_api_key> <alpaca_secret>\n' + \
+            'newbasket (<symbol0> <symbol1> <symboli>) <weighting_method> <basket_weight>\n' + \
+            '\tweighting_method options: equal market_cap value value_quality\n' + \
+            'newbasketfromindex <index_symbol> <weighting_method> <basket_weight>\n' + \
+            'listbaskets\n' + \
+            'inspectbasket <basket_name>\n' + \
+            'addsymbols <basket_name> <symbol1> <symboli>\n' + \
+            'buybasket <basket_name>\n' + \
+            'sellbasket <basket_name>\n' + \
+            'deletebasket <basket_name>\n' + \
+            'rebalance <basket_name>\n' + \
+            'listindices\n\n' + \
+            "Enter 'help' to see commands.\n"+ \
+            "Enter 'quit' to quit, or kill with CTRL+c.")
+
 
 class InspectAccount():
     '''
@@ -315,7 +358,7 @@ class BuyBasket(BasketCommand):
         weighting_method = basket[1]
         basket_weight = basket[2]
         symbols = basket[3].split(' ')
-        buy_basket(name, weighting_method, basket_weight, symbols)
+        Basket.buy_basket(name, weighting_method, basket_weight, symbols)
     
     @staticmethod
     def print_basket_and_purchase_info(basket):
@@ -409,7 +452,7 @@ class Rebalance(BasketCommand):
         weighting_method = basket[1]
         basket_weight = basket[2]
         symbols = basket[3].split(' ')
-        weights = get_weights(weighting_method, symbols)
+        weights = Basket.get_weights(weighting_method, symbols)
 
         for symbol in symbols:
             curr_position = api_utils.get_position(symbol)
@@ -461,9 +504,9 @@ class ListIndices():
             print(f'{supported_indices_dict[symbol]}  |  {symbol}')
 
 
-class Exit():
+class Quit():
     '''
-    Namespace for the methods that execute the exit command.
+    Namespace for the methods that execute the quit command.
     '''
     @staticmethod
     def execute():

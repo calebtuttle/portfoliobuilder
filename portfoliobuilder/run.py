@@ -1,12 +1,11 @@
 
-import sqlite3
+# import sqlite3
 
 from portfoliobuilder import commands
 
-# TODO: change help_str: 'exit' is now the exit command, not 'q'
-
 
 command_executables = {
+    'help': commands.Help,
     'inspectaccount': commands.InspectAccount,
     'linkaccount': commands.LinkAccount,
     'newbasket': commands.NewBasket,
@@ -19,31 +18,28 @@ command_executables = {
     'deletebasket': commands.DeleteBasket,
     'rebalance': commands.Rebalance,
     'listindices': commands.ListIndices,
-    'exit': commands.Exit
+    'exit': commands.Quit
 }
 
 
-conn = sqlite3.connect('portfoliobuilder/portfoliobuilder.db')
-cursor = conn.cursor()
-
-# Ensure essential tables exist
-# TODO: Change 'name' field to 'id', and make it an int
-create_baskets_table = 'CREATE TABLE if not exists baskets' + \
-                    ' (name text, weighting_method text,' + \
-                    ' weight real, symbols text, active integer)' 
-cursor.execute(create_baskets_table)
-
 def parse_user_input(user_input):
     try:
-        command = user_input[0]
+        commands.user_input = user_input
+        command = user_input.split(' ')[0]
         command_executables[command].execute()
-    except (IndexError, KeyError):
-        print('Invalid command.')
+    except (IndexError, KeyError) as error:
+        print(f'Invalid command. {type(error)}')
+
+print("Welcome to the portfoliobuilder command line application. " +
+        "Enter 'help' to see commands. Enter 'q' to quit, or kill with ^c.")
 
 try:
     user_input = ''
-    while user_input is not 'exit':
+    while True:
         user_input = input('> ')
+        if user_input == 'exit':
+            command_executables['exit'].execute()
+            break
         parse_user_input(user_input)
 except KeyboardInterrupt:
     command_executables['exit'].execute()
