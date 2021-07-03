@@ -34,6 +34,8 @@ def parse_user_input(user_input):
 print("Welcome to the portfoliobuilder command line application. " +
         "Enter 'help' to see commands. Enter 'q' to quit, or kill with ^c.")
 
+commands.setup_db()
+
 try:
     user_input = ''
     while True:

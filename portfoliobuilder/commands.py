@@ -15,19 +15,17 @@ from sqlalchemy.orm import Session
 
 from portfoliobuilder import utils, api_utils
 from portfoliobuilder.models import Base, Basket, Stock
-from portfoliobuilder.basket_utils import Basket
 from portfoliobuilder.supported_indices import supported_indices_dict
 
 
-engine = create_engine('sqlite:////home/caleb/Desktop/myprograms' +\
-                                '/portfoliobuilder/sqlalchemy.db',
-                                    echo=True, future=True)
+def setup_db():
+    global engine, session
+    engine = create_engine('sqlite:////home/caleb/Desktop/myprograms' +\
+                                    '/portfoliobuilder/sqlalchemy.db',
+                                        echo=True, future=True)
+    session = Session(engine)
+    Base.metadata.create_all(bind=engine) # Create tables
 
-Base.metadata.create_all(bind=engine) # Create tables
-
-session = Session(engine)
-
-# TODO: Figure out how to use sqlalchemy to modify the db
 
 
 # This variable is set in run.py everytime the user enters input
@@ -41,9 +39,8 @@ class BasketCommand():
     '''
     @staticmethod
     def get_basket_from_user_input():
-        basket_name = user_input.split(' ')[1]
-        cursor.execute('SELECT * FROM baskets WHERE name=?', (basket_name,))
-        return cursor.fetchone()
+        basket_id = int(user_input.split(' ')[1])
+        return session.get(Basket, basket_id)
     
 
 class Help():
@@ -129,8 +126,7 @@ class NewBasket():
     def execute():
         try:
             NewBasket.input_has_enough_args()
-            basket = NewBasket.create_basket()
-            NewBasket.add_basket_to_db(basket)
+            NewBasket.create_basket()
         except IndexError:
             print("Invalid command. Enter 'help' to see usage.")
         except AssertionError:
@@ -171,20 +167,27 @@ class NewBasket():
     def create_basket():
         '''
         Parse user_input for args for creating a Basket,
-        and return the resultant Basket.
+        create the resultant Basket, and add it to the db.
         '''
         weighting_method, weight, symbols = NewBasket.get_args()
-        num_baskets = cursor.execute('SELECT COUNT(*) FROM baskets')
-        num_baskets = cursor.fetchone()[0]
-        name = f'Basket{num_baskets}'
-        return Basket(name, weighting_method, weight, symbols, False)
+        stocks = NewBasket.get_stocks_from_symbols(symbols)
+        basket = Basket(active=False, weighting_method=weighting_method, 
+                                        weight=weight, stocks=stocks)
+        session.add(basket)
+        session.flush()
+        print(f'Basket{basket.id} created.')
         
     @staticmethod
-    def add_basket_to_db(basket):
-        symbols_str = ' '.join(basket.symbols)
-        sql_params = (basket.name, basket.weighting_method, basket.weight, symbols_str, 0)
-        cursor.execute('INSERT INTO baskets VALUES (?,?,?,?,?)', sql_params)
-        print(f'{basket.name} created.')
+    def get_stocks_from_symbols(symbols):
+        '''
+        Return a list of Stock objects from a list of symbols.
+        '''
+        stocks = []
+        for symbol in symbols:
+            stock = Stock(symbol=symbol)
+            stocks.append(stocks)
+        return stocks
+        
 
 
 class NewBasketFromIndex():
