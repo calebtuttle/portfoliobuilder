@@ -13,7 +13,7 @@ import sys
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from portfoliobuilder import utils, api_utils
+from portfoliobuilder import utils, api_utils, basket_utils
 from portfoliobuilder.models import Base, Basket, Stock
 from portfoliobuilder.supported_indices import supported_indices_dict
 
@@ -346,30 +346,19 @@ class BuyBasket(BasketCommand):
             return
             
         basket = BuyBasket.get_basket_from_user_input()
-        if basket[4]:
+        if basket.active:
             print(f'{basket[0]} is already active. Exiting.')
             return
-        BuyBasket.buy(basket)
-        cursor.execute('UPDATE baskets SET active=? WHERE name=?', (1,basket[0]))
+        basket_utils.buy_basket(basket)
         BuyBasket.print_basket_and_purchase_info(basket)
+        basket.active = True
+        session.flush()
 
     @staticmethod
-    def buy(basket):
-        '''
-        basket : tuple
-            An entry from the baskets table in the database
-        '''
-        name = basket[0]
-        weighting_method = basket[1]
-        basket_weight = basket[2]
-        symbols = basket[3].split(' ')
-        Basket.buy_basket(name, weighting_method, basket_weight, symbols)
-    
-    @staticmethod
     def print_basket_and_purchase_info(basket):
-        print(f'Orders to purchase stocks in {basket[0]} have been placed.')
-        print(f'Weighting method: {basket[1]}.')
-        print(f'Basket weight: {basket[2]}.')
+        print(f'Orders to purchase stocks in Basket{basket.id} have been placed.')
+        print(f'Weighting method: {basket.weighting_method}.')
+        print(f'Basket weight: {basket.weight}.')
         print('Note: Some purchase orders might not have been placed.', end=' ')
         print('If no errors were printed above, all orders were placed successfully.')
 

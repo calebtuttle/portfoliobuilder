@@ -30,21 +30,11 @@ def get_weights(weighting_method, symbols):
         raise Exception('Invalid weighting method')
 
 
-def buy_basket(basket_name, weighting_method, basket_weight, symbols):
+def buy_basket(basket):
     '''
     Buy a basket of stocks (designated by the symbols argument). 
     The amount of each stock to purchase is determined using
     the weighting_method and the total basket_weight.
-
-    basket_name : str
-        The name of the basket
-    weighting_method : str
-        Must be either 'market_cap', 'equal', 'value' (naively implemented), or 'value_quality'
-    basket_weight : float
-        The weight of the basket within the user's account. Designated as a number
-        n such that 0 > n <= 100.
-    symbols : list of strings
-        The list of stocks to purchase. All elements must be valid ticker symbols.
     '''
     # Determine account value and cash available
     account = api_utils.get_account()
@@ -55,9 +45,13 @@ def buy_basket(basket_name, weighting_method, basket_weight, symbols):
         print('Could not access account. Exiting. Try again or ensure API keys are correct.')
         return
     
+    weighting_method = basket.weighting_method
+    basket_weight = basket.weight
+    symbols = [stock.symbol for stock in basket.stocks]
+
     # Ensure there is enough cash to give the basket its full weight
     if (basket_weight/100) * acc_value > cash:
-        print(f'Not enough cash available to purchase {basket_name}. Exiting.')
+        print(f'Not enough cash available to purchase Basket{basket.id}. Exiting.')
         return
 
     # Ensure weighting_method is valid
