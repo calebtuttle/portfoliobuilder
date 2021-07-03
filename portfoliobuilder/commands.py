@@ -254,12 +254,14 @@ class InspectBasket(BasketCommand):
         basket : tuple
             An entry in the baskets table in the database
         '''
-        active = 'True' if basket[4] else 'False'
-        print(f'Inspecting {basket[0]}...')
-        print(f'Basket weighting method: {basket[1]}')
-        print(f'Basket weight: {basket[2]}%')
+        active = 'True' if basket.active else 'False'
+        symbols = [stock.symbol for stock in basket.stocks]
+        symbols = ' '.join(symbols)
+        print(f'Inspecting Basket{basket.id}...')
+        print(f'Basket weighting method: {basket.weighting_method}')
+        print(f'Basket weight: {basket.weight}%')
         print(f'Basket is active: {active}')
-        print(f'Basket constituents: {basket[3]}')
+        print(f'Basket constituents: {symbols}')
 
 
 class AddSymbols(BasketCommand):
