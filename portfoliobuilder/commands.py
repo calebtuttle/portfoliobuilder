@@ -380,10 +380,10 @@ class SellBasket(BasketCommand):
     @staticmethod
     def basket_is_modifiable(basket):
         if not basket:
-            print(f'No basket with name {basket[0]}.')
+            print(f'No basket with id {basket.id}.')
             return False
         if not basket[4]:
-            print(f'{basket[0]} is not active. Cannot sell.')
+            print(f'Basket{basket.id} is not active. Cannot sell.')
             return False
         return True
 
@@ -393,7 +393,7 @@ class SellBasket(BasketCommand):
         basket : tuple
             An entry from the baskets table in the database
         '''
-        symbols = basket[3].split(' ')
+        symbols = [stock.symbol for stock in basket.stocks]
         for symbol in symbols:
             if api_utils.close_position(symbol):
                 print('Successfully placed an order to sell '\
@@ -404,10 +404,10 @@ class SellBasket(BasketCommand):
 
     @staticmethod
     def update_active_for_basket_in_db(basket):
-        print(f'Setting active to False for {basket[0]}.')
+        print(f'Setting active to False for Basket{basket.id}.')
         print('If some orders were not placed, you must manually place them in Alpaca.')
-        sql_params = (0, basket[0])
-        cursor.execute('UPDATE baskets SET active=? WHERE name=?', sql_params)
+        basket.active = True
+        session.flush()
 
 
 class DeleteBasket(BasketCommand):
@@ -420,10 +420,10 @@ class DeleteBasket(BasketCommand):
             return
         basket = DeleteBasket.get_basket_from_user_input()
         if not basket:
-            print(f'No basket with name {basket[0]}.')
+            print(f'No basket with id {basket.id}.')
         SellBasket.sell(basket)
-        cursor.execute('DELETE FROM baskets WHERE name=(?)', (basket[0],))
-        print(f'{basket[0]} deleted.')
+        session.delete(basket)
+        session.flush()
 
 
 class Rebalance(BasketCommand):
@@ -436,16 +436,16 @@ class Rebalance(BasketCommand):
             return
         basket = Rebalance.get_basket_from_user_input()
         if not basket:
-            print(f'No basket with name {basket[0]}.')
+            print(f'No basket with id {basket.id}.')
             return
         acc_value = Rebalance.get_account_value()
         if acc_value <= 0:
             print('Nothing to rebalance')
             return
 
-        weighting_method = basket[1]
-        basket_weight = basket[2]
-        symbols = basket[3].split(' ')
+        weighting_method = basket.weighting_method
+        basket_weight = basket.weight
+        symbols = [stock.symbol for stock in basket.stocks]
         weights = Basket.get_weights(weighting_method, symbols)
 
         for symbol in symbols:
@@ -458,7 +458,7 @@ class Rebalance(BasketCommand):
                 sys.stdout.write("\033[K")
             else:
                 print(f'Could not rebalance {symbol}.')
-        print(f'{basket[0]} rebalanced. See above for stocks that might not have been rebalanced.')
+        print(f'Basket{basket.id} rebalanced. See above for stocks that might not have been rebalanced.')
 
     @staticmethod
     def get_account_value():
