@@ -187,7 +187,6 @@ class NewBasket():
             stock = Stock(symbol=symbol)
             stocks.append(stocks)
         return stocks
-        
 
 
 class NewBasketFromIndex():
@@ -227,11 +226,10 @@ class ListBaskets():
     '''
     @staticmethod
     def execute():
-        cursor.execute('SELECT * FROM baskets')
-        baskets = cursor.fetchall()
+        baskets = Basket.query.all()
         if baskets:
             for b in baskets:
-                print(b[0])
+                print(f'Basket{b.id}')
         else:
             print('No baskets.')
 
