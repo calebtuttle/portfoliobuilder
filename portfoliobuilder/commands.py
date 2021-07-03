@@ -279,13 +279,13 @@ class AddSymbols(BasketCommand):
     @staticmethod
     def basket_is_modifiable(basket):
         if not basket:
-            print(f'No basket with the name {basket[0]}.')
+            print(f'No basket with id {id}.')
             return False
-        if basket[4]:
-            print(f'{basket[0]} is active. Cannot add symbols.')
+        if basket.active:
+            print(f'Basket{basket.id} is active. Cannot add symbols.')
             return False
         return True
-        
+    
     @staticmethod
     def get_symbols_from_user_input():
         '''
@@ -311,20 +311,20 @@ class AddSymbols(BasketCommand):
         '''
         new_symbols = AddSymbols.get_new_symbols_not_in_basket(new_symbols, basket)
         AddSymbols.print_new_symbols(new_symbols)
-        curr_symbols = basket[3].split(' ')
-        all_symbols = set(curr_symbols).union(new_symbols)
-        all_symbols_str = ' '.join(all_symbols)
         
-        sql_params = (all_symbols_str, basket[0])
-        cursor.execute('UPDATE baskets SET symbols=? WHERE name=?', sql_params)
+        for symbol in new_symbols:
+            stock = Stock(symbol=symbol)
+            basket.stocks.append(stock)
+        session.flush()
 
     @staticmethod
     def get_new_symbols_not_in_basket(new_symbols, basket):
-        curr_symbols = basket[3].split(' ')
+        curr_symbols = [stock.symbol for stock in basket.stocks]
+        curr_symbols = ' '.join(curr_symbols)
         intersection = new_symbols.intersection(set(curr_symbols))
         if intersection:
-            print(f'The following stocks are already in {basket[0]}', end=' ')
-            print(f'and will not be added to {basket[0]}:', end=' ')
+            print(f'The following stocks are already in Basket{basket.id}', end=' ')
+            print(f'and will not be added to Basket{basket.id}:', end=' ')
             intersection_str = ' '.join(intersection)
             print(intersection_str)
         return new_symbols - intersection
