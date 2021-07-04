@@ -20,9 +20,8 @@ from portfoliobuilder.supported_indices import supported_indices_dict
 
 def setup_db():
     global engine, session
-    engine = create_engine('sqlite:////home/caleb/Desktop/myprograms' +\
-                            'portfoliobuilder/portfoliobuilder/portfoliobuilder.db',
-                                        echo=False, future=True)
+    engine = create_engine('sqlite:///portfoliobuilder/portfoliobuilder.db',
+                                                    echo=False, future=True)
     session = Session(engine)
     Base.metadata.create_all(bind=engine) # Create tables
 
