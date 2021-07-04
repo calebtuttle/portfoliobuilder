@@ -355,8 +355,8 @@ class BuyBasket(BasketCommand):
     @staticmethod
     def print_basket_and_purchase_info(basket):
         print(f'Orders to purchase stocks in Basket{basket.id} have been placed.')
-        print(f'Weighting method: {basket.weighting_method}.')
-        print(f'Basket weight: {basket.weight}.')
+        print(f'Weighting method: {basket.weighting_method}')
+        print(f'Basket weight: {basket.weight}')
         print('Note: Some purchase orders might not have been placed.', end=' ')
         print('If no errors were printed above, all orders were placed successfully.')
 
@@ -380,7 +380,7 @@ class SellBasket(BasketCommand):
         if not basket:
             print(f'No basket with id {basket.id}.')
             return False
-        if not basket[4]:
+        if not basket.active:
             print(f'Basket{basket.id} is not active. Cannot sell.')
             return False
         return True
@@ -398,14 +398,16 @@ class SellBasket(BasketCommand):
                         f'all shares of {symbol}.', end='\r')
                 sys.stdout.write('\033[K')
             else:
-                print(f'Could not place an order to sell {symbol}.')
-                print('Place order manually in Alpaca.')
+                print(f'Could not place an order to sell {symbol}.', end=' ')
+                print(f'Ensure your account has a position in {symbol}.', end=' ')
+                print(f'If you have a position in {symbol}, you', end=' ')
+                print('must place your order manually in Alpaca.')
 
     @staticmethod
     def update_active_for_basket_in_db(basket):
         print(f'Setting active to False for Basket{basket.id}.')
         print('If some orders were not placed, you must manually place them in Alpaca.')
-        basket.active = True
+        basket.active = False
         session.flush()
 
 
@@ -420,7 +422,9 @@ class DeleteBasket(BasketCommand):
         basket = DeleteBasket.get_basket_from_user_input()
         if not basket:
             print(f'No basket with id {basket.id}.')
-        SellBasket.sell(basket)
+            return
+        if basket.active:
+            SellBasket.sell(basket)
         session.delete(basket)
         session.flush()
 

@@ -1,3 +1,4 @@
+import sys
 
 from portfoliobuilder import api_utils, weighting
 
@@ -64,6 +65,7 @@ def buy_basket(basket):
     basket_weight = basket_weight / 100
     for symbol in weights.keys():
         print(f'Placing order to buy {symbol}...', end='\r')
+        sys.stdout.write('\033[K')
         notional = acc_value * basket_weight * weights[symbol]
         if not api_utils.place_order(symbol, notional, 'buy'):
             print(f'Order to buy {symbol} failed.')
