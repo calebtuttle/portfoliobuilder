@@ -396,6 +396,7 @@ class SellBasket(BasketCommand):
             if api_utils.close_position(symbol):
                 print('Successfully placed an order to sell '\
                         f'all shares of {symbol}.', end='\r')
+                sys.stdout.write('\033[K')
             else:
                 print(f'Could not place an order to sell {symbol}.')
                 print('Place order manually in Alpaca.')
