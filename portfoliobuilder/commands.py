@@ -53,7 +53,7 @@ class Help():
         print('Usage: <command>\n\n' + \
             'Commands:\n' + \
             'inspectaccount\n' + \
-            'linkaccount <alpaca_api_key> <alpaca_secret>\n' + \
+            'linkalpaca <alpaca_api_key> <alpaca_secret>\n' + \
             'newbasket <weighting_method> <basket_weight> (<symbol0> <symbol1> <symboli>)\n' + \
             '\tweighting_method options: equal market_cap value value_quality\n' + \
             'newbasketfromindex <weighting_method> <basket_weight> <index_symbol>\n' + \
@@ -83,16 +83,16 @@ class InspectAccount():
             print('Could not get account information.')
 
 
-class LinkAccount():
+class LinkAlpaca():
     '''
     Namespace for the methods that execute the linkaccount command.
     '''
     @staticmethod
     def execute():
-        if not LinkAccount.input_is_valid():
+        if not LinkAlpaca.input_is_valid():
             return
-        LinkAccount.set_environment_variables()
-        LinkAccount.check_account_connected()
+        LinkAlpaca.set_environment_variables()
+        LinkAlpaca.check_account_connected()
 
     @staticmethod
     def input_is_valid():

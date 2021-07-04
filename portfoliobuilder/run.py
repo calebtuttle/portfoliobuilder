@@ -5,7 +5,7 @@ from portfoliobuilder import commands
 command_executables = {
     'help': commands.Help,
     'inspectaccount': commands.InspectAccount,
-    'linkaccount': commands.LinkAccount,
+    'linkalpaca': commands.LinkAlpaca,
     'newbasket': commands.NewBasket,
     'newbasketfromindex': commands.NewBasketFromIndex,
     'listbaskets': commands.ListBaskets,
