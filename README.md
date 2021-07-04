@@ -2,14 +2,14 @@
 Portfolio Builder is a tool for creating and maintaining a diversified stock portfolio.
 
 ## Overview
-There are two basic ideas behind Portfolio Builder: Basket-based investing is superior to stock picking, and the current options for basket-based investing are insufficient. Portfolio Builder allows an investor to easily buy a basket of stocks and gives the investor a few options with respect to weighting those stocks. This ability to quickly buy a basket of stocks gives an investor the ability to construct a portfolio that is as diversified as one consisting of ETFs, and with Portfolio Builder, there are no annual fees. 
+There are two basic ideas behind Portfolio Builder: Basket-based investing is superior to stock picking, and the current options for basket-based investing are insufficient. Portfolio Builder allows an investor to easily buy a basket of stocks and gives the investor a few options with respect to weighting those stocks. This ability to quickly buy a basket of stocks gives an investor the ability to construct, with no fees, a portfolio that is as diversified as one consisting of ETFs. 
 
-I want the benefit of the passive investment strategies of ETFs without the disadvantage of fees. I created this app with the goal of copying and executing those strategies for free.
+I want the benefit of the passive investment strategies of ETFs without the disadvantage of fees. I created this app with the goal of executing those strategies for free.
 
-## Background
+## Motivation
 There are two primary motivations for this project: reducing fees and reclaiming ownership of the stocks in my portfolio.
 
-The institutions that collectively manage $26 trillion of assets earn over $11 billion per year in fees ([$26 trillion AUM](https://www.cnbc.com/2020/11/17/us-etf-market-tops-5-trillion-in-assets-as-investors-stampede-into-stocks-on-vaccine-hopes.html) x [0.45% expense ratio](https://newsroom.morningstar.com/newsroom/news-archive/press-release-details/2020/Morningstars-Annual-Fund-Fee-Study-Finds-Investors-Saved-Nearly-6-Billion-in-Fund-Fees-in-2019/default.aspx) ~= $11 billion). A portion of those fees are used to manage index funds which are entirely automated. With the ability to automate trades and purchase fractional shares, an investor can copy these index funds without paying the fees.
+The institutions that collectively manage $26 trillion of assets earn over $11 billion per year in fees ([$26 trillion AUM](https://www.cnbc.com/2020/11/17/us-etf-market-tops-5-trillion-in-assets-as-investors-stampede-into-stocks-on-vaccine-hopes.html) x [0.45% expense ratio](https://newsroom.morningstar.com/newsroom/news-archive/press-release-details/2020/Morningstars-Annual-Fund-Fee-Study-Finds-Investors-Saved-Nearly-6-Billion-in-Fund-Fees-in-2019/default.aspx) ~= $11 billion). A portion of those fees are used to manage index funds which are entirely automated. With the ability to automate trades and purchase fractional shares, an investor can copy these index funds without paying the fees. It is remarkable that the fees for these fully automated funds have not reached zero.
 
 Additionally, the popularity of index funds has resulted in the concentration of voting power. The top three mutual fund firms cast about 25% of the shareholder votes for companies in the S&P500. Such a high level of concentrated power is not good for competition in markets. I encourage anyone intrigued to see [this article by Annie Lowrey](https://www.theatlantic.com/ideas/archive/2021/04/the-autopilot-economy/618497/). Portfolio Builder allows an investor to purchase shares of companies directly; an investor therefore retains his or her voting power.
 
@@ -55,12 +55,12 @@ For this example, we will buy all the stocks in the S&P500, but instead of weigh
 
 This command says, "Construct a basket of all the stocks in the _^GSPC_ index (which is the symbol for the S&P500). When I buy this basket, I want those stocks to be weighted _equally_. And when I buy the basket, I want to allocate exactly _50%_ of my portfolio to it." After Portfolio Builder ensures all stocks in the S&P500 can be traded through Alpaca, you should get an output that looks like this:
 
-    Basket0 created.
+    Basket1 created.
 
 We can double check that the basket was created with `inspectbasket` (I'm omitting the entire list of basket constituents here).
 
-    > inspectbasket Basket0
-    Inspecting Basket0...
+    > inspectbasket 1
+    Inspecting Basket1...
     Basket weighting method: equal
     Basket weight: 50.0%
     Basket is active: False
@@ -68,16 +68,18 @@ We can double check that the basket was created with `inspectbasket` (I'm omitti
 
 Now we buy the basket:
 
-    > buybasket Basket0
+    > buybasket Basket1
     Orders to purchase stocks in Basket0 have been placed.
-    Weighting method: equal.
-    Basket weight: 50.0%.
+    Weighting method: equal
+    Basket weight: 50.0%
     Note: Some purchase orders might not have been placed. If no errors
     were printed above, all stocks were placed successfully.
 
 If all of the above ran without errors or exceptions, you successfully purchased the ~500 stocks in the S&P500 and weighted them equally. For further information, see the command line app documentation.
 
 ## A Note on the API Keys
+All of the APIs used by Portfolio Builder are free or have a free tier. Portfolio Builder requires no API subscriptions.
+
 What are the API keys for? The two Alpaca keys are used to trade stocks within your Alpaca account. The Alpaca API keys are the only strictly necessary ones for this application; if you do not connect to the other APIs, however, the 'equal' weighting method will be the only weighting method available. Note that each Alpaca account comes with two sub-accounts: a paper account and a live account. The paper account uses fake money to simulate buying and selling of stocks; this let's you test programmatic trading. The live account uses real money, and you can only trade within it once you've funded it. I discourage anyone from using Portfolio Builder with their live account until the app has been sufficiently tested.
 
 The Finnhub and Polygon API keys are used to collect stock data (e.g., market capitalizations and P/E ratios). This data is used by the weighting methods other than the 'equal' weighting method.
