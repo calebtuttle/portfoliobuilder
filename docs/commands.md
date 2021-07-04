@@ -4,7 +4,13 @@
 List the information of the linked Alpaca account. If no account is linked, an error message is printed.
 
 ### linkalpaca <alpaca_api_key> <alpaca_secret>
-Store the user's Alpaca API key and secret for the current session. This allows the user to interact with their account (e.g., to place orders). Note: This command is unnecessary if you have already set the environment variables.
+Store the user's Alpaca API key and secret for the current session. This allows the user to interact with their account (e.g., to place orders). Note: This command is unnecessary if you have already set the PORTFOLIOBUILDER_ALPACA_PAPER_KEY and PORTFOLIOBUILDER_ALPACA_PAPER_SECRET_KEY environment variables.
+
+### linkfinnhub <finnhub_api_key>
+Store the user's Finnhub API key for the current session. Note: This command is unnecessary if you have already set the PORTFOLIOBUILDER_FINNHUB_KEY environment variable.
+
+### linkpolygon <polygon_api_key>
+Store the user's Polygon API key for the current session. Note: This command is unnecessary if you have already set the PORTFOLIOBUILDER_POLYGON_KEY environment variable.
 
 ### newbasket <weighting_method> <basket_weight> (\<symbol0> \<symbol1> \<symboli>)
 Create a new basket of stocks and stores it locally; this does not place any orders. Possible weighting methods are: market_cap, equal, value, and value_quality. Basket weight must be greater than 0 and less than or equal to 100. 

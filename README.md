@@ -34,7 +34,11 @@ An Alpaca account, a Finnhub account, a polygon account, and API keys for each. 
         PORTFOLIOBUILDER_FINNHUB_KEY
         PORTFOLIOBUILDER_POLYGON_KEY
 
-    If you are using conda, you can find instructions for setting environment variables [here](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#saving-environment-variables).
+    There are a couple ways to set these environment variables:
+
+    (a) You can set the environment variables with your _virtual environment_. If you are using conda, you can find instructions for setting environment variables [here](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#saving-environment-variables).
+
+    (b) You can set the environment variables every time you run Portfolio Builder using the `link` commands.
 
 ## Quickstart
 The following demonstrates how to construct, inspect, and purchase a basket of stocks. 

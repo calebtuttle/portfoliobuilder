@@ -6,6 +6,8 @@ command_executables = {
     'help': commands.Help,
     'inspectaccount': commands.InspectAccount,
     'linkalpaca': commands.LinkAlpaca,
+    'linkfinnhub': commands.LinkFinnhub,
+    'linkpolygon': commands.LinkPolygon,
     'newbasket': commands.NewBasket,
     'newbasketfromindex': commands.NewBasketFromIndex,
     'listbaskets': commands.ListBaskets,

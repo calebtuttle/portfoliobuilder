@@ -54,6 +54,8 @@ class Help():
             'Commands:\n' + \
             'inspectaccount\n' + \
             'linkalpaca <alpaca_api_key> <alpaca_secret>\n' + \
+            'linkfinnhub <finnhub_api_key>\n' + \
+            'linkpolygon <polygon_api_key>\n' + \
             'newbasket <weighting_method> <basket_weight> (<symbol0> <symbol1> <symboli>)\n' + \
             '\tweighting_method options: equal market_cap value value_quality\n' + \
             'newbasketfromindex <weighting_method> <basket_weight> <index_symbol>\n' + \
@@ -85,7 +87,7 @@ class InspectAccount():
 
 class LinkAlpaca():
     '''
-    Namespace for the methods that execute the linkaccount command.
+    Namespace for the methods that execute the linkalpaca command.
     '''
     @staticmethod
     def execute():
@@ -111,9 +113,73 @@ class LinkAlpaca():
     def check_account_connected():
         acc = api_utils.get_account()
         if acc:
-            print(f'Linked to account with id: {acc["id"]}.')
+            print(f'Linked to Alpaca account with id: {acc["id"]}.')
         else:
-            print('Could not link account.') 
+            print('Could not link Alpaca account.') 
+
+
+class LinkFinnhub():
+    '''
+    Namespace for the methods that execute the linkfinnhub command.
+    '''
+    @staticmethod
+    def execute():
+        if not LinkAlpaca.input_is_valid():
+            return
+        LinkAlpaca.set_environment_variables()
+        LinkAlpaca.check_account_connected()
+
+    @staticmethod
+    def input_is_valid():
+        '''
+        Return a bool indicating whether the input is valid.
+        '''
+        return utils.has_num_args(user_input, 1)
+
+    @staticmethod
+    def set_environment_variables():
+        key = user_input.split(' ')[1]
+        os.environ['PORTFOLIOBUILDER_FINNHUB_KEY'] = key
+
+    @staticmethod
+    def check_account_connected():
+        constituents = api_utils.get_index_constituents('^DJI')
+        if constituents:
+            print(f'Connected to Finnhub API.')
+        else:
+            print('Could not connect to Finnhub.')
+
+
+class LinkPolygon():
+    '''
+    Namespace for the methods that execute the linkpolygon command.
+    '''
+    @staticmethod
+    def execute():
+        if not LinkAlpaca.input_is_valid():
+            return
+        LinkAlpaca.set_environment_variables()
+        LinkAlpaca.check_account_connected()
+
+    @staticmethod
+    def input_is_valid():
+        '''
+        Return a bool indicating whether the input is valid.
+        '''
+        return utils.has_num_args(user_input, 1)
+
+    @staticmethod
+    def set_environment_variables():
+        key = user_input.split(' ')[1]
+        os.environ['PORTFOLIOBUILDER_POLYGON_KEY'] = key
+
+    @staticmethod
+    def check_account_connected():
+        financials = api_utils.get_financials('AAPL')
+        if financials:
+            print(f'Connected to Polygon API.')
+        else:
+            print('Could not connect to Finnhub.') 
 
 
 class NewBasket():
