@@ -19,7 +19,7 @@ command_executables = {
     'deletebasket': commands.DeleteBasket,
     'rebalance': commands.Rebalance,
     'listindices': commands.ListIndices,
-    'exit': commands.Quit
+    'quit': commands.Quit
 }
 
 
@@ -32,7 +32,7 @@ def parse_user_input(user_input):
         print(f'Invalid command. {type(error)}')
 
 print("Welcome to the portfoliobuilder command line application. " +
-        "Enter 'help' to see commands. Enter 'q' to quit, or kill with ^c.")
+        "Enter 'help' to see commands. Enter 'quit' to quit, or kill with CTRL+C.")
 
 commands.setup_db()
 
@@ -40,9 +40,9 @@ try:
     user_input = ''
     while True:
         user_input = input('> ')
-        if user_input == 'exit':
-            command_executables['exit'].execute()
+        if user_input == 'quit':
+            command_executables['quit'].execute()
             break
         parse_user_input(user_input)
 except KeyboardInterrupt:
-    command_executables['exit'].execute()
+    command_executables['quit'].execute()

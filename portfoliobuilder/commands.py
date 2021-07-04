@@ -22,7 +22,7 @@ def setup_db():
     global engine, session
     engine = create_engine('sqlite:////home/caleb/Desktop/myprograms' +\
                                     '/portfoliobuilder/sqlalchemy.db',
-                                        echo=True, future=True)
+                                        echo=False, future=True)
     session = Session(engine)
     Base.metadata.create_all(bind=engine) # Create tables
 
@@ -34,14 +34,16 @@ user_input = ''
 
 class BasketCommand():
     '''
-    A class inherited by commands where <basket_name>
+    A class inherited by commands where <basket_id>
     is the first parameter.
     '''
     @staticmethod
     def get_basket_from_user_input():
-        basket_id = int(user_input.split(' ')[1])
-        return session.get(Basket, basket_id)
-    
+        try:
+            basket_id = int(user_input.split(' ')[1])
+            return session.get(Basket, basket_id)
+        except ValueError:
+            return
 
 class Help():
     '''
@@ -53,19 +55,19 @@ class Help():
             'Commands:\n' + \
             'inspectaccount\n' + \
             'linkaccount <alpaca_api_key> <alpaca_secret>\n' + \
-            'newbasket (<symbol0> <symbol1> <symboli>) <weighting_method> <basket_weight>\n' + \
+            'newbasket <weighting_method> <basket_weight> (<symbol0> <symbol1> <symboli>)\n' + \
             '\tweighting_method options: equal market_cap value value_quality\n' + \
-            'newbasketfromindex <index_symbol> <weighting_method> <basket_weight>\n' + \
+            'newbasketfromindex <weighting_method> <basket_weight> <index_symbol>\n' + \
             'listbaskets\n' + \
-            'inspectbasket <basket_name>\n' + \
-            'addsymbols <basket_name> <symbol1> <symboli>\n' + \
-            'buybasket <basket_name>\n' + \
-            'sellbasket <basket_name>\n' + \
-            'deletebasket <basket_name>\n' + \
-            'rebalance <basket_name>\n' + \
+            'inspectbasket <basket_id>\n' + \
+            'addsymbols <basket_id> <symbol1> <symboli>\n' + \
+            'buybasket <basket_id>\n' + \
+            'sellbasket <basket_id>\n' + \
+            'deletebasket <basket_id>\n' + \
+            'rebalance <basket_id>\n' + \
             'listindices\n\n' + \
             "Enter 'help' to see commands.\n"+ \
-            "Enter 'quit' to quit, or kill with CTRL+c.")
+            "Enter 'quit' to quit, or kill with CTRL+C.")
 
 
 class InspectAccount():
@@ -118,9 +120,6 @@ class LinkAccount():
 class NewBasket():
     '''
     Namespace for the methods that execute the newbasket command.
-
-    newbasket <weighting_method> <basket_weight> (<symbol0> <symbol1> <symboli>)
-        weighting_method options: equal market_cap value value_quality
     '''
     @staticmethod
     def execute():
@@ -170,23 +169,18 @@ class NewBasket():
         create the resultant Basket, and add it to the db.
         '''
         weighting_method, weight, symbols = NewBasket.get_args()
-        stocks = NewBasket.get_stocks_from_symbols(symbols)
         basket = Basket(active=False, weighting_method=weighting_method, 
-                                        weight=weight, stocks=stocks)
+                                        weight=weight, stocks=[])
+        NewBasket.add_symbols_to_basket(symbols, basket)
         session.add(basket)
         session.flush()
         print(f'Basket{basket.id} created.')
-        
+    
     @staticmethod
-    def get_stocks_from_symbols(symbols):
-        '''
-        Return a list of Stock objects from a list of symbols.
-        '''
-        stocks = []
+    def add_symbols_to_basket(symbols, basket):
         for symbol in symbols:
             stock = Stock(symbol=symbol)
-            stocks.append(stocks)
-        return stocks
+            basket.stocks.append(stock)
 
 
 class NewBasketFromIndex():
@@ -197,7 +191,7 @@ class NewBasketFromIndex():
     '''
     @staticmethod
     def execute():
-        if not utils.has_num_args(user_input, 4):
+        if not utils.has_num_args(user_input, 3):
             return
         symbols = NewBasketFromIndex.get_symbols_in_index()
         NewBasketFromIndex.replace_index_with_symbols_in_user_input(symbols)
@@ -226,7 +220,7 @@ class ListBaskets():
     '''
     @staticmethod
     def execute():
-        baskets = Basket.query.all()
+        baskets = session.query(Basket)
         if baskets:
             for b in baskets:
                 print(f'Basket{b.id}')
@@ -296,9 +290,13 @@ class AddSymbols(BasketCommand):
         untradable_new_symbols = []
         for symbol in new_symbols:
             print(f'Determining whether {symbol} is tradable...', end='\r')
-            if not api_utils.tradable(symbol):
-                print(f'{symbol} appears to not be tradable.')
-                untradable_new_symbols.append(symbol)
+            asset = api_utils.get_asset(symbol)    
+            sys.stdout.write("\033[K")
+            if asset:
+                if asset['tradable']:
+                    continue
+            print(f'{symbol} appears to not be tradable.')
+            untradable_new_symbols.append(symbol)
         return set(new_symbols) - set(untradable_new_symbols)
 
     @staticmethod
@@ -332,7 +330,7 @@ class AddSymbols(BasketCommand):
     @staticmethod
     def print_new_symbols(new_symbols):
         new_symbols_str = ' '.join(new_symbols)
-        print('Adding the following symbols:', end='')
+        print('Adding the following symbols: ', end='')
         print(new_symbols_str)
 
 

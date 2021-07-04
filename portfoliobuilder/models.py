@@ -22,5 +22,5 @@ class Stock(Base):
     id = Column(Integer, primary_key=True)
     basket_id = Column(Integer, ForeignKey('basket.id'))
 
-    symbol = Column(String, unique=True)
+    symbol = Column(String)
 
