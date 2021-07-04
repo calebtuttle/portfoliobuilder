@@ -43,9 +43,9 @@ An Alpaca account, a Finnhub account, a polygon account, and API keys for each. 
 ## Quickstart
 The following demonstrates how to construct, inspect, and purchase a basket of stocks. 
 
-To run Portfolio Builder, run the command_line_app script with:
+To run Portfolio Builder, execute the run.py script with:
 
-    portfoliobuilder/portfoliobuilder$ python command_line_app.py
+    portfoliobuilder/portfoliobuilder$ python run.py
 
 You should be presented with a short welcome message and prompt:
 
@@ -80,6 +80,13 @@ Now we buy the basket:
     were printed above, all stocks were placed successfully.
 
 If all of the above ran without errors or exceptions, you successfully purchased the ~500 stocks in the S&P500 and weighted them equally. For a full list of commands and their descriptions, see the [commands page](docs/commands.md).
+
+## Contribute
+I welcome all contributions! Feel free to find bugs, address bugs, add commands/features, or improve the documentation.
+
+There are, however, a few items I would love help with first: testing and a GUI. I invite people to try to find bugs; and for front-end-oriented devs, I would love help with an interface.
+
+See [this post](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) for a guide on contributing to an open source project.
 
 ## A Note on the API Keys
 All of the APIs used by Portfolio Builder are free or have a free tier. Portfolio Builder requires no API subscriptions.
