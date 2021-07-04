@@ -82,7 +82,7 @@ Now we buy the basket:
 If all of the above ran without errors or exceptions, you successfully purchased the ~500 stocks in the S&P500 and weighted them equally. For a full list of commands and their descriptions, see the [commands page](docs/commands.md).
 
 ## Contribute
-I welcome all contributions! Feel free to find bugs, address bugs, add commands/features, or improve the documentation.
+I welcome all contributions! Feel free to find bugs, address bugs, add commands/features, and improve the documentation.
 
 There are, however, a few items I would love help with first: testing and a GUI. I invite people to try to find bugs; and for front-end-oriented devs, I would love help with an interface.
 
