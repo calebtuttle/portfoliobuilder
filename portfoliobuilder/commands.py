@@ -26,7 +26,6 @@ def setup_db():
     Base.metadata.create_all(bind=engine) # Create tables
 
 
-
 # This variable is set in run.py everytime the user enters input
 user_input = ''
 
@@ -43,6 +42,7 @@ class BasketCommand():
             return session.get(Basket, basket_id)
         except ValueError:
             return
+
 
 class Help():
     '''

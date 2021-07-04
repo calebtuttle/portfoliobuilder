@@ -10,7 +10,7 @@ class Basket(Base):
     id = Column(Integer, primary_key=True)
 
     active = Column(Boolean)
-    weighting_method = Column(String) # TODO: Add a constraint for this
+    weighting_method = Column(String)
     weight = Column(Float)
 
     stocks = relationship('Stock', cascade='all, delete')

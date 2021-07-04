@@ -1,6 +1,3 @@
-'''
-TODO: Test thoroughly. Then delete basket_functions.py and command_line_app.py.
-'''
 
 from portfoliobuilder import commands
 
@@ -31,8 +28,9 @@ def parse_user_input(user_input):
     except (IndexError, KeyError) as error:
         print(f'Invalid command. {type(error)}')
 
-print("Welcome to the portfoliobuilder command line application. " +
-        "Enter 'help' to see commands. Enter 'quit' to quit, or kill with CTRL+C.")
+
+print("Welcome to the portfoliobuilder command line application. Enter " +
+    "'help' to see commands. Enter 'quit' to quit, or kill with CTRL+C.")
 
 commands.setup_db()
 
