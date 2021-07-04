@@ -55,7 +55,7 @@ You should be presented with a short welcome message and prompt:
 
 For this example, we will buy all the stocks in the S&P500, but instead of weighting those stocks by market cap (like the S&P500 does), we will weight them equally. First, we create a basket from an index:
 
-    > newbasketfromindex ^GSPC equal 50
+    > newbasketfromindex equal 50 ^GSPC
 
 This command says, "Construct a basket of all the stocks in the _^GSPC_ index (which is the symbol for the S&P500). When I buy this basket, I want those stocks to be weighted _equally_. And when I buy the basket, I want to allocate exactly _50%_ of my portfolio to it." After Portfolio Builder ensures all stocks in the S&P500 can be traded through Alpaca, you should get an output that looks like this:
 
@@ -73,13 +73,13 @@ We can double check that the basket was created with `inspectbasket` (I'm omitti
 Now we buy the basket:
 
     > buybasket Basket1
-    Orders to purchase stocks in Basket0 have been placed.
+    Orders to purchase stocks in Basket1 have been placed.
     Weighting method: equal
     Basket weight: 50.0%
     Note: Some purchase orders might not have been placed. If no errors
     were printed above, all stocks were placed successfully.
 
-If all of the above ran without errors or exceptions, you successfully purchased the ~500 stocks in the S&P500 and weighted them equally. For further information, see the command line app documentation.
+If all of the above ran without errors or exceptions, you successfully purchased the ~500 stocks in the S&P500 and weighted them equally. For a full list of commands and their descriptions, see the [commands page](docs/commands.md).
 
 ## A Note on the API Keys
 All of the APIs used by Portfolio Builder are free or have a free tier. Portfolio Builder requires no API subscriptions.
