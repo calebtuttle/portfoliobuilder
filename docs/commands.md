@@ -1,7 +1,7 @@
 
 ## Commands
 ### inspectaccount
-List the information of the linked account. If no account is linked, an error message is printed.
+List the information of the linked Alpaca account. If no account is linked, an error message is printed.
 
 ### linkalpaca <alpaca_api_key> <alpaca_secret>
 Store the user's Alpaca API key and secret for the current session. This allows the user to interact with their account (e.g., to place orders). Note: This command is unnecessary if you have already set the environment variables.
