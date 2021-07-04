@@ -82,9 +82,9 @@ Now we buy the basket:
 If all of the above ran without errors or exceptions, you successfully purchased the ~500 stocks in the S&P500 and weighted them equally. For a full list of commands and their descriptions, see the [commands page](docs/commands.md).
 
 ## Contribute
-I welcome all contributions! Feel free to find bugs, address bugs, add commands/features, and improve the documentation.
+I welcome all contributions! Feel free to find bugs, address bugs, add commands/features, and improve the documentation. Also feel free to fork this project and make your own version.
 
-There are, however, a few items I would love help with first: testing and a GUI. I invite people to try to find bugs; and for front-end-oriented devs, I would love help with an interface.
+There are, however, a few items that are high priority in my mind: testing and a GUI. I invite people to try to find bugs; and for front-end-oriented devs, I would love help with an interface.
 
 See [this post](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) for a guide on contributing to an open source project.
 
