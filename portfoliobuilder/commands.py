@@ -1,12 +1,5 @@
 '''
 This module implements the commands for the command line app.
-
-To create a command:
-- Create a class with the name of the command.
-- Add an 'execute()' method to the class that executes the command.
-- Add the command keyword and the class to the command_executables
-    dictionary in run.py.
-- Update the help string in the Help class to include the command.
 '''
 import os
 import sys
