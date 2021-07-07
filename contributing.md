@@ -8,7 +8,7 @@ Follow the [PEP 8 Style Guide](https://www.python.org/dev/peps/pep-0008/).
 Use descriptive names, and keep functions short. As a rule of thumb, functions should be between 2 and 100 lines, with most being no more than 20 lines. This helps create self-documenting code and can allow for more modular development.
 
 ## How to Contribute
-I welcome all contributions. Below is a list of how to report issues and add commands. If you would like to contribute some other way, feel free to raise an issue describing what you want to add.
+I welcome all contributions. Below you will find descriptions on how to report issues and add commands. If you would like to contribute some other way, feel free to raise an issue describing what you want to add.
 
 See [this post](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) for a general guide on contributing to an open source project.
 
