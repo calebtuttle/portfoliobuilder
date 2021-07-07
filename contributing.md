@@ -31,11 +31,11 @@ Actual behavior:
 Reproduces how often:
 
 ### Add a Command
-To create a command, open [commands.py](portfoliobuilder/commands.py) and:
-- Create a class with the name of the command.
+To create a command, open:
+- Create a class in [commands.py](portfoliobuilder/commands.py) with the name of the command.
 - Add an 'execute()' method to the class that executes the command.
+- Update the help string in the Help class in [commands.py](portfoliobuilder/commands.py) to include the command.
 - Add both the command keyword and the class to the command_executables
     dictionary in [run.py](portfoliobuilder/run.py).
-- Update the help string in the Help class to include the command.
 - Add an entry in [commands.md](docs/commands.md) with the command name and description.
 
