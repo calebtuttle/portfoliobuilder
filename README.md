@@ -21,15 +21,13 @@ An Alpaca account, a Finnhub account, a polygon account, and API keys for each. 
 ## Installation
 1. Clone this GitHub repository, and navigate to the outermost portfoliobuilder/ directory.
 
-2. Install dependencies. You can do this with either (a) pip or (b) conda.
-
-    (a) Using pip:
-
-        portfoliobuilder$ pip install -r requirements.txt
-
-    (b) Using conda:
+2. Install dependencies. If you are using conda, use this command:
 
         portfoliobuilder$ conda install --file requirements.txt
+
+    Otherwise install using pip:
+
+        portfoliobuilder$ pip install -r requirements.txt
 
 3. Run setup.py in the outermost portfoliobuilder/ directory:
 
