@@ -5,8 +5,13 @@ import os
 
 alpaca_endpoint = 'https://paper-api.alpaca.markets/v2/'
 
-alpaca_paper_key = os.environ['PORTFOLIOBUILDER_ALPACA_PAPER_KEY']
-alpaca_paper_secret = os.environ['PORTFOLIOBUILDER_ALPACA_PAPER_SECRET_KEY']
+try:
+    alpaca_paper_key = os.environ['PORTFOLIOBUILDER_ALPACA_PAPER_KEY']
+    alpaca_paper_secret = os.environ['PORTFOLIOBUILDER_ALPACA_PAPER_SECRET_KEY']
+except KeyError:
+    alpaca_paper_key = ''
+    alpaca_paper_secret = ''
+    print('Link Alpaca account with linkalpaca.')
 
 alpaca_headers = {'APCA-API-KEY-ID': alpaca_paper_key, 'APCA-API-SECRET-KEY': alpaca_paper_secret}
 
@@ -15,12 +20,19 @@ alpaca_headers = {'APCA-API-KEY-ID': alpaca_paper_key, 'APCA-API-SECRET-KEY': al
 
 finnhub_endpoint = 'https://finnhub.io/api/v1/'
 
-finnhub_key = os.environ['PORTFOLIOBUILDER_FINNHUB_KEY']
+try:
+    finnhub_key = os.environ['PORTFOLIOBUILDER_FINNHUB_KEY']
+except KeyError:
+    finnhub_key = ''
+    print('Link Finnhub account with linkfinnhub.')
 
 
 ############### Polygon constants ###############
 
 polygon_endpoint = 'https://api.polygon.io/v2/reference/'
 
-polygon_key = os.environ['PORTFOLIOBUILDER_POLYGON_KEY']
-
+try:
+    polygon_key = os.environ['PORTFOLIOBUILDER_POLYGON_KEY']
+except KeyError:
+    polygon_key = ''
+    print('Link Polygon account with linkpolygon.')
