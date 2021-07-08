@@ -13,8 +13,9 @@ from portfoliobuilder.supported_indices import supported_indices_dict
 
 def setup_db():
     global engine, session
-    engine = create_engine('sqlite:///portfoliobuilder/portfoliobuilder.db',
-                                                    echo=False, future=True)
+    path_to_db = os.path.dirname(os.path.abspath(__file__))
+    path_to_db += f'/portfoliobuilder.db'
+    engine = create_engine(f'sqlite:////{path_to_db}', echo=False, future=True)
     session = Session(engine)
     Base.metadata.create_all(bind=engine) # Create tables
 
