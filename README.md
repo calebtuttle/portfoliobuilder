@@ -14,20 +14,30 @@ The institutions that collectively manage $26 trillion of assets earn over $11 b
 Additionally, the popularity of index funds has resulted in the concentration of voting power. The top three mutual fund firms cast about 25% of the shareholder votes for companies in the S&P500. Such a high level of concentrated power is not good for competition in markets. I encourage anyone intrigued to see [this article by Annie Lowrey](https://www.theatlantic.com/ideas/archive/2021/04/the-autopilot-economy/618497/). Portfolio Builder allows an investor to purchase shares of companies directly; an investor therefore retains his or her voting power.
 
 ## Requirements
-Python 3.6.8
+Python 3.7.6
 
 An Alpaca account, a Finnhub account, a polygon account, and API keys for each. You can create an Alpaca account [here](https://alpaca.markets), a Finnhub account [here](https://finnhub.io), and a Polygon account [here](https://polygon.io). See [A Note on the API Keys](#A-Note-on-the-API-Keys) for more info.
 
 ## Installation
 1. Clone this GitHub repository, and navigate to the outermost portfoliobuilder/ directory.
 
-2. Run setup.py in the outermost portfoliobuilder/ directory:
+2. Install dependencies. You can do this with either (a) pip or (b) conda.
+
+    (a) Using pip:
+
+        portfoliobuilder$ pip install -r requirements.txt
+
+    (b) Using conda:
+
+        portfoliobuilder$ conda install --file requirements.txt
+
+3. Run setup.py in the outermost portfoliobuilder/ directory:
 
         portfoliobuilder$ python setup.py develop
 
     This allows you to import portfoliobuilder.
 
-3. Set the following environment variables to your Alpaca API key for paper trading, your Alpaca secret key for paper trading, your Finnhub API key, and your Polygon key, respectively:
+4. Set the following environment variables to your Alpaca API key for paper trading, your Alpaca secret key for paper trading, your Finnhub API key, and your Polygon key, respectively:
 
         PORTFOLIOBUILDER_ALPACA_PAPER_KEY
         PORTFOLIOBUILDER_ALPACA_PAPER_SECRET_KEY
