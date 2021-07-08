@@ -82,7 +82,7 @@ Now we buy the basket:
 If all of the above ran without errors or exceptions, you successfully purchased the ~500 stocks in the S&P500 and weighted them equally. For a full list of commands and their descriptions, see the [commands page](docs/commands.md).
 
 ## Contribute
-I welcome all contributions! Feel free to find bugs, address bugs, add commands/features, and improve the documentation. See the [contributing page](contributing.md) for contribution guidelines.
+I welcome all contributions! Feel free to report bugs, address bugs, add commands/features, and improve the documentation. See the [contributing page](contributing.md) for more info.
 
 ## A Note on the API Keys
 All of the APIs used by Portfolio Builder are free or have a free tier. Portfolio Builder requires no API subscriptions.
