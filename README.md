@@ -50,7 +50,7 @@ To run Portfolio Builder, execute the run.py script with:
 You should be presented with a short welcome message and prompt:
 
     Welcome to the portfoliobuilder command line application. Enter
-    'help' to see commands. Enter 'q' to quit, or kill with ^c.
+    'help' to see commands. Enter 'q' to quit, or kill with CTRL+C.
     > 
 
 For this example, we will buy all the stocks in the S&P500, but instead of weighting those stocks by market cap (like the S&P500 does), we will weight them equally. First, we create a basket from an index:
