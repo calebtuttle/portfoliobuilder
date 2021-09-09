@@ -1,10 +1,9 @@
 # Portfolio Builder
 Portfolio Builder is a tool for creating and maintaining a diversified stock portfolio.
 
-## Overview
-There are two basic ideas behind Portfolio Builder: Basket-based investing is superior to stock picking, and the current options for basket-based investing are insufficient. Portfolio Builder allows an investor to easily buy a basket of stocks and gives the investor a few options with respect to weighting those stocks. This ability to quickly buy a basket of stocks gives an investor the ability to construct, with no fees, a portfolio that is as diversified as one consisting of ETFs. 
+It allows users to buy _baskets_ of stocks. The user creates a basket and then purchases the basket. A user's portfolio can consist of multiple baskets. 
 
-I want the benefit of the passive investment strategies of ETFs without the disadvantage of fees. I created this app with the goal of executing those strategies for free.
+This ability to quickly buy a basket of stocks gives an investor the ability to construct, with no fees, a portfolio that is as diversified as one consisting of equity-comprised ETFs, and it gives the investor more weighting strategies than ETFs provide.
 
 ## Motivation
 There are two primary motivations for this project: reducing fees and reclaiming ownership of the stocks in my portfolio.
@@ -16,22 +15,32 @@ Additionally, the popularity of index funds has resulted in the concentration of
 ## Requirements
 Python 3.7.6
 
-An Alpaca account, a Finnhub account, a polygon account, and API keys for each. You can create an Alpaca account [here](https://alpaca.markets), a Finnhub account [here](https://finnhub.io), and a Polygon account [here](https://polygon.io). See [A Note on the API Keys](#A-Note-on-the-API-Keys) for more info.
+API keys for the following APIs:
+- [Alpaca](https://alpaca.markets) 
+- [Finnhub](https://finnhub.io)
+- [Polygon](https://polygon.io)
+See [A Note on the API Keys](#A-Note-on-the-API-Keys) to see what the API keys are used for.
 
 ## Installation
-1. Clone this GitHub repository, and navigate to the outermost portfoliobuilder/ directory.
+1. Clone this GitHub repository.
 
-2. Install dependencies. If you are using conda, use this command:
+        git clone https://github.com/calebtuttle/portfoliobuilder.git
+        
+2. Navigate into the cloned directory.
 
-        portfoliobuilder$ conda install --file requirements.txt
+        cd portfoliobuilder
 
-    Otherwise install using pip:
+4. Install dependencies. Install with conda:
 
-        portfoliobuilder$ pip install -r requirements.txt
+        conda install --file requirements.txt
 
-3. Run setup.py in the outermost portfoliobuilder/ directory:
+    Or install pip:
 
-        portfoliobuilder$ python setup.py develop
+        pip install -r requirements.txt
+
+3. While still in the outermost portfoliobuilder/ directory, run setup.py:
+
+        python setup.py develop
 
     This allows you to import portfoliobuilder.
 
@@ -46,7 +55,7 @@ An Alpaca account, a Finnhub account, a polygon account, and API keys for each. 
 
     (a) You can set the environment variables with your _virtual environment_. If you are using conda, you can find instructions for setting environment variables [here](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#saving-environment-variables).
 
-    (b) You can set the environment variables every time you run Portfolio Builder using the `link` commands.
+    (b) You can set the environment variables every time you run Portfolio Builder using the [`link` commands](docs/commands.md#linkalpaca-alpaca_api_key-alpaca_secret).
 
 ## Quickstart
 The following demonstrates how to construct, inspect, and purchase a basket of stocks. 
