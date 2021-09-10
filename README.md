@@ -66,19 +66,19 @@ See [A note on the API keys](#A-note-on-the-API-keys) to see what the API keys a
     (b) You can set the environment variables every time you run Portfolio Builder using the [`link` commands](docs/commands.md#linkalpaca-alpaca_api_key-alpaca_secret).
 
 ## Quickstart
-The following demonstrates how to construct, inspect, and purchase a basket of stocks. 
+The following demonstrates how to construct, inspect, edit, and purchase a basket of stocks. 
 
-To run Portfolio Builder, execute the run.py script within portfoliobuilder/portfoliobuilder:
+To run Portfolio Builder, execute the run.py script within portfoliobuilder/portfoliobuilder.
 
     python run.py
 
-You should be presented with a short welcome message and prompt:
+You should be presented with a short welcome message and prompt.
 
     Welcome to the portfoliobuilder command line application. Enter
     'help' to see commands. Enter 'q' to quit, or kill with CTRL+C.
     > 
 
-For this example, we will buy all the stocks in the S&P500, but instead of weighting those stocks by market cap (like the S&P500 does), we will weight them equally. First, we create a basket from an index:
+For this example, we will buy all the stocks in the S&P500, but instead of weighting those stocks by market cap (like the S&P500 does), we will weight them equally. First, we create a basket from an index.
 
     > newbasketfromindex equal 50 ^GSPC
 
@@ -95,7 +95,13 @@ We can double check that the basket was created with `inspectbasket` (I'm omitti
     Basket is active: False
     Basket constituents: SBAC CVX PVH SWKS ...
 
-Now we buy the basket:
+Perhaps we want to add to our basket a company not in the S&P500. We add stocks to our basket with the `addsymbols` command.
+
+    > addsymbols 1 AMC
+    
+The above command added AMC to Basket1.
+
+We buy a basket with the `buybasket` command.
 
     > buybasket Basket1
     Orders to purchase stocks in Basket1 have been placed.
@@ -104,7 +110,7 @@ Now we buy the basket:
     Note: Some purchase orders might not have been placed. If no errors
     were printed above, all stocks were placed successfully.
 
-If all of the above ran without errors or exceptions, you successfully purchased the ~500 stocks in the S&P500 and weighted them equally. For a full list of commands and their descriptions, see the [commands page](docs/commands.md).
+If all of the above ran without errors or exceptions, you successfully purchased (with fake money) the ~500 stocks in the S&P500 and weighted them equally. For a full list of commands and their descriptions, see the [commands page](docs/commands.md).
 
 ## Contribute
 I welcome all contributions! Feel free to report bugs, address bugs, add commands/features, and improve the documentation. See the [contributing page](contributing.md) for more info.
