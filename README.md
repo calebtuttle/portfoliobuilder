@@ -1,24 +1,26 @@
 # Portfolio Builder
 Portfolio Builder is a tool for creating and maintaining a diversified stock portfolio.
 
-It allows users to buy _baskets_ of stocks. The user creates a basket and then purchases the basket. A user's portfolio can consist of multiple baskets. 
+It allows users to buy _baskets_ of stocks. The user constructs a basket which is stored on their computer. Once constructed, a basket can be purchased. A user's portfolio can consist of multiple baskets. 
 
 This ability to quickly buy a basket of stocks gives an investor the ability to construct, with no fees, a portfolio that is as diversified as one consisting of equity-comprised ETFs, and it gives the investor more weighting strategies than ETFs provide.
+
+Note: The Portfolio Builder documentation assumes a basic understanding of the stock market and portfolio weighting strategies.
 
 ## Motivation
 There are two primary motivations for this project: reducing fees and reclaiming ownership of the stocks in my portfolio.
 
-The institutions that collectively manage $26 trillion of assets earn over $11 billion per year in fees ([$26 trillion AUM](https://www.cnbc.com/2020/11/17/us-etf-market-tops-5-trillion-in-assets-as-investors-stampede-into-stocks-on-vaccine-hopes.html) x [0.45% expense ratio](https://newsroom.morningstar.com/newsroom/news-archive/press-release-details/2020/Morningstars-Annual-Fund-Fee-Study-Finds-Investors-Saved-Nearly-6-Billion-in-Fund-Fees-in-2019/default.aspx) ~= $11 billion). A portion of those fees are used to manage index funds which are entirely automated. With the ability to automate trades and purchase fractional shares, an investor can copy these index funds without paying the fees. It is remarkable that the fees for these fully automated funds have not reached zero.
+The institutions that collectively manage $26 trillion of assets earn over $11 billion per year in fees ([$26 trillion AUM](https://www.cnbc.com/2020/11/17/us-etf-market-tops-5-trillion-in-assets-as-investors-stampede-into-stocks-on-vaccine-hopes.html) x [0.45% expense ratio](https://newsroom.morningstar.com/newsroom/news-archive/press-release-details/2020/Morningstars-Annual-Fund-Fee-Study-Finds-Investors-Saved-Nearly-6-Billion-in-Fund-Fees-in-2019/default.aspx) ~= $11 billion). A portion of those fees are used to manage index funds which are entirely automated. With the ability to automate trades, purchase fractional shares, and pay zero commissions, an investor can copy these index funds without paying the fees.
 
 Additionally, the popularity of index funds has resulted in the concentration of voting power. The top three mutual fund firms cast about 25% of the shareholder votes for companies in the S&P500. Such a high level of concentrated power is not good for competition in markets. I encourage anyone intrigued to see [this article by Annie Lowrey](https://www.theatlantic.com/ideas/archive/2021/04/the-autopilot-economy/618497/). Portfolio Builder allows an investor to purchase shares of companies directly; an investor therefore retains his or her voting power.
 
 ## Requirements
-Python 3.7.6
+- Python 3.7.6
+- API keys for the following APIs:
+    - [Alpaca](https://alpaca.markets) 
+    - [Finnhub](https://finnhub.io)
+    - [Polygon](https://polygon.io)
 
-API keys for the following APIs:
-- [Alpaca](https://alpaca.markets) 
-- [Finnhub](https://finnhub.io)
-- [Polygon](https://polygon.io)
 See [A Note on the API Keys](#A-Note-on-the-API-Keys) to see what the API keys are used for.
 
 ## Installation
@@ -30,7 +32,9 @@ See [A Note on the API Keys](#A-Note-on-the-API-Keys) to see what the API keys a
 
         cd portfoliobuilder
 
-4. Install dependencies. Install with conda:
+3. Install dependencies. 
+
+    Install with conda:
 
         conda install --file requirements.txt
 
@@ -38,20 +42,24 @@ See [A Note on the API Keys](#A-Note-on-the-API-Keys) to see what the API keys a
 
         pip install -r requirements.txt
 
-3. While still in the outermost portfoliobuilder/ directory, run setup.py:
+4. While still in the outermost portfoliobuilder/ directory, run setup.py:
 
         python setup.py develop
 
-    This allows you to import portfoliobuilder.
+    This allows modules in portfoliobuilder import one another, and it allows you to import portfoliobuilder to your python modules.
 
-4. Set the following environment variables to your Alpaca API key for paper trading, your Alpaca secret key for paper trading, your Finnhub API key, and your Polygon key, respectively:
+5. Set the following environment variables for your: 
+- Alpaca API key for paper trading
+- Alpaca secret key for paper trading
+- Finnhub API key 
+- Polygon key
 
         PORTFOLIOBUILDER_ALPACA_PAPER_KEY
         PORTFOLIOBUILDER_ALPACA_PAPER_SECRET_KEY
         PORTFOLIOBUILDER_FINNHUB_KEY
         PORTFOLIOBUILDER_POLYGON_KEY
 
-    There are a couple ways to set these environment variables:
+    There are a couple ways to set these environment variables.
 
     (a) You can set the environment variables with your _virtual environment_. If you are using conda, you can find instructions for setting environment variables [here](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#saving-environment-variables).
 
@@ -60,9 +68,9 @@ See [A Note on the API Keys](#A-Note-on-the-API-Keys) to see what the API keys a
 ## Quickstart
 The following demonstrates how to construct, inspect, and purchase a basket of stocks. 
 
-To run Portfolio Builder, execute the run.py script with:
+To run Portfolio Builder, execute the run.py script within portfoliobuilder/portfoliobuilder:
 
-    portfoliobuilder/portfoliobuilder$ python run.py
+    python run.py
 
 You should be presented with a short welcome message and prompt:
 
