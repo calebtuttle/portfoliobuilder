@@ -5,7 +5,7 @@ It allows users to buy _baskets_ of stocks. The user constructs a basket which i
 
 This ability to quickly buy a basket of stocks gives an investor the ability to construct, with no fees, a portfolio that is as diversified as one consisting of equity-comprised ETFs, and it gives the investor more weighting strategies than ETFs provide.
 
-Note: The Portfolio Builder documentation assumes a basic understanding of the stock market and portfolio weighting strategies.
+Note: The Portfolio Builder documentation assumes a basic understanding of the stock market and portfolio weighting strategies. See [introductory readings](#Introductory-readings) to get a sense of the investing vocabulary used in this documentation.
 
 ## Motivation
 There are two primary motivations for this project: reducing fees and reclaiming ownership of the stocks in my portfolio.
@@ -21,7 +21,7 @@ Additionally, the popularity of index funds has resulted in the concentration of
     - [Finnhub](https://finnhub.io)
     - [Polygon](https://polygon.io)
 
-See [A Note on the API Keys](#A-Note-on-the-API-Keys) to see what the API keys are used for.
+See [A note on the API keys](#A-note-on-the-API-keys) to see what the API keys are used for.
 
 ## Installation
 1. Clone this GitHub repository.
@@ -34,15 +34,15 @@ See [A Note on the API Keys](#A-Note-on-the-API-Keys) to see what the API keys a
 
 3. Install dependencies. 
 
-    Install with conda:
+    Install with conda.
 
         conda install --file requirements.txt
 
-    Or install pip:
+    Or install pip.
 
         pip install -r requirements.txt
 
-4. While still in the outermost portfoliobuilder/ directory, run setup.py:
+4. While still in the outermost portfoliobuilder/ directory, run setup.py.
 
         python setup.py develop
 
@@ -109,9 +109,14 @@ If all of the above ran without errors or exceptions, you successfully purchased
 ## Contribute
 I welcome all contributions! Feel free to report bugs, address bugs, add commands/features, and improve the documentation. See the [contributing page](contributing.md) for more info.
 
-## A Note on the API Keys
+## A note on the API keys
 All of the APIs used by Portfolio Builder are free or have a free tier. Portfolio Builder requires no API subscriptions.
 
 What are the API keys for? The two Alpaca keys are used to trade stocks within your Alpaca account. The Alpaca API keys are the only strictly necessary ones for this application; if you do not connect to the other APIs, however, the 'equal' weighting method will be the only weighting method available. Note that each Alpaca account comes with two sub-accounts: a paper account and a live account. The paper account uses fake money to simulate buying and selling of stocks; this let's you test programmatic trading. The live account uses real money, and you can only trade within it once you've funded it. I discourage anyone from using Portfolio Builder with their live account until the app has been sufficiently tested.
 
 The Finnhub and Polygon API keys are used to collect stock data (e.g., market capitalizations and P/E ratios). This data is used by the weighting methods other than the 'equal' weighting method.
+
+## Introductory readings
+The Portfolio Builder documentation assumes a basic familiarity with investing concepts. The following resources introduce you to the investing concepts used in the Portfolio Builder documentation. (For the purposes of this documentation, these resources are meant to be skimmed. You do not need to study these to understand the documentation.)
+- [Wikipedia article on stock market indices](https://en.wikipedia.org/wiki/Stock_market_index)
+- [Wikipedia article on ETFs](https://en.wikipedia.org/wiki/Exchange-traded_fund)
