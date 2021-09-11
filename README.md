@@ -103,7 +103,7 @@ The above command adds AMC to Basket1.
 
 We buy a basket with the `buybasket` command.
 
-    > buybasket Basket1
+    > buybasket 1
     Orders to purchase stocks in Basket1 have been placed.
     Weighting method: equal
     Basket weight: 50.0%
