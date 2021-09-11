@@ -31,7 +31,7 @@ Actual behavior:
 Reproduces how often:
 
 ### Add a Command
-To create a command, open:
+To create a command, follow these steps:
 - Create a class in [commands.py](portfoliobuilder/commands.py) with the name of the command.
 - Add an 'execute()' method to the class that executes the command.
 - Update the help string in the Help class in [commands.py](portfoliobuilder/commands.py) to include the command.
