@@ -99,7 +99,7 @@ Perhaps we want to add to our basket a company not in the S&P500. We add stocks 
 
     > addsymbols 1 AMC
     
-The above command added AMC to Basket1.
+The above command adds AMC to Basket1.
 
 We buy a basket with the `buybasket` command.
 
