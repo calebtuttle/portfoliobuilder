@@ -5,7 +5,7 @@ It allows users to buy _baskets_ of stocks. The user constructs a basket which i
 
 This ability to quickly buy a basket of stocks gives an investor the ability to construct, with no fees, a portfolio that is as diversified as one consisting of equity-comprised ETFs, and it gives the investor more weighting strategies than ETFs provide.
 
-Note: The Portfolio Builder documentation assumes a basic understanding of the stock market and portfolio weighting strategies. See [introductory readings](#Introductory-readings) to get a sense of the investing vocabulary used in this documentation.
+Note: The Portfolio Builder documentation assumes a basic understanding of the stock market and portfolio weighting strategies. See [extra resources](#Extra-resources) to get a sense of the investing vocabulary used in this documentation.
 
 ## Motivation
 There are two primary motivations for this project: reducing fees and reclaiming ownership of the stocks in my portfolio.
@@ -122,7 +122,7 @@ What are the API keys for? The two Alpaca keys are used to trade stocks within y
 
 The Finnhub and Polygon API keys are used to collect stock data (e.g., market capitalizations and P/E ratios). This data is used by the weighting methods other than the 'equal' weighting method.
 
-## Introductory readings
+## Extra resources
 The Portfolio Builder documentation assumes a basic familiarity with investing concepts. The following resources introduce you to the investing concepts used in the Portfolio Builder documentation. (For the purposes of this documentation, these resources are meant to be skimmed. You do not need to study these to understand the documentation.)
 - [Wikipedia article on stock market indices](https://en.wikipedia.org/wiki/Stock_market_index)
 - [Wikipedia article on ETFs](https://en.wikipedia.org/wiki/Exchange-traded_fund)
