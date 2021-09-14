@@ -4,7 +4,7 @@ This page describes the valuation and quality ('Value-Quality,' 'value_quality')
 ## Overview
 There are a few steps in the Valuation and Quality weighting method.
 
-First, valuation and quality data is gathered on each stock. The valuation data measures how inexpensive the stock is. The quality data measures how good the company is, mainly, how good it is at generating earnings.
+First, valuation and quality data is gathered on each stock. The valuation data measures how inexpensive the stock is. The quality data measures how good the company is, mainly, how good its earnings are.
 
 Second, each stock is given a score for each measure. That is, a stock will receive a score for its P/E ratio, one for its EV/EBITDA ratio, and so on. This score is a function of the measure for this stock relative to the total value for this measure for all stocks. For instance, if a basket contains only 2 stocks (AAPL and FB, say), and if AAPL's ROE is 3x that of FB, AAPL's ROE score will be 3x FB's ROE score.
 
