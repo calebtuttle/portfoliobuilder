@@ -44,4 +44,4 @@ WARNING: This method is not finished! Review the code-level details in depth bef
 
 Weight each stock according to both its valuation and its quality. Give stocks with lower valuations and higher quality more weight. Give stocks with higher valuations and lower quality less weight.
 
-This weighting method is significantly more involved than the others. For detailed information, see the [Valuation and Quality Weighting Method](value_quality_method.md) page.
+This weighting method is significantly more involved than the others. For detailed information, see [Valuation and Quality Weighting Method](value_quality_method.md).
